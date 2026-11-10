@@ -280,7 +280,7 @@ class SoloDesk(ctk.CTk):
   p=self.pages["What's New"]
   for w in p.winfo_children():w.destroy()
   self.heading(p,"What's new in SoloDesk","Release notes and product improvements.")
-  notes=[("V1.3","Market Insight design system",["Dark-first interface, rounded cards and consistent controls.","Five colour themes, five fonts, global bold text and dark/light/system modes.","Analytics, searchable records, document links, quick-start guide and creator links."]),("V1.2","Business workspace refresh",["Overview dashboard, customers, invoices, expenses and tasks.","Invoice and expense editing, CSV exports, local database backups.","Responsive website and Windows packaging."])]
+  notes=[("V1.3","Market Insight design system",["Dark-first interface, rounded cards and consistent controls.","Five colour themes, five fonts, global bold text and dark/light/system modes.","Startup launch, desktop shortcut controls and automatic update checks.","Analytics, searchable records, document links, quick-start guide and creator links."]),("V1.2","Business workspace refresh",["Overview dashboard, customers, invoices, expenses and tasks.","Invoice and expense editing, CSV exports, local database backups.","Responsive website and Windows packaging."])]
   for v,t,items in notes:
    card=self.panel(p);card.pack(fill="x",pady=7);self.label(card,v,17,"accent").pack(anchor="w",padx=18,pady=(14,2));self.label(card,t,14).pack(anchor="w",padx=18,pady=3)
    for item in items:self.label(card,"•  "+item,11,"muted",wraplength=900,justify="left").pack(anchor="w",padx=20,pady=3)
