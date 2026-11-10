@@ -12,6 +12,14 @@ All notable changes to SoloDesk are recorded here.
 - Local SQLite database, business settings and manual backup.
 - Windows installer and portable build.
 
+## V1.1 — repository and usability improvements
+- Added invoice editing.
+- Added expense editing.
+- Refined the desktop table, tab and window styling.
+- Added an in-app link to the latest release page.
+- Improved Windows build discovery for Inno Setup.
+- Added portable ZIP packaging and automatic GitHub Release publishing for version tags.
+
 ## Repository improvements
 - Added an in-app shortcut to the latest GitHub release page.
 - Added a website download path to the latest release.
