@@ -53,8 +53,8 @@ class SoloDesk(tk.Tk):
         for c in cols:self.tables[name].heading(c,text=c.replace("_"," ").title());self.tables[name].column(c,width=125)
         self.tables[name].pack(fill="both",expand=True)
         if name=="Customers":items=[("Add",self.add_customer),("Edit",self.edit_customer),("Delete",lambda:self.delete("Customers","customers")),("Export CSV",lambda:self.export("customers"))]
-        elif name=="Invoices":items=[("New invoice",self.add_invoice),("Mark paid",self.mark_paid),("Delete",lambda:self.delete("Invoices","invoices")),("Export CSV",lambda:self.export("invoices"))]
-        elif name=="Expenses":items=[("Add expense",self.add_expense),("Delete",lambda:self.delete("Expenses","expenses")),("Export CSV",lambda:self.export("expenses"))]
+        elif name=="Invoices":items=[("New invoice",self.add_invoice),("Edit",self.edit_invoice),("Mark paid",self.mark_paid),("Delete",lambda:self.delete("Invoices","invoices")),("Export CSV",lambda:self.export("invoices"))]
+        elif name=="Expenses":items=[("Add expense",self.add_expense),("Edit",self.edit_expense),("Delete",lambda:self.delete("Expenses","expenses")),("Export CSV",lambda:self.export("expenses"))]
         else:items=[("Add task",self.add_task),("Complete / reopen",self.toggle_task),("Delete",lambda:self.delete("Tasks","tasks"))]
         for label,fn in items:ttk.Button(actions,text=label,command=fn).pack(side="left",padx=3)
     def make_overview(self):
@@ -76,11 +76,11 @@ class SoloDesk(tk.Tk):
         ttk.Button(p,text="Back up database",command=self.backup).pack(anchor="w",pady=8)
         ttk.Button(p,text="Check for updates",command=lambda:webbrowser.open("https://github.com/adrianvaleitl-debug/SoloDesk/releases/latest")).pack(anchor="w",pady=8)
         ttk.Label(p,text="Currency changes the display symbol only; no currency conversion or tax calculations are performed.").pack(anchor="w",pady=8)
-    def form(self,title,fields):
+    def form(self,title,fields,initial=None):
         w=tk.Toplevel(self);w.title(title);w.transient(self);w.grab_set();vars={}
         for i,(key,label,options) in enumerate(fields):
             ttk.Label(w,text=label).grid(row=i,column=0,padx=10,pady=6,sticky="w")
-            v=tk.StringVar();vars[key]=v
+            v=tk.StringVar(value=(initial or {}).get(key,""));vars[key]=v
             widget=ttk.Combobox(w,textvariable=v,values=options,state="readonly",width=30) if options else ttk.Entry(w,textvariable=v,width=33)
             widget.grid(row=i,column=1,padx=10,pady=6)
         out={}
@@ -98,7 +98,7 @@ class SoloDesk(tk.Tk):
         i=self.chosen("Customers")
         if i is None:return
         r=self.db.execute("SELECT * FROM customers WHERE id=?",(i,)).fetchone()
-        d=self.form("Edit customer",[(k,k.title(),None) for k in ("name","company","email","phone","notes")])
+        d=self.form("Edit customer",[(k,k.title(),None) for k in ("name","company","email","phone","notes")],dict(r))
         if d and d["name"]:self.db.execute("UPDATE customers SET name=?,company=?,email=?,phone=?,notes=? WHERE id=?",(d["name"],d["company"],d["email"],d["phone"],d["notes"],i));self.db.commit();self.refresh()
     def add_invoice(self):
         cs=self.db.execute("SELECT id,name FROM customers ORDER BY name").fetchall()
@@ -113,6 +113,39 @@ class SoloDesk(tk.Tk):
             self.db.execute("INSERT INTO invoices(number,customer_id,description,amount,issued,due,status) VALUES(?,?,?,?,?,?,?)",(f"SD-{date.today():%y%m%d}-{n:04d}",m[d["customer"]],d["description"],amount,d["issued"],d["due"],d["status"]))
             self.db.commit();self.refresh()
         except Exception:messagebox.showerror("Invalid invoice","Check all invoice fields and dates.")
+
+    def edit_invoice(self):
+        i=self.chosen("Invoices")
+        if i is None:return
+        r=self.db.execute("SELECT * FROM invoices WHERE id=?",(i,)).fetchone()
+        cs=self.db.execute("SELECT id,name FROM customers ORDER BY name").fetchall()
+        if not cs:return
+        choices={f"{x['id']} - {x['name']}":x['id'] for x in cs}
+        selected=next((k for k,v in choices.items() if v==r["customer_id"]),list(choices)[0])
+        initial={"customer":selected,"description":r["description"],"amount":str(r["amount"]),"issued":r["issued"],"due":r["due"],"status":r["status"]}
+        d=self.form("Edit invoice",[( "customer","Customer",list(choices)),("description","Description",None),("amount","Amount",None),("issued","Issue date YYYY-MM-DD",None),("due","Due date YYYY-MM-DD",None),("status","Status",["Draft","Sent","Paid"])],initial)
+        if not d:return
+        try:
+            amount=float(d["amount"]);date.fromisoformat(d["issued"]);date.fromisoformat(d["due"])
+            if amount<0:raise ValueError()
+            self.db.execute("UPDATE invoices SET customer_id=?,description=?,amount=?,issued=?,due=?,status=? WHERE id=?",(choices[d["customer"]],d["description"],amount,d["issued"],d["due"],d["status"],i))
+            self.db.commit();self.refresh()
+        except Exception:messagebox.showerror("Invalid invoice","Check all invoice fields and dates.")
+
+    def edit_expense(self):
+        i=self.chosen("Expenses")
+        if i is None:return
+        r=self.db.execute("SELECT * FROM expenses WHERE id=?",(i,)).fetchone()
+        initial={"date":r["date"],"category":r["category"],"description":r["description"],"supplier":r["supplier"],"amount":str(r["amount"])}
+        d=self.form("Edit expense",[("date","Date YYYY-MM-DD",None),("category","Category",["Travel","Software","Equipment","Office","Marketing","Other"]),("description","Description",None),("supplier","Supplier",None),("amount","Amount",None)],initial)
+        if not d:return
+        try:
+            date.fromisoformat(d["date"]);amount=float(d["amount"])
+            if amount<0:raise ValueError()
+            self.db.execute("UPDATE expenses SET date=?,category=?,description=?,supplier=?,amount=? WHERE id=?",(d["date"],d["category"],d["description"],d["supplier"],amount,i))
+            self.db.commit();self.refresh()
+        except Exception:messagebox.showerror("Invalid expense","Check date and amount.")
+
     def add_expense(self):
         d=self.form("Add expense",[("date","Date YYYY-MM-DD",None),("category","Category",["Travel","Software","Equipment","Office","Marketing","Other"]),("description","Description",None),("supplier","Supplier",None),("amount","Amount",None)])
         if not d:return
