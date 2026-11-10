@@ -158,7 +158,10 @@ class SoloDesk(ctk.CTk):
    if not q or q in " ".join(map(str,v)).lower():tree.insert("","end",values=v)
  def refresh_recent(self):
   if not hasattr(self,"recent"):return
-  for x in self.recent.get_children():self.recent.delete(x)
+  try:
+   if not self.recent.winfo_exists():return
+   for x in self.recent.get_children():self.recent.delete(x)
+  except tk.TclError:return
   for r in self.data("Invoices")[:8]:self.recent.insert("","end",values=(r["number"],r["customer"],self.money(r["amount"]),r["due"],r["status"]))
  def refresh(self):
   for n in list(self.tables):self.refresh_table(n)
@@ -228,6 +231,7 @@ class SoloDesk(ctk.CTk):
   if not d:return
   try:
    date.fromisoformat(d["date"]);a=float(d["amount"])
+   if a<0:raise ValueError()
    self.db.execute("UPDATE expenses SET date=?,category=?,description=?,supplier=?,amount=? WHERE id=?",(d["date"],d["category"],d["description"],d["supplier"],a,i));self.db.commit();self.refresh()
   except Exception:messagebox.showerror("Invalid expense","Check expense date and amount.")
  def add_task(self):
