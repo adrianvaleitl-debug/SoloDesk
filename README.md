@@ -20,3 +20,15 @@ Run `build_windows.bat` on Windows to create a standalone app in `dist\SoloDesk\
 
 ## Data and limitations
 Windows data is stored in `%LOCALAPPDATA%\SoloDesk\solodesk.db`; other platforms use `~/.solodesk/solodesk.db`. Back it up regularly. Currency selection changes the displayed symbol only; it does not convert amounts. V1.0 is not accounting or tax software and does not provide VAT returns, payment processing, cloud sync or legally compliant invoice templates. Review invoices and tax records with an appropriate professional.
+
+
+## Releases and updates
+
+- Download the latest Windows installer from [GitHub Releases](https://github.com/adrianvaleitl-debug/SoloDesk/releases/latest).
+- In the app, open **Settings → Check for updates** to open the latest release page.
+- GitHub Actions creates build artifacts when run manually. Pushing a version tag such as `V1.1` builds the installer and publishes a GitHub Release automatically.
+- Before installing an update, close SoloDesk and back up your database from Settings. The installer does not intentionally remove your local database.
+
+## Project quality and support
+
+Please report reproducible problems through [GitHub Issues](https://github.com/adrianvaleitl-debug/SoloDesk/issues). Do not include customer records, passwords, payment details, or database backups in bug reports.
