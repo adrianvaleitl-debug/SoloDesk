@@ -2,6 +2,7 @@ name: Build SoloDesk for Windows
 on:
   workflow_dispatch:
   push:
+    branches: ["main"]
     tags: ["V*"]
 permissions:
   contents: write
