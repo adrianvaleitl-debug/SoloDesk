@@ -206,7 +206,7 @@ class SoloDesk(tk.Tk):
         due=self.db.execute("SELECT COALESCE(SUM(amount),0) FROM invoices WHERE status IN ('Draft','Sent')").fetchone()[0]
         spent=self.db.execute("SELECT COALESCE(SUM(amount),0) FROM expenses").fetchone()[0]
         count=self.db.execute("SELECT COUNT(*) FROM customers").fetchone()[0]
-        self.summary.config(text=f"PAID INCOME     {self.money(paid)}        OUTSTANDING     {self.money(due)}\\n\\nEXPENSES     {self.money(spent)}        CUSTOMERS     {count}")
+        self.summary.config(text=f"PAID INCOME     {self.money(paid)}        OUTSTANDING     {self.money(due)}\n\nEXPENSES     {self.money(spent)}        CUSTOMERS     {count}")
 
 if __name__=="__main__":
     SoloDesk().mainloop()
