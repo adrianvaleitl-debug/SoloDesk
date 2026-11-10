@@ -6,6 +6,9 @@ on:
     tags: ["V*"]
 permissions:
   contents: write
+concurrency:
+  group: solodesk-v1-3-release
+  cancel-in-progress: true
 jobs:
   build:
     runs-on: windows-latest
@@ -46,6 +49,7 @@ jobs:
           target_commitish: main
           name: SoloDesk V1.3
           make_latest: true
+          overwrite_files: true
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
