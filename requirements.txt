@@ -1,1 +1,1 @@
-# SoloDesk uses Python standard-library modules only.
+customtkinter>=5.2.2
