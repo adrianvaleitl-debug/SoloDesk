@@ -12,7 +12,7 @@ SYMBOLS = {"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹"}
 class SoloDesk(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("SoloDesk V1.0"); self.geometry("1240x780"); self.minsize(980,640)
+        self.title("SoloDesk V1.1"); self.geometry("1360x860"); self.minsize(1080,700)
         self.db=sqlite3.connect(DB); self.db.row_factory=sqlite3.Row
         self.db.executescript("""
         CREATE TABLE IF NOT EXISTS settings(k TEXT PRIMARY KEY,v TEXT);
@@ -27,12 +27,24 @@ class SoloDesk(tk.Tk):
         s=ttk.Style(self)
         try:s.theme_use("clam")
         except tk.TclError:pass
-        s.configure("Treeview",rowheight=34,font=("Segoe UI",10),background="#FFFFFF",fieldbackground="#FFFFFF",foreground="#24364B"); s.configure("Treeview.Heading",font=("Segoe UI",10,"bold"),background="#E8EFF7",foreground="#14243A",padding=(9,10)); s.map("Treeview",background=[("selected","#DCEBFF")],foreground=[("selected","#14243A")]); s.configure("TNotebook.Tab",font=("Segoe UI",10,"bold"),padding=(18,11)); s.configure("TButton",font=("Segoe UI",9,"bold"),padding=(11,7))
-        head=tk.Frame(self,bg="#14243A",height=70); head.pack(fill="x"); head.pack_propagate(False)
-        tk.Label(head,text="◈  SoloDesk",bg="#14243A",fg="white",font=("Segoe UI",23,"bold")).pack(side="left",padx=24)
+        s.configure(".", font=("Segoe UI", 10))
+        s.configure("TFrame", background="#F3F6FA")
+        s.configure("TLabel", background="#F3F6FA", foreground="#24364B", font=("Segoe UI", 10))
+        s.configure("TNotebook", background="#F3F6FA", borderwidth=0, tabmargins=(4, 8, 4, 0))
+        s.configure("TNotebook.Tab", font=("Segoe UI", 10, "bold"), padding=(20, 13), background="#E5ECF5", foreground="#52677F")
+        s.map("TNotebook.Tab", background=[("selected", "#3977D5"), ("active", "#DCE9F8")], foreground=[("selected", "#FFFFFF"), ("active", "#14243A")])
+        s.configure("Treeview", rowheight=40, font=("Segoe UI", 10), background="#FFFFFF", fieldbackground="#FFFFFF", foreground="#24364B", borderwidth=0, relief="flat")
+        s.configure("Treeview.Heading", font=("Segoe UI", 10, "bold"), background="#E8EFF7", foreground="#14243A", padding=(12, 13), relief="flat")
+        s.map("Treeview", background=[("selected", "#DCEBFF")], foreground=[("selected", "#14243A")])
+        s.configure("TButton", font=("Segoe UI", 9, "bold"), padding=(14, 9), background="#E4ECF6", foreground="#193451", borderwidth=0)
+        s.map("TButton", background=[("pressed", "#245EAD"), ("active", "#D4E4F7")], foreground=[("pressed", "#FFFFFF")])
+        s.configure("Accent.TButton", font=("Segoe UI", 9, "bold"), padding=(15, 9), background="#3977D5", foreground="#FFFFFF")
+        s.map("Accent.TButton", background=[("pressed", "#245EAD"), ("active", "#2F69BE")], foreground=[("active", "#FFFFFF")])
+        head=tk.Frame(self,bg="#14243A",height=82,highlightthickness=0); head.pack(fill="x"); head.pack_propagate(False)
+        tk.Label(head,text="◈  SoloDesk",bg="#14243A",fg="white",font=("Segoe UI",24,"bold")).pack(side="left",padx=28)
         tk.Label(head,text="YOUR BUSINESS, IN ONE PLACE",bg="#14243A",fg="#9EC8F5",font=("Segoe UI",9,"bold")).pack(side="left")
-        self.bizlabel=tk.Label(head,text=self.get("business"),bg="#14243A",fg="white");self.bizlabel.pack(side="right",padx=24)
-        self.tabs=ttk.Notebook(self);self.tabs.pack(fill="both",expand=True,padx=16,pady=16)
+        self.bizlabel=tk.Label(head,text=self.get("business"),bg="#1D3553",fg="#FFFFFF",font=("Segoe UI",10,"bold"),padx=16,pady=9);self.bizlabel.pack(side="right",padx=26)
+        self.tabs=ttk.Notebook(self);self.tabs.pack(fill="both",expand=True,padx=22,pady=(18,20))
         self.tables={}
         self.make_table("Customers",("id","name","company","email","phone"))
         self.make_table("Invoices",("id","number","customer","description","amount","issued","due","status"))
@@ -47,7 +59,7 @@ class SoloDesk(tk.Tk):
     def money(self,n):return f"{SYMBOLS.get(self.get('currency'),'£')}{float(n):,.2f}"
     def make_table(self,name,cols):
         p=ttk.Frame(self.tabs,padding=14);self.tabs.add(p,text=name)
-        tk.Label(p,text=name,bg="#F3F6FA",fg="#14243A",font=("Segoe UI",19,"bold")).pack(anchor="w")
+        tk.Label(p,text=name,bg="#F3F6FA",fg="#14243A",font=("Segoe UI",21,"bold")).pack(anchor="w",pady=(4,10))
         actions=ttk.Frame(p);actions.pack(fill="x",pady=8)
         self.tables[name]=ttk.Treeview(p,columns=cols,show="headings")
         for c in cols:self.tables[name].heading(c,text=c.replace("_"," ").title());self.tables[name].column(c,width=125)
@@ -56,11 +68,11 @@ class SoloDesk(tk.Tk):
         elif name=="Invoices":items=[("New invoice",self.add_invoice),("Edit",self.edit_invoice),("Mark paid",self.mark_paid),("Delete",lambda:self.delete("Invoices","invoices")),("Export CSV",lambda:self.export("invoices"))]
         elif name=="Expenses":items=[("Add expense",self.add_expense),("Edit",self.edit_expense),("Delete",lambda:self.delete("Expenses","expenses")),("Export CSV",lambda:self.export("expenses"))]
         else:items=[("Add task",self.add_task),("Complete / reopen",self.toggle_task),("Delete",lambda:self.delete("Tasks","tasks"))]
-        for label,fn in items:ttk.Button(actions,text=label,command=fn).pack(side="left",padx=3)
+        for label,fn in items:ttk.Button(actions,text=label,command=fn,style=("Accent.TButton" if label in ("Add","New invoice","Add expense","Add task") else "TButton")).pack(side="left",padx=(0,8),pady=(2,10))
     def make_overview(self):
         p=ttk.Frame(self.tabs,padding=16);self.tabs.insert(0,p,text="Overview")
-        tk.Label(p,text="Business overview",bg="#F3F6FA",fg="#14243A",font=("Segoe UI",20,"bold")).pack(anchor="w")
-        self.summary=tk.Label(p,text="",bg="#F3F6FA",fg="#14243A",font=("Segoe UI",14));self.summary.pack(anchor="w",pady=25)
+        tk.Label(p,text="Business overview",bg="#F3F6FA",fg="#14243A",font=("Segoe UI",22,"bold")).pack(anchor="w",pady=(4,8))
+        self.summary=tk.Label(p,text="",bg="#FFFFFF",fg="#14243A",font=("Segoe UI",13,"bold"),padx=24,pady=24,relief="flat",bd=0,justify="left");self.summary.pack(fill="x",anchor="w",pady=(18,24))
         self.recent=ttk.Treeview(p,columns=("number","customer","amount","due","status"),show="headings")
         for c in ("number","customer","amount","due","status"):self.recent.heading(c,text=c.title());self.recent.column(c,width=150)
         self.recent.pack(fill="both",expand=True)
@@ -194,7 +206,7 @@ class SoloDesk(tk.Tk):
         due=self.db.execute("SELECT COALESCE(SUM(amount),0) FROM invoices WHERE status IN ('Draft','Sent')").fetchone()[0]
         spent=self.db.execute("SELECT COALESCE(SUM(amount),0) FROM expenses").fetchone()[0]
         count=self.db.execute("SELECT COUNT(*) FROM customers").fetchone()[0]
-        self.summary.config(text=f"Paid income  {self.money(paid)}     Outstanding  {self.money(due)}     Expenses  {self.money(spent)}     Customers  {count}")
+        self.summary.config(text=f"PAID INCOME     {self.money(paid)}        OUTSTANDING     {self.money(due)}\\n\\nEXPENSES     {self.money(spent)}        CUSTOMERS     {count}")
 
 if __name__=="__main__":
     SoloDesk().mainloop()
