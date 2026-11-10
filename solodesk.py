@@ -215,6 +215,7 @@ class SoloDesk(ctk.CTk):
   if not d:return
   try:
    a=float(d["amount"]);date.fromisoformat(d["issued"]);date.fromisoformat(d["due"])
+   if a<0:raise ValueError()
    self.db.execute("UPDATE invoices SET customer_id=?,description=?,amount=?,issued=?,due=?,status=? WHERE id=?",(opts[d["customer"]],d["description"],a,d["issued"],d["due"],d["status"],i));self.db.commit();self.refresh()
   except Exception:messagebox.showerror("Invalid invoice","Check invoice fields.")
  def add_expense(self):
