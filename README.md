@@ -17,7 +17,8 @@ SoloDesk is a local-first Windows desktop workspace for freelancers and small bu
 - Bold or regular typography throughout the app.
 - Dark, Light and System appearance modes.
 - First-launch quick-start guide and in-app What's New release notes.
-- Optional Windows startup launch, manual database backups and update links.
+- Optional Windows startup launch and desktop shortcut create/remove controls.
+- Automatic and manual GitHub release checks, manual database backups and in-app update links.
 - YouTube, TikTok and Ko-fi creator links.
 
 ## Creator
