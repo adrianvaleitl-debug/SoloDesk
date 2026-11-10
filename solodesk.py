@@ -12,7 +12,7 @@ SYMBOLS = {"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹"}
 class SoloDesk(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("SoloDesk"); self.geometry("1100x700"); self.minsize(900,580)
+        self.title("SoloDesk V1.0"); self.geometry("1240x780"); self.minsize(980,640)
         self.db=sqlite3.connect(DB); self.db.row_factory=sqlite3.Row
         self.db.executescript("""
         CREATE TABLE IF NOT EXISTS settings(k TEXT PRIMARY KEY,v TEXT);
@@ -27,9 +27,9 @@ class SoloDesk(tk.Tk):
         s=ttk.Style(self)
         try:s.theme_use("clam")
         except tk.TclError:pass
-        s.configure("Treeview",rowheight=29,font=("Segoe UI",10))
+        s.configure("Treeview",rowheight=34,font=("Segoe UI",10),background="#FFFFFF",fieldbackground="#FFFFFF",foreground="#24364B"); s.configure("Treeview.Heading",font=("Segoe UI",10,"bold"),background="#E8EFF7",foreground="#14243A",padding=(9,10)); s.map("Treeview",background=[("selected","#DCEBFF")],foreground=[("selected","#14243A")]); s.configure("TNotebook.Tab",font=("Segoe UI",10,"bold"),padding=(18,11)); s.configure("TButton",font=("Segoe UI",9,"bold"),padding=(11,7))
         head=tk.Frame(self,bg="#14243A",height=70); head.pack(fill="x"); head.pack_propagate(False)
-        tk.Label(head,text="SoloDesk",bg="#14243A",fg="white",font=("Segoe UI",22,"bold")).pack(side="left",padx=24)
+        tk.Label(head,text="◈  SoloDesk",bg="#14243A",fg="white",font=("Segoe UI",23,"bold")).pack(side="left",padx=24)
         tk.Label(head,text="YOUR BUSINESS, IN ONE PLACE",bg="#14243A",fg="#9EC8F5",font=("Segoe UI",9,"bold")).pack(side="left")
         self.bizlabel=tk.Label(head,text=self.get("business"),bg="#14243A",fg="white");self.bizlabel.pack(side="right",padx=24)
         self.tabs=ttk.Notebook(self);self.tabs.pack(fill="both",expand=True,padx=16,pady=16)
