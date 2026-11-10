@@ -371,7 +371,7 @@ class SoloDesk(ctk.CTk):
      self.after(0,lambda:self.offer_update(latest))
     elif manual:self.after(0,lambda:messagebox.showinfo("SoloDesk is up to date",f"You are using {APP_VERSION}, the latest available release."))
    except Exception as e:
-    if manual:self.after(0,lambda:messagebox.showwarning("Update check unavailable",f"Could not check GitHub Releases right now.\\n\\n{e}"))
+    if manual:self.after(0,lambda err=str(e):messagebox.showwarning("Update check unavailable",f"Could not check GitHub Releases right now.\\n\\n{err}"))
   threading.Thread(target=worker,daemon=True).start()
  def offer_update(self,version):
   if messagebox.askyesno("Update available",f"SoloDesk {version} is available.\\n\\nWould you like to open the download page?"):webbrowser.open(RELEASES)
