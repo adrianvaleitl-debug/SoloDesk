@@ -381,12 +381,22 @@ class SoloDesk(ctk.CTk):
   path=filedialog.asksaveasfilename(defaultextension=".db",initialfile="solodesk-backup.db")
   if path:self.db.commit();shutil.copy2(DB,path);messagebox.showinfo("Backup","Database backup saved.")
  def tutorial(self):
-  w=ctk.CTkToplevel(self);w.title("Welcome to SoloDesk");w.geometry("620x500");w.transient(self);w.grab_set();w.configure(fg_color=self.col("bg"))
-  self.label(w,"Welcome to SoloDesk",24).pack(anchor="w",padx=25,pady=(25,5));self.label(w,"Your business, in one place.",13,"accent").pack(anchor="w",padx=25,pady=(0,15))
-  for title,desc in [("01  Set up your workspace","Add your business name and preferred display currency."),("02  Add customers","Save contact details, then create invoices for your customers."),("03  Track your money","Record invoices and expenses to understand paid and outstanding amounts."),("04  Stay organised","Use tasks and document links to keep your work together. Back up your local database from Settings.")]:
-   card=self.panel(w);card.pack(fill="x",padx=22,pady=6);self.label(card,title,13).pack(anchor="w",padx=14,pady=(10,2));self.label(card,desc,10,"muted",wraplength=520,justify="left").pack(anchor="w",padx=14,pady=(0,10))
+  w=ctk.CTkToplevel(self);w.title("Welcome to SoloDesk");w.geometry("700x720");w.transient(self);w.grab_set();w.configure(fg_color=self.col("bg"))
+  self.label(w,"Welcome to SoloDesk",24).pack(anchor="w",padx=25,pady=(22,4));self.label(w,"Your business, in one place.  ·  Your seven-step quick start",12,"accent").pack(anchor="w",padx=25,pady=(0,10))
+  scroll=ctk.CTkScrollableFrame(w,fg_color="transparent");scroll.pack(fill="both",expand=True,padx=16)
+  steps=[
+   ("01  Set up your workspace","Add your business name and choose the currency symbol you want to display."),
+   ("02  Add your customers","Save contact details for the people and businesses you work with."),
+   ("03  Create and track invoices","Create invoices for customers and track draft, sent and paid status."),
+   ("04  Record your expenses","Log business spending with a date, category, description and supplier."),
+   ("05  Organise your work","Use priorities and due dates for tasks, and keep useful file links in Documents."),
+   ("06  Make SoloDesk yours","Choose a colour theme, font, text weight and Dark, Light or System appearance."),
+   ("07  Back up and stay current","Create a database backup from Settings and use automatic or manual update checks to stay up to date."),
+  ]
+  for title,desc in steps:
+   card=self.panel(scroll);card.pack(fill="x",padx=8,pady=5);self.label(card,title,13).pack(anchor="w",padx=14,pady=(9,2));self.label(card,desc,10,"muted",wraplength=590,justify="left").pack(anchor="w",padx=14,pady=(0,9))
   def done():self.set("tutorial_completed","1");w.destroy()
-  self.button(w,"Get started",done,True,140).pack(anchor="e",padx=25,pady=15)
+  self.button(w,"Get started",done,True,140).pack(anchor="e",padx=25,pady=14)
  def close(self):
   self.db.commit();self.db.close();self.destroy()
 
