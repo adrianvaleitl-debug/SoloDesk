@@ -4,7 +4,7 @@ on:
   push:
     tags: ["V*"]
 permissions:
-  contents: read
+  contents: write
 jobs:
   build:
     runs-on: windows-latest
@@ -38,6 +38,18 @@ jobs:
           Write-Host "Using Inno Setup compiler: $iscc"
           & $iscc installer.iss
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Package portable application
+        shell: pwsh
+        run: Compress-Archive -Path dist/SoloDesk/* -DestinationPath installer/SoloDesk-Portable-V1.0.zip -Force
+      - name: Publish GitHub release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          name: SoloDesk ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            installer/SoloDesk-Setup-V1.0.exe
+            installer/SoloDesk-Portable-V1.0.zip
       - name: Upload Windows installer
         uses: actions/upload-artifact@v4
         with:
