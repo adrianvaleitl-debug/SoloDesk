@@ -29,6 +29,7 @@ class SoloDesk(ctk.CTk):
   for k,v in defaults.items():self.db.execute("INSERT OR IGNORE INTO settings VALUES(?,?)",(k,v))
   self.db.commit();self.cfg={r["k"]:r["v"] for r in self.db.execute("SELECT * FROM settings")}
   self.font_family=self.cfg["font_family"];self.bold=self.cfg["bold_text"]=="1";self.theme=self.cfg["colour_theme"]
+  ctk.set_default_color_theme("green")
   ctk.set_appearance_mode(self.cfg["appearance"])
   super().__init__();self.title("SoloDesk "+APP_VERSION);self.geometry("1480x920");self.minsize(1150,740)
   self.protocol("WM_DELETE_WINDOW",self.close);self.pages={};self.nav={};self.tables={}
@@ -178,7 +179,7 @@ class SoloDesk(ctk.CTk):
   for k,l,opts in fields:
    row=ctk.CTkFrame(w,fg_color="transparent");row.pack(fill="x",padx=20,pady=4);self.label(row,l,11,"muted",width=145,anchor="w").pack(side="left")
    v=tk.StringVar(value=(initial or {}).get(k,""));vars[k]=v
-   widget=ctk.CTkComboBox(row,values=opts,variable=v,width=300,height=34,corner_radius=9,font=self.font(11)) if opts else ctk.CTkEntry(row,textvariable=v,width=300,height=34,corner_radius=9,font=self.font(11))
+   widget=ctk.CTkComboBox(row,values=opts,variable=v,width=300,height=34,corner_radius=9,font=self.font(11),button_color=self.accent2(),button_hover_color=self.accent()) if opts else ctk.CTkEntry(row,textvariable=v,width=300,height=34,corner_radius=9,font=self.font(11))
    widget.pack(side="right")
   out={}
   def save():out.update({k:v.get().strip() for k,v in vars.items()});w.destroy()
@@ -305,9 +306,9 @@ class SoloDesk(ctk.CTk):
   for t,u in [("YouTube @Adrianvaleitl",YOUTUBE),("TikTok @adrianvaleitl",TIKTOK),("Support on Ko-fi",KOFI)]:self.button(row,t,lambda url=u:webbrowser.open(url)).pack(side="left",padx=4)
  def setting_select(self,p,label,key,opts):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left")
-  v=tk.StringVar(value=self.get(key,opts[0]));ctk.CTkComboBox(r,values=opts,variable=v,width=230,height=34,corner_radius=10,font=self.font(11),command=lambda x,k=key:self.apply_setting(k,x)).pack(side="right")
+  v=tk.StringVar(value=self.get(key,opts[0]));ctk.CTkComboBox(r,values=opts,variable=v,width=230,height=34,corner_radius=10,font=self.font(11),button_color=self.accent2(),button_hover_color=self.accent(),command=lambda x,k=key:self.apply_setting(k,x)).pack(side="right")
  def setting_select_var(self,p,label,var,opts):
-  r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left");ctk.CTkComboBox(r,values=opts,variable=var,width=230,height=34,corner_radius=10,font=self.font(11)).pack(side="right")
+  r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left");ctk.CTkComboBox(r,values=opts,variable=var,width=230,height=34,corner_radius=10,font=self.font(11),button_color=self.accent2(),button_hover_color=self.accent()).pack(side="right")
  def setting_entry(self,p,label,var):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left");ctk.CTkEntry(r,textvariable=var,width=230,height=34,corner_radius=10,font=self.font(11)).pack(side="right")
  def setting_switch(self,p,label,key):
