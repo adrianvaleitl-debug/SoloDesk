@@ -293,7 +293,7 @@ class SoloDesk(ctk.CTk):
   self.button(b,"Save business settings",self.save_business,True,170).pack(anchor="e",padx=18,pady=14)
   d=self.panel(sc);d.pack(fill="x",pady=6);self.label(d,"App and data",16).pack(anchor="w",padx=18,pady=(14,8));self.setting_switch(d,"Launch when Windows starts","startup")
   row=ctk.CTkFrame(d,fg_color="transparent");row.pack(anchor="w",padx=12,pady=10)
-  for t,fn in [("Back up database",self.backup),("Replay quick-start guide",self.tutorial),("Check for updates",lambda:webbrowser.open(RELEASES)),("Open GitHub",lambda:webbrowser.open(REPO))]:self.button(row,t,fn).pack(side="left",padx=4)
+  for t,fn in [("Back up database",self.backup),("Create desktop shortcut",self.create_shortcut),("Remove desktop shortcut",lambda:self.create_shortcut(True)),("Replay quick-start guide",self.tutorial),("Check for updates",lambda:webbrowser.open(RELEASES)),("Open GitHub",lambda:webbrowser.open(REPO))]:self.button(row,t,fn).pack(side="left",padx=4)
   self.label(d,"Records are stored locally. Currency selection changes the displayed symbol only; no FX conversion or tax calculations are performed.",10,"muted",wraplength=900,justify="left").pack(anchor="w",padx=18,pady=(0,14))
   cr=self.panel(sc);cr.pack(fill="x",pady=6);self.label(cr,"Created by Adrian Vale",16).pack(anchor="w",padx=18,pady=(14,3));self.label(cr,"Follow the project and support development.",11,"muted").pack(anchor="w",padx=18)
   row=ctk.CTkFrame(cr,fg_color="transparent");row.pack(anchor="w",padx=12,pady=12)
@@ -335,6 +335,24 @@ class SoloDesk(ctk.CTk):
      try:winreg.DeleteValue(k,"SoloDesk")
      except FileNotFoundError:pass
   except Exception as e:messagebox.showerror("Startup setting",str(e))
+ def create_shortcut(self,remove=False):
+  if sys.platform!="win32":
+   return messagebox.showinfo("Windows shortcut","Desktop shortcuts are available in the Windows app.")
+  desktop=Path.home()/"Desktop";shortcut=desktop/"SoloDesk.lnk"
+  try:
+   if remove:
+    if shortcut.exists():shortcut.unlink()
+    return messagebox.showinfo("Shortcut","SoloDesk desktop shortcut removed.")
+   if getattr(sys,"frozen",False):
+    target=sys.executable;args=""
+   else:
+    target=sys.executable;args='"'+str(Path(__file__).resolve())+'"'
+   q=lambda x:str(x).replace("'","''")
+   command="$w=New-Object -ComObject WScript.Shell; $s=$w.CreateShortcut('"+q(shortcut)+"'); $s.TargetPath='"+q(target)+"'; $s.Arguments='"+q(args)+"'; $s.WorkingDirectory='"+q(str(Path(target).parent))+"'; $s.Description='SoloDesk business workspace'; $s.Save()"
+   import subprocess
+   subprocess.run(["powershell","-NoProfile","-ExecutionPolicy","Bypass","-Command",command],check=True,capture_output=True,text=True)
+   messagebox.showinfo("Shortcut","SoloDesk desktop shortcut created.")
+  except Exception as e:messagebox.showerror("Shortcut error",str(e))
  def backup(self):
   path=filedialog.asksaveasfilename(defaultextension=".db",initialfile="solodesk-backup.db")
   if path:self.db.commit();shutil.copy2(DB,path);messagebox.showinfo("Backup","Database backup saved.")
