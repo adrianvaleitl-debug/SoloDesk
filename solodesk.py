@@ -179,7 +179,7 @@ class SoloDesk(ctk.CTk):
   for k,l,opts in fields:
    row=ctk.CTkFrame(w,fg_color="transparent");row.pack(fill="x",padx=20,pady=4);self.label(row,l,11,"muted",width=145,anchor="w").pack(side="left")
    v=tk.StringVar(value=(initial or {}).get(k,""));vars[k]=v
-   widget=ctk.CTkComboBox(row,values=opts,variable=v,width=300,height=34,corner_radius=9,font=self.font(11),button_color=self.accent2(),button_hover_color=self.accent()) if opts else ctk.CTkEntry(row,textvariable=v,width=300,height=34,corner_radius=9,font=self.font(11))
+   widget=ctk.CTkComboBox(row,values=opts,variable=v,width=300,height=34,corner_radius=9,font=self.font(11),button_color=self.accent2(),button_hover_color=self.accent(),fg_color=self.col("input"),border_color=self.col("line"),text_color=self.col("text"),dropdown_fg_color=self.col("panel"),dropdown_text_color=self.col("text")) if opts else ctk.CTkEntry(row,textvariable=v,width=300,height=34,corner_radius=9,font=self.font(11),fg_color=self.col("input"),border_color=self.col("line"),text_color=self.col("text"))
    widget.pack(side="right")
   out={}
   def save():out.update({k:v.get().strip() for k,v in vars.items()});w.destroy()
@@ -310,7 +310,7 @@ class SoloDesk(ctk.CTk):
  def setting_select_var(self,p,label,var,opts):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left");ctk.CTkComboBox(r,values=opts,variable=var,width=230,height=34,corner_radius=10,font=self.font(11),button_color=self.accent2(),button_hover_color=self.accent()).pack(side="right")
  def setting_entry(self,p,label,var):
-  r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left");ctk.CTkEntry(r,textvariable=var,width=230,height=34,corner_radius=10,font=self.font(11)).pack(side="right")
+  r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left");ctk.CTkEntry(r,textvariable=var,width=230,height=34,corner_radius=10,font=self.font(11),fg_color=self.col("input"),border_color=self.col("line"),text_color=self.col("text")).pack(side="right")
  def setting_switch(self,p,label,key):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left");v=tk.BooleanVar(value=self.get(key,"0")=="1")
   ctk.CTkSwitch(r,text="",variable=v,progress_color=self.accent2(),command=lambda:self.apply_setting(key,"1" if v.get() else "0")).pack(side="right")
