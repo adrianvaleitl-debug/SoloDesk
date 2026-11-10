@@ -1,9 +1,15 @@
-# SoloDesk brand
-- Name: SoloDesk
-- Version: V1.0
+# SoloDesk brand system
+- Product: SoloDesk
+- Current version: V1.3
 - Tagline: Your business, in one place.
-- Primary navy: #14243A
-- Accent blue: #3977D5
-- Cyan: #36B8C8
-- Background: #F3F6FA
+- Creator attribution: Created by Adrian Vale
+- Creator links: YouTube @Adrianvaleitl · TikTok @adrianvaleitl · Ko-fi marketinsight
+- Visual reference: Market Insight
+- Default website/app appearance: dark forest-green surfaces, soft green accent, bold typography
+- Base colours: #101612 background, #17211B panels, #1D2922 raised panels, #2A3A30 borders, #EDF5EF text, #A1B1A6 muted text
+- Default accent: #B8E4C7; secondary accent: #6EB88A
+- Radius system: 11–13px controls, 18–19px cards, 22–24px hero panels
+- Themes: Dollar, Euro, Pound, Yen, Franc
+- Fonts: Segoe UI, Arial, Verdana, Trebuchet MS, Georgia
+- Typography: bold by default, user-selectable regular weight
 - Voice: calm, capable, clear, practical
