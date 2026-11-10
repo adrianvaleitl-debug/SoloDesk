@@ -1,4 +1,4 @@
-import csv, os, shutil, sqlite3, sys
+import csv, os, shutil, sqlite3, sys, webbrowser
 from pathlib import Path
 from datetime import date
 import tkinter as tk
@@ -74,6 +74,7 @@ class SoloDesk(tk.Tk):
         self.currency=tk.StringVar(value=self.get("currency"));ttk.Combobox(f,textvariable=self.currency,values=list(SYMBOLS),state="readonly",width=31).grid(row=1,column=1,padx=12)
         ttk.Button(f,text="Save settings",command=self.save_settings).grid(row=2,column=1,sticky="e",pady=12)
         ttk.Button(p,text="Back up database",command=self.backup).pack(anchor="w",pady=8)
+        ttk.Button(p,text="Check for updates",command=lambda:webbrowser.open("https://github.com/adrianvaleitl-debug/SoloDesk/releases/latest")).pack(anchor="w",pady=8)
         ttk.Label(p,text="Currency changes the display symbol only; no currency conversion or tax calculations are performed.").pack(anchor="w",pady=8)
     def form(self,title,fields):
         w=tk.Toplevel(self);w.title(title);w.transient(self);w.grab_set();vars={}
