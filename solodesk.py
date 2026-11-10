@@ -12,7 +12,7 @@ SYMBOLS = {"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹"}
 class SoloDesk(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("SoloDesk V1.1"); self.geometry("1360x860"); self.minsize(1080,700)
+        self.title("SoloDesk V1.2"); self.geometry("1440x900"); self.minsize(1120,740)
         self.db=sqlite3.connect(DB); self.db.row_factory=sqlite3.Row
         self.db.executescript("""
         CREATE TABLE IF NOT EXISTS settings(k TEXT PRIMARY KEY,v TEXT);
@@ -23,26 +23,26 @@ class SoloDesk(tk.Tk):
         """)
         self.db.execute("INSERT OR IGNORE INTO settings VALUES('business','My Business')")
         self.db.execute("INSERT OR IGNORE INTO settings VALUES('currency','GBP')"); self.db.commit()
-        self.configure(bg="#F3F6FA")
+        self.configure(bg="#F4F6FA")
         s=ttk.Style(self)
         try:s.theme_use("clam")
         except tk.TclError:pass
         s.configure(".", font=("Segoe UI", 10))
         s.configure("TFrame", background="#F3F6FA")
         s.configure("TLabel", background="#F3F6FA", foreground="#24364B", font=("Segoe UI", 10))
-        s.configure("TNotebook", background="#F3F6FA", borderwidth=0, tabmargins=(4, 8, 4, 0))
-        s.configure("TNotebook.Tab", font=("Segoe UI", 10, "bold"), padding=(20, 13), background="#E5ECF5", foreground="#52677F")
-        s.map("TNotebook.Tab", background=[("selected", "#3977D5"), ("active", "#DCE9F8")], foreground=[("selected", "#FFFFFF"), ("active", "#14243A")])
-        s.configure("Treeview", rowheight=40, font=("Segoe UI", 10), background="#FFFFFF", fieldbackground="#FFFFFF", foreground="#24364B", borderwidth=0, relief="flat")
-        s.configure("Treeview.Heading", font=("Segoe UI", 10, "bold"), background="#E8EFF7", foreground="#14243A", padding=(12, 13), relief="flat")
+        s.configure("TNotebook", background="#F4F6FA", borderwidth=0, tabmargins=(4, 10, 4, 0))
+        s.configure("TNotebook.Tab", font=("Segoe UI", 10, "bold"), padding=(22, 15), background="#E9EEF6", foreground="#66758B")
+        s.map("TNotebook.Tab", background=[("selected", "#4778F5"), ("active", "#DCE7FA")], foreground=[("selected", "#FFFFFF"), ("active", "#17243A")])
+        s.configure("Treeview", rowheight=46, font=("Segoe UI", 10), background="#FFFFFF", fieldbackground="#FFFFFF", foreground="#17243A", borderwidth=0, relief="flat")
+        s.configure("Treeview.Heading", font=("Segoe UI", 9, "bold"), background="#EFF3F8", foreground="#718096", padding=(14, 15), relief="flat")
         s.map("Treeview", background=[("selected", "#DCEBFF")], foreground=[("selected", "#14243A")])
-        s.configure("TButton", font=("Segoe UI", 9, "bold"), padding=(14, 9), background="#E4ECF6", foreground="#193451", borderwidth=0)
+        s.configure("TButton", font=("Segoe UI", 9, "bold"), padding=(15, 10), background="#E9EEF6", foreground="#243B59", borderwidth=0)
         s.map("TButton", background=[("pressed", "#245EAD"), ("active", "#D4E4F7")], foreground=[("pressed", "#FFFFFF")])
-        s.configure("Accent.TButton", font=("Segoe UI", 9, "bold"), padding=(15, 9), background="#3977D5", foreground="#FFFFFF")
+        s.configure("Accent.TButton", font=("Segoe UI", 9, "bold"), padding=(16, 11), background="#4778F5", foreground="#FFFFFF")
         s.map("Accent.TButton", background=[("pressed", "#245EAD"), ("active", "#2F69BE")], foreground=[("active", "#FFFFFF")])
-        head=tk.Frame(self,bg="#14243A",height=82,highlightthickness=0); head.pack(fill="x"); head.pack_propagate(False)
-        tk.Label(head,text="◈  SoloDesk",bg="#14243A",fg="white",font=("Segoe UI",24,"bold")).pack(side="left",padx=28)
-        tk.Label(head,text="YOUR BUSINESS, IN ONE PLACE",bg="#14243A",fg="#9EC8F5",font=("Segoe UI",9,"bold")).pack(side="left")
+        head=tk.Frame(self,bg="#111D32",height=86,highlightthickness=0); head.pack(fill="x"); head.pack_propagate(False)
+        tk.Label(head,text="◈  SoloDesk",bg="#111D32",fg="white",font=("Segoe UI",24,"bold")).pack(side="left",padx=28)
+        tk.Label(head,text="YOUR BUSINESS, IN ONE PLACE",bg="#111D32",fg="#31C6C0",font=("Segoe UI",9,"bold")).pack(side="left")
         self.bizlabel=tk.Label(head,text=self.get("business"),bg="#1D3553",fg="#FFFFFF",font=("Segoe UI",10,"bold"),padx=16,pady=9);self.bizlabel.pack(side="right",padx=26)
         self.tabs=ttk.Notebook(self);self.tabs.pack(fill="both",expand=True,padx=22,pady=(18,20))
         self.tables={}
