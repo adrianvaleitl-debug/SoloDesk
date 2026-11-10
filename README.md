@@ -19,7 +19,7 @@ Install Python 3.11 or newer, then run `python solodesk.py`. No third-party pack
 Run `build_windows.bat` on Windows to create a standalone app in `dist\SoloDesk\`. The installer configuration is in `installer.iss`. GitHub Actions can build the installer manually or when a `V*` tag is pushed.
 
 ## Data and limitations
-Windows data is stored in `%LOCALAPPDATA%\SoloDesk\solodesk.db`; other platforms use `~/.solodesk/solodesk.db`. Back it up regularly. Currency selection changes the displayed symbol only; it does not convert amounts. V1.0 is not accounting or tax software and does not provide VAT returns, payment processing, cloud sync or legally compliant invoice templates. Review invoices and tax records with an appropriate professional.
+Windows data is stored in `%LOCALAPPDATA%\SoloDesk\solodesk.db`; other platforms use `~/.solodesk/solodesk.db`. Back it up regularly. Currency selection changes the displayed symbol only; it does not convert amounts. V1.1 is not accounting or tax software and does not provide VAT returns, payment processing, cloud sync or legally compliant invoice templates. Review invoices and tax records with an appropriate professional.
 
 
 ## Releases and updates
