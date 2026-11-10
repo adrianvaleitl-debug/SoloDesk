@@ -1,27 +1,13 @@
-# SoloDesk changelog
+# Changelog
 
-All notable changes to SoloDesk are recorded here.
+## V1.1 — 10 November 2026
+- Refreshed the desktop interface with a navy-and-blue visual system, larger workspace, clearer navigation tabs, improved tables and more prominent overview metrics.
+- Added invoice editing and expense editing.
+- Refreshed the landing page to match the SoloDesk brand.
+- Improved the Windows build and portable packaging workflow.
+- Added automated GitHub release publishing for V1.1.
 
 ## V1.0
-- Initial Windows desktop release.
-- Overview for paid income, outstanding invoices, expenses and customers.
-- Customer directory with CSV export.
-- Invoice creation and payment status tracking.
-- Expense tracking and CSV export.
-- Task list with priorities and completion state.
-- Local SQLite database, business settings and manual backup.
-- Windows installer and portable build.
-
-## V1.1 — repository and usability improvements
-- Added invoice editing.
-- Added expense editing.
-- Refined the desktop table, tab and window styling.
-- Added an in-app link to the latest release page.
-- Improved Windows build discovery for Inno Setup.
-- Added portable ZIP packaging and automatic GitHub Release publishing for version tags.
-
-## Repository improvements
-- Added an in-app shortcut to the latest GitHub release page.
-- Added a website download path to the latest release.
-- Added automatic GitHub Release publishing for version-tagged builds.
-- Expanded release and backup guidance in the README.
+- Initial local-first business organiser release.
+- Customer, invoice, expense and task management.
+- Overview dashboard, CSV exports, settings and database backup.
