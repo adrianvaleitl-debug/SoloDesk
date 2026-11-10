@@ -1,4 +1,4 @@
-# SoloDesk V1.0
+# SoloDesk V1.1
 **Your business, in one place.**
 
 SoloDesk is a local-first Windows desktop organiser for freelancers and small businesses.
