@@ -43,11 +43,15 @@ jobs:
         shell: pwsh
         run: Compress-Archive -Path dist/SoloDesk/* -DestinationPath installer/SoloDesk-Portable-V1.1.zip -Force
       - name: Publish GitHub release
-        if: startsWith(github.ref, 'refs/tags/')
+        if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          name: SoloDesk ${{ github.ref_name }}
+          tag_name: V1.1
+          target_commitish: main
+          name: SoloDesk V1.1
+          make_latest: true
           generate_release_notes: true
+          fail_on_unmatched_files: true
           files: |
             installer/SoloDesk-Setup-V1.1.exe
             installer/SoloDesk-Portable-V1.1.zip
