@@ -1,5 +1,5 @@
 #define MyAppName "SoloDesk"
-#define MyAppVersion "1.0"
+#define MyAppVersion "1.1"
 #define MyAppPublisher "SoloDesk"
 #define MyAppExeName "SoloDesk.exe"
 [Setup]
@@ -10,7 +10,7 @@ AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\SoloDesk
 DefaultGroupName=SoloDesk
 OutputDir=installer
-OutputBaseFilename=SoloDesk-Setup-V1.0
+OutputBaseFilename=SoloDesk-Setup-V1.1
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
