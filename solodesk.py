@@ -1,4 +1,4 @@
-import csv,os,shutil,sqlite3,sys,webbrowser
+import csv,os,shutil,sqlite3,sys,webbrowser,json,threading,urllib.request
 from pathlib import Path
 from datetime import date
 import tkinter as tk
@@ -25,7 +25,7 @@ class SoloDesk(ctk.CTk):
   CREATE TABLE IF NOT EXISTS expenses(id INTEGER PRIMARY KEY,category TEXT,description TEXT,amount REAL,date TEXT,supplier TEXT);
   CREATE TABLE IF NOT EXISTS tasks(id INTEGER PRIMARY KEY,title TEXT,due TEXT,priority TEXT,done INTEGER DEFAULT 0);
   CREATE TABLE IF NOT EXISTS documents(id INTEGER PRIMARY KEY,title TEXT,category TEXT,path TEXT,added TEXT);""")
-  defaults={"business":"My Business","currency":"GBP","appearance":"Dark","colour_theme":"Dollar","font_family":"Segoe UI","bold_text":"1","tutorial_completed":"0","startup":"0"}
+  defaults={"business":"My Business","currency":"GBP","appearance":"Dark","colour_theme":"Dollar","font_family":"Segoe UI","bold_text":"1","tutorial_completed":"0","startup":"0","auto_updates":"1"}
   for k,v in defaults.items():self.db.execute("INSERT OR IGNORE INTO settings VALUES(?,?)",(k,v))
   self.db.commit();self.cfg={r["k"]:r["v"] for r in self.db.execute("SELECT * FROM settings")}
   self.font_family=self.cfg["font_family"];self.bold=self.cfg["bold_text"]=="1";self.theme=self.cfg["colour_theme"]
@@ -34,6 +34,7 @@ class SoloDesk(ctk.CTk):
   self.protocol("WM_DELETE_WINDOW",self.close);self.pages={};self.nav={};self.tables={}
   self.build_shell();self.show("Overview");self.refresh()
   if self.cfg["tutorial_completed"]!="1":self.after(650,self.tutorial)
+  if self.cfg.get("auto_updates","1")=="1":self.after(1800,self.check_updates)
 
  def get(self,k,d=""):return self.cfg.get(k,d)
  def set(self,k,v):
@@ -295,9 +296,9 @@ class SoloDesk(ctk.CTk):
   self.bizvar=tk.StringVar(value=self.get("business"));self.curvar=tk.StringVar(value=self.get("currency","GBP"))
   self.setting_entry(b,"Business name",self.bizvar);self.setting_select_var(b,"Display currency",self.curvar,list(SYMBOLS))
   self.button(b,"Save business settings",self.save_business,True,170).pack(anchor="e",padx=18,pady=14)
-  d=self.panel(sc);d.pack(fill="x",pady=6);self.label(d,"App and data",16).pack(anchor="w",padx=18,pady=(14,8));self.setting_switch(d,"Launch when Windows starts","startup")
+  d=self.panel(sc);d.pack(fill="x",pady=6);self.label(d,"App and data",16).pack(anchor="w",padx=18,pady=(14,8));self.setting_switch(d,"Launch when Windows starts","startup");self.setting_switch(d,"Check for updates automatically","auto_updates")
   row=ctk.CTkFrame(d,fg_color="transparent");row.pack(anchor="w",padx=12,pady=10)
-  for t,fn in [("Back up database",self.backup),("Create desktop shortcut",self.create_shortcut),("Remove desktop shortcut",lambda:self.create_shortcut(True)),("Replay quick-start guide",self.tutorial),("Check for updates",lambda:webbrowser.open(RELEASES)),("Open GitHub",lambda:webbrowser.open(REPO))]:self.button(row,t,fn).pack(side="left",padx=4)
+  for t,fn in [("Back up database",self.backup),("Create desktop shortcut",self.create_shortcut),("Remove desktop shortcut",lambda:self.create_shortcut(True)),("Replay quick-start guide",self.tutorial),("Check for updates",lambda:self.check_updates(True)),("Open GitHub",lambda:webbrowser.open(REPO))]:self.button(row,t,fn).pack(side="left",padx=4)
   self.label(d,"Records are stored locally. Currency selection changes the displayed symbol only; no FX conversion or tax calculations are performed.",10,"muted",wraplength=900,justify="left").pack(anchor="w",padx=18,pady=(0,14))
   cr=self.panel(sc);cr.pack(fill="x",pady=6);self.label(cr,"Created by Adrian Vale",16).pack(anchor="w",padx=18,pady=(14,3));self.label(cr,"Follow the project and support development.",11,"muted").pack(anchor="w",padx=18)
   row=ctk.CTkFrame(cr,fg_color="transparent");row.pack(anchor="w",padx=12,pady=12)
@@ -357,6 +358,23 @@ class SoloDesk(ctk.CTk):
    subprocess.run(["powershell","-NoProfile","-ExecutionPolicy","Bypass","-Command",command],check=True,capture_output=True,text=True)
    messagebox.showinfo("Shortcut","SoloDesk desktop shortcut created.")
   except Exception as e:messagebox.showerror("Shortcut error",str(e))
+ def check_updates(self,manual=False):
+  def worker():
+   try:
+    req=urllib.request.Request("https://api.github.com/repos/adrianvaleitl-debug/SoloDesk/releases/latest",headers={"User-Agent":"SoloDesk"})
+    with urllib.request.urlopen(req,timeout=8) as response:data=json.loads(response.read().decode("utf-8"))
+    latest=data.get("tag_name","V1.0")
+    def parts(v):
+     try:return tuple(int(x) for x in v.lstrip("vV").split("."))
+     except:return (0,)
+    if parts(latest)>parts(APP_VERSION):
+     self.after(0,lambda:self.offer_update(latest))
+    elif manual:self.after(0,lambda:messagebox.showinfo("SoloDesk is up to date",f"You are using {APP_VERSION}, the latest available release."))
+   except Exception as e:
+    if manual:self.after(0,lambda:messagebox.showwarning("Update check unavailable",f"Could not check GitHub Releases right now.\\n\\n{e}"))
+  threading.Thread(target=worker,daemon=True).start()
+ def offer_update(self,version):
+  if messagebox.askyesno("Update available",f"SoloDesk {version} is available.\\n\\nWould you like to open the download page?"):webbrowser.open(RELEASES)
  def backup(self):
   path=filedialog.asksaveasfilename(defaultextension=".db",initialfile="solodesk-backup.db")
   if path:self.db.commit();shutil.copy2(DB,path);messagebox.showinfo("Backup","Database backup saved.")
