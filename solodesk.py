@@ -167,7 +167,7 @@ class SoloDesk(ctk.CTk):
    text_color="#122033" if primary else self.col("text"),font=self.font(11))
  def build_shell(self):
   self.configure(fg_color=self.col("bg"))
-  self.work=ctk.CTkFrame(self,fg_color=self.col("bg"),corner_radius=18);self.work.pack(fill="both",expand=True)
+  self.work=ctk.CTkFrame(self,fg_color="transparent",corner_radius=18);self.work.pack(fill="both",expand=True)
   self.work.grid_columnconfigure(1,weight=1);self.work.grid_rowconfigure(1,weight=1)
   self.sidebar=ctk.CTkFrame(self.work,width=238,fg_color=self.col("side"),corner_radius=24,border_width=0,border_color=self.col("line"))
   self.sidebar.grid(row=0,column=0,rowspan=2,sticky="nsew",padx=(14,8),pady=14);self.sidebar.grid_propagate(False)
