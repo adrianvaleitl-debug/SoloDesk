@@ -177,7 +177,7 @@ class SoloDesk(ctk.CTk):
   self.search_button.pack(side="right",padx=(4,12),pady=8)
   self.biz=self.label(self.top,self.get("business"),10,"accent",fg_color=self.col("panel2"),corner_radius=12,padx=13,pady=8)
   self.biz.pack(side="right",padx=12)
-  self.top.bind("<Configure>",lambda _event:self.global_search_entry.configure(width=170 if self.top.winfo_width()<1050 else 230 if self.top.winfo_width()<1250 else 310),add="+")
+  self.top.bind("<Configure>",lambda _event:self.global_search_entry.configure(width=145 if self.top.winfo_width()<1050 else 165 if self.top.winfo_width()<1250 else 190),add="+")
   self.body=ctk.CTkFrame(self.work,fg_color="transparent")
   self.body.grid(row=1,column=1,sticky="nsew",padx=(16,14),pady=(10,14))
   for n in ["Overview","Customers","Invoices","Expenses","Tasks","Task Calendar","Customer Activity","Documents","Analytics","What's New","Settings"]:
