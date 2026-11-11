@@ -106,6 +106,7 @@ class SoloDesk(ctk.CTk):
   if self.brand_image:ctk.CTkLabel(brand,text="",image=self.brand_image).pack(side="left",padx=(0,9))
   else:self.label(brand,"▦",27,"accent").pack(side="left",padx=(0,9))
   self.label(brand,"SoloDesk",22).pack(side="left")
+  self.titlelabel=self.label(self.top,"Overview",11,"muted",fg_color=self.col("panel2"),corner_radius=10,padx=12,pady=7);self.titlelabel.pack(side="left",padx=22)
   self.biz=self.label(self.top,self.get("business"),10,"accent",fg_color=self.col("panel2"),corner_radius=12,padx=14,pady=8);self.biz.pack(side="right",padx=24)
   self.global_search_entry=ctk.CTkEntry(self.top,placeholder_text="Search customers, invoices, expenses and tasks…",width=330,height=38,corner_radius=14,font=self.font(11))
   self.global_search_entry.pack(side="right",padx=8)
