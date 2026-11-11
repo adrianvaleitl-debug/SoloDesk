@@ -44,30 +44,30 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Package portable application
         shell: pwsh
-        run: Compress-Archive -Path dist/SoloDesk/* -DestinationPath installer/SoloDesk-Portable-V1.7.zip -Force
+        run: Compress-Archive -Path dist/SoloDesk/* -DestinationPath installer/SoloDesk-Portable-V1.8.zip -Force
       - name: Publish GitHub release
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: V1.7
+          tag_name: V1.8
           target_commitish: main
-          name: SoloDesk V1.7
+          name: SoloDesk V1.8
           make_latest: true
           overwrite_files: true
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
-            installer/SoloDesk-Setup-V1.7.exe
-            installer/SoloDesk-Portable-V1.7.zip
+            installer/SoloDesk-Setup-V1.8.exe
+            installer/SoloDesk-Portable-V1.8.zip
       - name: Upload Windows installer
         uses: actions/upload-artifact@v4
         with:
-          name: SoloDesk-Setup-V1.7
-          path: installer/SoloDesk-Setup-V1.7.exe
+          name: SoloDesk-Setup-V1.8
+          path: installer/SoloDesk-Setup-V1.8.exe
           if-no-files-found: error
       - name: Upload portable application
         uses: actions/upload-artifact@v4
         with:
-          name: SoloDesk-Portable-V1.7
+          name: SoloDesk-Portable-V1.8
           path: dist/SoloDesk/
           if-no-files-found: error
