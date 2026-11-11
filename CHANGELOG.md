@@ -1,5 +1,11 @@
 # Changelog
 
+## V2.7 — 11 November 2026
+- Fixed a startup crash caused by an invalid fallback accent-theme lookup (`KeyError: 'Euro'`).
+- Made accent colour lookup safely fall back to Black when a saved theme is missing or invalid.
+- Kept existing saved business data and the six accent choices intact.
+
+
 ## V2.6 — 11 November 2026
 - Made global search more compact to prevent the search icon and field from colliding with the surrounding outline.
 - Restored six optional accent choices, with Black as the default while retaining neutral dark glass surfaces.
