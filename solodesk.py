@@ -149,11 +149,11 @@ class SoloDesk(ctk.CTk):
  def accent2(self):return THEMES.get(self.theme,THEMES["Euro"])[1]
  def col(self,k):
   dark=ctk.get_appearance_mode()=="Dark"
-  bases={"bg":"#0C1422" if dark else "#EAF0F8","side":"#142236" if dark else "#F7FAFF",
-  "panel":"#17263A" if dark else "#FFFFFF","panel2":"#20344D" if dark else "#EAF1FA",
-  "line":"#2A405B" if dark else "#DCE6F3","text":"#EFF5FF" if dark else "#26374D",
-  "muted":"#9AAAC0" if dark else "#71839C","input":"#1C2A3B" if dark else "#FAFCFF",
-  "hover":"#263C55" if dark else "#DCE8F6","accent":self.accent(),"danger":"#D77F7F"}
+  bases={"bg":"#09120D" if dark else "#E9EEE8","side":"#111F17" if dark else "#F0F4EE",
+  "panel":"#14231A" if dark else "#FAFCF8","panel2":"#1B2D21" if dark else "#E4EBE2",
+  "line":"#304638" if dark else "#D3DED2","text":"#EDF4EE" if dark else "#26372C",
+  "muted":"#9BAEA1" if dark else "#718276","input":"#101D15" if dark else "#F7FAF5",
+  "hover":"#263B2D" if dark else "#DCE7DA","accent":self.accent(),"danger":"#D88C82"}
   base=bases[k]
   if k in ("bg","side","panel","panel2","input"):
    try:
