@@ -688,12 +688,27 @@ class SoloDesk(ctk.CTk):
  def whats_new(self):
   p=self.pages["What's New"]
   for w in p.winfo_children():w.destroy()
-  self.heading(p,"What's new in SoloDesk","Release notes and product improvements.")
-  notes=[("V2.9","A clearer nebula spotlight and improved Windows glass",["Reworked the accent-colour spotlight into a brighter multi-layer nebula glow with soft blur.","The spotlight follows the selected accent colour and redraws when the window is resized.","Improved Windows 11 acrylic/transient backdrop handling while keeping interface text and controls crisp.","Your saved business data and existing preferences are preserved."]),("V2.8","Accent-colour glass and creator shortcuts",["Added persistent Adrian Vale website and Donate · Ko-fi links in the sidebar and Settings.","Added a soft blurred spotlight that follows the selected accent colour.","Transparency changes now reapply Windows acrylic blur immediately.","Your saved business data and existing preferences are preserved."]),("V2.7","Fixed a startup crash and made accent settings safer",["Fixed the startup error caused by an invalid Euro accent fallback (KeyError: 'Euro').","Accent colours now fall back safely to Black if a saved setting is missing or invalid.","Existing saved accent choices are mapped to the current palette, so older preferences remain compatible.","Your customers, invoices, expenses, tasks and other local business data are left untouched."]),("V2.6","Compact search, clearer spacing and optional accent colours",["Kept the restrained black acrylic-glass interface and restored optional accent colours without tinting the main surfaces.","Reduced the global search control so its icon and expanding field fit cleanly inside the top bar.","Added Black, Amber, Azure, Lavender, Rose and Teal accent choices; Black remains the default and charcoal glass surfaces stay neutral.","Improved spacing around text and panel edges."]),("V1.8","A sharper financial picture",["Six-month cashflow pulse comparing paid invoices with recorded expenses.","Invoice ageing buckets to surface overdue receivables.","Spending breakdown by category with visual comparison."]),("V1.7","Workspace reliability improvements",["Refined Windows startup and update handoff behaviour."]),("V1.6","A new workspace layout",["A redesigned top navigation bar and compact page ribbon replace the old side menu.","A cleaner business workspace with more room for tables, search and day-to-day records.","Refined rounded panels, spacing and visual hierarchy across the app."]),("V1.5","More control over everyday work",["Recurring daily, weekly and monthly tasks with automatic next due dates.","Overdue task and unpaid invoice reminders.","Global search across all workspace records.","Monthly task calendar and customer activity history."]),("V1.4","A more personal SoloDesk",["A dedicated SoloDesk workspace icon and a fresh navy-and-blue visual identity.","Five distinct colour themes, five fonts, bold or regular text, and Dark, Light or System appearance.","Automatic updates can download and launch the latest Windows installer for you.","A direct website installer download and improved Windows app branding."]),("V1.3","A more complete business workspace",["Rounded interface, searchable records, analytics and local backups.","Five font choices, colour themes and Dark, Light or System modes.","Windows startup, desktop shortcut controls and release update checks."]),("V1.2","Business workspace refresh",["Overview dashboard, customers, invoices, expenses and tasks.","Invoice and expense editing, CSV exports and local database backups."])]
-  for v,t,items in notes:
-   card=self.panel(p);card.pack(fill="x",pady=7);self.label(card,v,17,"accent").pack(anchor="w",padx=18,pady=(14,2));self.label(card,t,14).pack(anchor="w",padx=18,pady=3)
-   for item in items:self.label(card,"•  "+item,11,"muted",wraplength=900,justify="left").pack(anchor="w",padx=20,pady=3)
-   ctk.CTkFrame(card,height=10,fg_color="transparent").pack()
+  self.heading(p,"Release notes","A clearer record of what has changed in SoloDesk.")
+  sc=ctk.CTkScrollableFrame(p,fg_color="transparent");sc.pack(fill="both",expand=True)
+  latest=self.panel(sc);latest.pack(fill="x",pady=(4,14))
+  top=ctk.CTkFrame(latest,fg_color="transparent");top.pack(fill="x",padx=22,pady=(20,8))
+  self.label(top,"V3.0",25,"accent").pack(side="left")
+  self.label(top,"LATEST RELEASE",10,"muted").pack(side="right")
+  self.label(latest,"A proper glass workspace",19).pack(anchor="w",padx=22,pady=(0,5))
+  self.label(latest,"11 November 2026  ·  Windows desktop",10,"muted").pack(anchor="w",padx=22)
+  self.label(latest,"This release rebuilds the Windows backdrop layer, makes the transparency control adjust the acrylic tint, and gives release notes a clearer home. The interface stays sharp while Windows composes the window background.",11,"muted",wraplength=900,justify="left").pack(anchor="w",padx=22,pady=(12,15))
+  self.label(latest,"IN THIS RELEASE",10,"muted").pack(anchor="w",padx=22,pady=(0,7))
+  for item in ["Windows colour-key transparency exposes the native acrylic backdrop without fading text or controls.","Transparency now spans a wider range and is reapplied after the window is mapped.","The accent spotlight sits on the transparent host layer instead of painting an opaque rectangle behind the app.","Saved business records, settings and preferences are retained."]:
+   self.label(latest,"✓   "+item,11,"text",wraplength=900,justify="left").pack(anchor="w",padx=24,pady=3)
+  self.label(sc,"PREVIOUS RELEASES",10,"muted").pack(anchor="w",padx=4,pady=(8,7))
+  history=[("V2.9","Accent spotlight groundwork","Introduced the multi-layer accent glow and initial Windows backdrop integration. The backdrop handling is refined in V3.0."),("V2.8","Creator shortcuts","Added persistent website and Ko-fi links in the sidebar and Settings."),("V2.7","Settings reliability","Improved saved accent compatibility and safe fallback handling."),("V2.6","Workspace refinements","Refined search, spacing and optional accent colours.")]
+  for version,title,detail in history:
+   card=self.panel(sc);card.pack(fill="x",pady=5)
+   row=ctk.CTkFrame(card,fg_color="transparent");row.pack(fill="x",padx=17,pady=(13,3))
+   self.label(row,version,14,"accent").pack(side="left")
+   self.label(row,title,12,"text").pack(side="left",padx=12)
+   self.label(card,detail,10,"muted",wraplength=900,justify="left").pack(anchor="w",padx=18,pady=(2,13))
+
  def settings_page(self):
   p=self.pages["Settings"]
   for w in p.winfo_children():w.destroy()
