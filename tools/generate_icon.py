@@ -13,8 +13,8 @@ def make_icon(size):
         return tuple(round(x * k) for x in v)
     def width(v):
         return max(1, round(v * k))
-    d.rounded_rectangle(box((8, 8, 248, 248)), radius=width(58), fill="#1A2D43")
-    d.rounded_rectangle(box((48, 48, 208, 208)), radius=width(25), fill="#EAF2FF")
+    d.rounded_rectangle(box((8, 8, 248, 248)), radius=width(70), fill="#172B43")
+    d.rounded_rectangle(box((48, 48, 208, 208)), radius=width(38), fill="#EAF2FF")
     d.rounded_rectangle(box((70, 76, 186, 180)), radius=width(15), fill="#F7FAFF")
     d.line([box((70, 103)), box((186, 103))], fill="#5F8FCB", width=width(11))
     d.rounded_rectangle(box((85, 120, 121, 162)), radius=width(8), fill="#9AB6D8")
