@@ -29,4 +29,5 @@ def make_icon(size):
 
 sizes = [make_icon(n) for n in (256, 128, 64, 48, 32, 16)]
 sizes[0].save(OUT, format="ICO", sizes=[(n, n) for n in (256, 128, 64, 48, 32, 16)])
+sizes[0].save(OUT.with_suffix(".png"), format="PNG")
 print("Created", OUT)
