@@ -19,7 +19,7 @@ WizardStyle=modern
 SetupIconFile=assets\solodesk.ico
 UninstallDisplayIcon={app}\SoloDesk.exe
 CloseApplications=yes
-RestartApplications=yes
+RestartApplications=no
 ArchitecturesInstallIn64BitMode=x64
 [Tasks]
 Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional shortcuts:"
