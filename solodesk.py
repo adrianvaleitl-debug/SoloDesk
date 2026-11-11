@@ -62,6 +62,13 @@ class SoloDesk(ctk.CTk):
   if self.theme not in THEMES:self.theme="Euro"
   self.set("colour_theme",self.theme)
   ctk.set_default_color_theme("blue")
+  theme=ctk.ThemeManager.theme
+  for widget,radius in (("CTkFrame",22),("CTkButton",15),("CTkEntry",15),("CTkComboBox",15),("CTkOptionMenu",15)):
+   if widget in theme:theme[widget]["corner_radius"]=radius
+  if "CTkComboBox" in theme:
+   theme["CTkComboBox"].update({"dropdown_fg_color":["#F7FAFF","#17263A"],"dropdown_hover_color":["#E4ECF7","#304966"],"dropdown_text_color":["#26374D","#EFF5FF"]})
+  if "CTkOptionMenu" in theme:
+   theme["CTkOptionMenu"].update({"dropdown_fg_color":["#F7FAFF","#17263A"],"dropdown_hover_color":["#E4ECF7","#304966"],"dropdown_text_color":["#26374D","#EFF5FF"]})
   ctk.set_appearance_mode(self.cfg["appearance"])
   super().__init__();self.title("SoloDesk "+APP_VERSION);screen_w=self.winfo_screenwidth();screen_h=self.winfo_screenheight();self.geometry(f"{min(1480,max(900,screen_w-80))}x{min(920,max(640,screen_h-100))}");self.minsize(min(1150,max(900,screen_w-80)),min(740,max(620,screen_h-100)))
   self.set_app_icon()
