@@ -54,7 +54,7 @@ class SoloDesk(ctk.CTk):
   task_columns={row["name"] for row in self.db.execute("PRAGMA table_info(tasks)")}
   if "recurrence" not in task_columns:self.db.execute("ALTER TABLE tasks ADD COLUMN recurrence TEXT DEFAULT 'None'")
   self.db.execute("CREATE INDEX IF NOT EXISTS idx_customer_activity_customer ON customer_activity(customer_id, id DESC)")
-  defaults={"business":"My Business","currency":"GBP","appearance":"Dark","colour_theme":"Dollar","font_family":"Segoe UI","bold_text":"1","tutorial_completed":"0","startup":"0","auto_updates":"1","transparency":"94"}
+  defaults={"business":"My Business","currency":"GBP","appearance":"Dark","colour_theme":"Dollar","font_family":"Segoe UI","bold_text":"1","tutorial_completed":"0","startup":"0","auto_updates":"1","transparency":"8"}
   for k,v in defaults.items():self.db.execute("INSERT OR IGNORE INTO settings VALUES(?,?)",(k,v))
   self.db.commit();self.cfg={r["k"]:r["v"] for r in self.db.execute("SELECT * FROM settings")}
   self.font_family=self.cfg["font_family"];self.bold=self.cfg["bold_text"]=="1"
@@ -90,7 +90,7 @@ class SoloDesk(ctk.CTk):
  def apply_glass_effect(self):
   """Subtle acrylic tint and transparency on supported Windows versions."""
   try:
-   self.attributes("-alpha",max(0.78,min(1.0,int(self.get("transparency","94"))/100)))
+   self.attributes("-alpha",max(0.65,min(1.0,1-int(self.get("transparency","8"))/100)))
    if sys.platform!="win32":return
    class ACCENT_POLICY(ctypes.Structure):
     _fields_=[("AccentState",ctypes.c_int),("AccentFlags",ctypes.c_int),("GradientColor",ctypes.c_int),("AnimationId",ctypes.c_int)]
@@ -625,9 +625,9 @@ class SoloDesk(ctk.CTk):
  def setting_transparency(self,p):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=7)
   self.label(r,"Window transparency",11,"muted").pack(side="left")
-  value=int(self.get("transparency","94"));display=self.label(r,f"{value}%",11,"text",width=52)
+  value=int(self.get("transparency","8"));display=self.label(r,f"{value}%",11,"text",width=52)
   display.pack(side="right",padx=(8,0))
-  slider=ctk.CTkSlider(r,from_=78,to=100,number_of_steps=22,width=230,command=lambda v:(self.set("transparency",round(v)),display.configure(text=f"{round(v)}%"),self.attributes("-alpha",round(v)/100)))
+  slider=ctk.CTkSlider(r,from_=0,to=35,number_of_steps=35,width=230,command=lambda v:(self.set("transparency",round(v)),display.configure(text=f"{round(v)}%"),self.attributes("-alpha",1-round(v)/100)))
   slider.set(value);slider.pack(side="right",padx=8)
  def setting_select(self,p,label,key,opts):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left")
