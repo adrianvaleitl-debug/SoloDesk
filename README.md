@@ -1,10 +1,10 @@
-# SoloDesk V1.5
+# SoloDesk V1.6
 **Your business, in one place.**  
 **Created by Adrian Vale.**
 
 SoloDesk is a local-first Windows desktop workspace for freelancers and small businesses.
 
-## What's new in V1.5
+## What's new in V1.6
 - Recurring daily, weekly and monthly tasks with automatic next due dates.\n- Overdue task and unpaid invoice reminders.\n- Global search across customers, invoices, expenses, documents and tasks.\n- Monthly task calendar and customer activity timelines.
 - New navy-and-blue interface identity with five distinct colour themes.
 - Website download buttons directly download the Windows installer.
