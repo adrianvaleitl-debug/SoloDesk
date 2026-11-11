@@ -7,7 +7,7 @@ from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
 from PIL import Image
 
-APP_VERSION="V2.2"
+APP_VERSION="V2.3"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
