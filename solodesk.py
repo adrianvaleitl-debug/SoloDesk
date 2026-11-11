@@ -1,4 +1,4 @@
-import csv,os,shutil,sqlite3,sys,webbrowser,json,threading,urllib.request,subprocess,tempfile
+import csv,os,shutil,sqlite3,sys,webbrowser,json,threading,urllib.request,subprocess,tempfile,ctypes,traceback
 from pathlib import Path
 from datetime import date
 import tkinter as tk
@@ -17,6 +17,24 @@ THEMES={
 LEGACY_THEMES={"Dollar":"Sage","Euro":"Ocean","Pound":"Violet","Yen":"Coral","Franc":"Teal"}
 YOUTUBE="https://www.youtube.com/@Adrianvaleitl";TIKTOK="https://www.tiktok.com/@adrianvaleitl";KOFI="https://ko-fi.com/marketinsight"
 REPO="https://github.com/adrianvaleitl-debug/SoloDesk";RELEASES=REPO+"/releases/latest"
+_SINGLE_INSTANCE_MUTEX=None
+
+def acquire_single_instance():
+ global _SINGLE_INSTANCE_MUTEX
+ if sys.platform!="win32":return True
+ try:
+  kernel32=ctypes.windll.kernel32
+  kernel32.CreateMutexW.argtypes=[ctypes.c_void_p,ctypes.c_bool,ctypes.c_wchar_p]
+  kernel32.CreateMutexW.restype=ctypes.c_void_p
+  handle=kernel32.CreateMutexW(None,False,"Local\\AdrianVale.SoloDesk.Singleton")
+  if not handle:return True
+  if kernel32.GetLastError()==183:
+   kernel32.CloseHandle(handle)
+   ctypes.windll.user32.MessageBoxW(None,"SoloDesk is already running.\\n\\nCheck your taskbar for the open window.","SoloDesk",0x40)
+   return False
+  _SINGLE_INSTANCE_MUTEX=handle
+  return True
+ except Exception:return True
 
 class SoloDesk(ctk.CTk):
  def __init__(self):
@@ -38,6 +56,7 @@ class SoloDesk(ctk.CTk):
   ctk.set_appearance_mode(self.cfg["appearance"])
   super().__init__();self.title("SoloDesk "+APP_VERSION);self.geometry("1480x920");self.minsize(1150,740)
   self.set_app_icon()
+  if sys.platform=="win32":self.after(120,lambda:self.state("zoomed"))
   self.protocol("WM_DELETE_WINDOW",self.close);self.pages={};self.nav={};self.tables={}
   self.build_shell();self.show("Overview");self.refresh()
   if self.cfg["tutorial_completed"]!="1":self.after(650,self.tutorial)
@@ -458,4 +477,21 @@ class SoloDesk(ctk.CTk):
  def close(self):
   self.db.commit();self.db.close();self.destroy()
 
-if __name__=="__main__":SoloDesk().mainloop()
+def run_app():
+ try:
+  SoloDesk().mainloop()
+ except Exception:
+  details=traceback.format_exc()
+  log=ROOT/"startup_error.log"
+  try:
+   ROOT.mkdir(parents=True,exist_ok=True)
+   log.write_text(details,encoding="utf-8")
+  except Exception:log=None
+  message="SoloDesk could not start because something went wrong."
+  if log:message+="\\n\\nA diagnostic report was saved to:\\n"+str(log)
+  if sys.platform=="win32":
+   try:ctypes.windll.user32.MessageBoxW(None,message,"SoloDesk",0x10)
+   except Exception:print(message+"\\n"+details)
+  else:print(message+"\\n"+details)
+
+if __name__=="__main__" and acquire_single_instance():run_app()
