@@ -40,8 +40,10 @@ def apply_windows_glass_backdrop(window, transparency=8, light=False):
         backdrop_ok = False
         try:
             backdrop = ctypes.c_int(3)
-            result = ctypes.windll.dwmapi.DwmSetWindowAttribute(
-                hwnd, 38, ctypes.byref(backdrop), ctypes.sizeof(backdrop))
+            dwm_set = ctypes.windll.dwmapi.DwmSetWindowAttribute
+            dwm_set.argtypes = [ctypes.c_void_p, ctypes.c_uint, ctypes.c_void_p, ctypes.c_uint]
+            dwm_set.restype = ctypes.c_long
+            result = dwm_set(hwnd, 38, ctypes.byref(backdrop), ctypes.sizeof(backdrop))
             backdrop_ok = (result == 0)
         except Exception:
             pass
@@ -63,6 +65,9 @@ def apply_windows_glass_backdrop(window, transparency=8, light=False):
         apply_attribute.restype = ctypes.c_bool
         accent_ok = bool(apply_attribute(hwnd, ctypes.byref(data)))
         try:
+            user32.SetWindowPos.argtypes = [ctypes.c_void_p, ctypes.c_void_p, ctypes.c_int, ctypes.c_int,
+                                            ctypes.c_int, ctypes.c_int, ctypes.c_uint]
+            user32.SetWindowPos.restype = ctypes.c_bool
             user32.SetWindowPos(hwnd, None, 0, 0, 0, 0,
                                 0x0001 | 0x0002 | 0x0004 | 0x0020)
         except Exception:
@@ -84,8 +89,8 @@ def install_accent_spotlight(window, accent, background="#101012"):
         rgb = tuple(int(accent[index:index + 2], 16) for index in (1, 3, 5))
         glow = Image.new("RGBA", (width, height), (0, 0, 0, 0))
         draw = ImageDraw.Draw(glow)
-        blobs = [(0.76,0.10,0.48,0.48,42),(0.92,0.42,0.34,0.38,28),
-                 (0.18,0.88,0.42,0.38,24),(0.46,0.52,0.34,0.30,14)]
+        blobs = [(0.76,0.10,0.48,0.48,68),(0.92,0.42,0.34,0.38,46),
+                 (0.18,0.88,0.42,0.38,32),(0.46,0.52,0.34,0.30,22)]
         for cx,cy,rx,ry,alpha in blobs:
             draw.ellipse((int((cx-rx)*width),int((cy-ry)*height),
                           int((cx+rx)*width),int((cy+ry)*height)),fill=(*rgb,alpha))
