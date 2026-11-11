@@ -4,6 +4,7 @@ from datetime import date
 import tkinter as tk
 from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
+from PIL import Image
 
 APP_VERSION="V1.4"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
@@ -47,7 +48,9 @@ class SoloDesk(ctk.CTk):
    base=Path(getattr(sys,"_MEIPASS",Path(__file__).resolve().parent))
    icon=base/"solodesk.ico"
    if icon.exists():self.iconbitmap(default=str(icon))
-  except Exception:pass
+   logo=base/"solodesk.png"
+   self.brand_image=ctk.CTkImage(light_image=Image.open(logo),dark_image=Image.open(logo),size=(32,32)) if logo.exists() else None
+  except Exception:self.brand_image=None
  def get(self,k,d=""):return self.cfg.get(k,d)
  def set(self,k,v):
   self.cfg[k]=str(v);self.db.execute("INSERT INTO settings VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v",(k,str(v)));self.db.commit()
@@ -55,23 +58,26 @@ class SoloDesk(ctk.CTk):
  def accent2(self):return THEMES.get(self.theme,THEMES["Dollar"])[1]
  def col(self,k):
   dark=ctk.get_appearance_mode()=="Dark"
-  return {"bg":"#101612" if dark else "#F1F5F1","side":"#121B16" if dark else "#E7EEE8",
-  "panel":"#17211B" if dark else "#FFFFFF","panel2":"#1D2922" if dark else "#E8F0E9",
-  "line":"#2A3A30" if dark else "#D8E3DA","text":"#EDF5EF" if dark else "#24352A",
-  "muted":"#A1B1A6" if dark else "#718278","input":"#1D2922" if dark else "#F8FAF8",
-  "hover":"#293B2F" if dark else "#DCE8DE","accent":self.accent(),"danger":"#D77F7F" }[k]
+  return {"bg":"#0D1420" if dark else "#F2F6FC","side":"#111D2C" if dark else "#E8EFF8",
+  "panel":"#151F2D" if dark else "#FFFFFF","panel2":"#1C2A3B" if dark else "#E9F0FA",
+  "line":"#2A3A50" if dark else "#D9E3F0","text":"#EFF5FF" if dark else "#26374D",
+  "muted":"#9AAAC0" if dark else "#71839C","input":"#1C2A3B" if dark else "#FAFCFF",
+  "hover":"#263C55" if dark else "#DCE8F6","accent":self.accent(),"danger":"#D77F7F" }[k]
  def font(self,n=12):return ctk.CTkFont(family=self.font_family,size=n,weight="bold" if self.bold else "normal")
  def panel(self,p):return ctk.CTkFrame(p,fg_color=self.col("panel"),corner_radius=18,border_width=1,border_color=self.col("line"))
  def label(self,p,t,size=12,color="text",**kw):return ctk.CTkLabel(p,text=t,font=self.font(size),text_color=self.col(color),**kw)
  def button(self,p,t,fn,primary=False,width=None):
   return ctk.CTkButton(p,text=t,command=fn,width=width or 120,height=37,corner_radius=11,
    fg_color=self.accent() if primary else self.col("panel2"),hover_color=self.accent2(),
-   text_color="#15251B" if primary else self.col("text"),font=self.font(11))
+   text_color="#122033" if primary else self.col("text"),font=self.font(11))
  def build_shell(self):
   self.configure(fg_color=self.col("bg"))
   self.side=ctk.CTkFrame(self,width=240,corner_radius=0,fg_color=self.col("side"));self.side.pack(side="left",fill="y");self.side.pack_propagate(False)
   b=ctk.CTkFrame(self.side,fg_color="transparent");b.pack(fill="x",padx=20,pady=(25,25))
-  self.label(b,"◈",27,"accent").pack(side="left",padx=(0,8));self.label(b,"SoloDesk",22).pack(side="left")
+  if self.brand_image:
+   ctk.CTkLabel(b,text="",image=self.brand_image).pack(side="left",padx=(0,8))
+  else:self.label(b,"▦",27,"accent").pack(side="left",padx=(0,8))
+  self.label(b,"SoloDesk",22).pack(side="left")
   self.label(self.side,"YOUR BUSINESS, IN ONE PLACE",9,"muted").pack(anchor="w",padx=22,pady=(0,15))
   for name,ico in [("Overview","⌂"),("Customers","♙"),("Invoices","▤"),("Expenses","↗"),("Tasks","✓"),("Documents","▧"),("Analytics","▥"),("What's New","✦"),("Settings","⚙")]:
    x=self.button(self.side,ico+"   "+name,lambda n=name:self.show(n));x.configure(anchor="w",fg_color="transparent",text_color=self.col("muted"),hover_color=self.col("hover"),height=42);x.pack(fill="x",padx=12,pady=3);self.nav[name]=x
