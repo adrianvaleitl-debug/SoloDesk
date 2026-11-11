@@ -48,7 +48,7 @@ class SoloDesk(ctk.CTk):
   "panel":"#17211B" if dark else "#FFFFFF","panel2":"#1D2922" if dark else "#E8F0E9",
   "line":"#2A3A30" if dark else "#D8E3DA","text":"#EDF5EF" if dark else "#24352A",
   "muted":"#A1B1A6" if dark else "#718278","input":"#1D2922" if dark else "#F8FAF8",
-  "hover":"#293B2F" if dark else "#DCE8DE","danger":"#D77F7F" }[k]
+  "hover":"#293B2F" if dark else "#DCE8DE","accent":self.accent(),"danger":"#D77F7F" }[k]
  def font(self,n=12):return ctk.CTkFont(family=self.font_family,size=n,weight="bold" if self.bold else "normal")
  def panel(self,p):return ctk.CTkFrame(p,fg_color=self.col("panel"),corner_radius=18,border_width=1,border_color=self.col("line"))
  def label(self,p,t,size=12,color="text",**kw):return ctk.CTkLabel(p,text=t,font=self.font(size),text_color=self.col(color),**kw)
