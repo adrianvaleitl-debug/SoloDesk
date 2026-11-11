@@ -1,4 +1,14 @@
-# SoloDesk V1.6
+# SoloDesk V1.8
+**Your business, in one place.**  
+**Created by Adrian Vale.**
+
+## What's new in V1.8
+- **Six-month cashflow pulse:** compare paid invoice totals with recorded expenses month by month.
+- **Invoice ageing:** group outstanding balances into not overdue, 1–7 days, 8–30 days and over 30 days overdue.
+- **Spending by category:** see expense totals with proportional visual bars.
+- Analytics are calculated from records stored locally. Currency is a display preference only; this is not accounting or tax advice.
+
+
 **Your business, in one place.**  
 **Created by Adrian Vale.**
 
