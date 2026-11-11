@@ -102,33 +102,6 @@ class SoloDesk(ctk.CTk):
    apply_attribute.restype=ctypes.c_bool
    apply_attribute(ctypes.c_void_p(self.winfo_id()),ctypes.byref(data))
   except Exception:pass
- def apply_spotlight_background(self):
-  """Render soft, palette-tinted spotlight blooms behind the translucent workspace."""
-  try:
-   dark=ctk.get_appearance_mode()=="Dark"
-   base="#101010" if dark else "#EDEDED"
-   accents=[self.accent(), "#919191", "#A0A0A0", "#BFBFBF"]
-   canvas=tk.Canvas(self,highlightthickness=0,bd=0,bg=base)
-   canvas.place(x=0,y=0,relwidth=1,relheight=1)
-   self._spotlight_canvas=canvas
-   def render(event=None):
-    if event is not None and event.widget is not self:return
-    w=max(480,self.winfo_width());h=max(360,self.winfo_height())
-    glow=Image.new("RGBA",(w,h),(0,0,0,0));draw=ImageDraw.Draw(glow)
-    alpha=150 if dark else 62
-    spots=[(-.08,-.10,.66,accents[0]),(.84,.12,.58,accents[1]),(.48,.92,.64,accents[2]),(.10,.62,.42,accents[3])]
-    for x,y,r,color in spots:
-     rgb=tuple(int(color[i:i+2],16) for i in (1,3,5))
-     cx,cy=x*w,y*h;rad=r*min(w,h)
-     draw.ellipse((cx-rad,cy-rad,cx+rad,cy+rad),fill=(*rgb,alpha))
-    glow=glow.filter(ImageFilter.GaussianBlur(max(85,int(min(w,h)*.14))))
-    image=Image.new("RGBA",(w,h),base);image.alpha_composite(glow)
-    self._spotlight_photo=ImageTk.PhotoImage(image.convert("RGB"))
-    canvas.delete("all");canvas.create_image(0,0,anchor="nw",image=self._spotlight_photo);canvas.lower()
-   self.bind("<Configure>",lambda e:render(e),add="+")
-   self.after(120,render)
-  except Exception:
-   pass
  def set_app_icon(self):
   try:
    base=Path(getattr(sys,"_MEIPASS",Path(__file__).resolve().parent))
@@ -648,6 +621,13 @@ class SoloDesk(ctk.CTk):
   cr=self.panel(sc);cr.pack(fill="x",pady=6);self.label(cr,"Created by Adrian Vale",16).pack(anchor="w",padx=18,pady=(14,3));self.label(cr,"Follow the project and support development.",11,"muted").pack(anchor="w",padx=18)
   row=ctk.CTkFrame(cr,fg_color="transparent");row.pack(anchor="w",padx=12,pady=12)
   for t,u in [("YouTube @Adrianvaleitl",YOUTUBE),("TikTok @adrianvaleitl",TIKTOK),("Support on Ko-fi",KOFI)]:self.button(row,t,lambda url=u:webbrowser.open(url)).pack(side="left",padx=4)
+ def setting_transparency(self,p):
+  r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=7)
+  self.label(r,"Window transparency",11,"muted").pack(side="left")
+  value=int(self.get("transparency","94"));display=self.label(r,f"{value}%",11,"text",width=52)
+  display.pack(side="right",padx=(8,0))
+  slider=ctk.CTkSlider(r,from_=78,to=100,number_of_steps=22,width=230,command=lambda v:(self.set("transparency",round(v)),display.configure(text=f"{round(v)}%"),self.attributes("-alpha",round(v)/100)))
+  slider.set(value);slider.pack(side="right",padx=8)
  def setting_select(self,p,label,key,opts):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left")
   theme_labels={"Dollar":"Finance","Euro":"Operations","Pound":"Planning","Yen":"Clients","Franc":"Workspace"}
