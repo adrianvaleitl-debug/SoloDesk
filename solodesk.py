@@ -372,22 +372,49 @@ class SoloDesk(ctk.CTk):
    messagebox.showinfo("Shortcut","SoloDesk desktop shortcut created.")
   except Exception as e:messagebox.showerror("Shortcut error",str(e))
  def check_updates(self,manual=False):
+  if getattr(self,"_update_check_running",False):return
+  self._update_check_running=True
   def worker():
    try:
     req=urllib.request.Request("https://api.github.com/repos/adrianvaleitl-debug/SoloDesk/releases/latest",headers={"User-Agent":"SoloDesk"})
-    with urllib.request.urlopen(req,timeout=8) as response:data=json.loads(response.read().decode("utf-8"))
+    with urllib.request.urlopen(req,timeout=12) as response:data=json.loads(response.read().decode("utf-8"))
     latest=data.get("tag_name","V1.0")
     def parts(v):
-     try:return tuple(int(x) for x in v.lstrip("vV").split("."))
-     except:return (0,)
+     out=[]
+     for part in str(v).strip().lstrip("vV").split("."):
+      digits="".join(ch for ch in part if ch.isdigit())
+      if not digits:break
+      out.append(int(digits))
+     return tuple(out) if out else (0,)
     if parts(latest)>parts(APP_VERSION):
-     self.after(0,lambda:self.offer_update(latest))
+     asset=next((x for x in data.get("assets",[]) if "setup" in x.get("name","").lower() and x.get("name","").lower().endswith(".exe")),None)
+     self.after(0,lambda:self.offer_update(latest,asset))
     elif manual:self.after(0,lambda:messagebox.showinfo("SoloDesk is up to date",f"You are using {APP_VERSION}, the latest available release."))
    except Exception as e:
     if manual:self.after(0,lambda err=str(e):messagebox.showwarning("Update check unavailable",f"Could not check GitHub Releases right now.\\n\\n{err}"))
+   finally:self._update_check_running=False
   threading.Thread(target=worker,daemon=True).start()
- def offer_update(self,version):
-  if messagebox.askyesno("Update available",f"SoloDesk {version} is available.\\n\\nWould you like to open the download page?"):webbrowser.open(RELEASES)
+ def offer_update(self,version,asset=None):
+  if not asset or not asset.get("browser_download_url"):
+   if messagebox.askyesno("Update available",f"SoloDesk {version} is available.\\n\\nOpen the release page to download it?"):webbrowser.open(RELEASES)
+   return
+  if not messagebox.askyesno("Update available",f"SoloDesk {version} is available.\\n\\nDownload and install the update now?\\nYour saved business data will be kept."):return
+  if not getattr(sys,"frozen",False):
+   webbrowser.open(asset["browser_download_url"]);return
+  def download():
+   try:
+    target=Path(tempfile.gettempdir())/("SoloDesk-Setup-"+str(version)+".exe")
+    req=urllib.request.Request(asset["browser_download_url"],headers={"User-Agent":"SoloDesk-Updater"})
+    with urllib.request.urlopen(req,timeout=90) as response,target.open("wb") as output:shutil.copyfileobj(response,output)
+    if not target.exists() or target.stat().st_size<100000:raise RuntimeError("The installer download appears incomplete.")
+    def launch():
+     try:
+      subprocess.Popen([str(target),"/SILENT","/CLOSEAPPLICATIONS","/RESTARTAPPLICATIONS"],close_fds=True)
+      self.after(350,self.close)
+     except Exception as e:messagebox.showerror("Update failed",f"Could not launch the installer.\\n\\n{e}")
+    self.after(0,launch)
+   except Exception as e:self.after(0,lambda err=str(e):messagebox.showerror("Update download failed",f"Could not download the update.\\n\\n{err}"))
+  threading.Thread(target=download,daemon=True).start()
  def backup(self):
   path=filedialog.asksaveasfilename(defaultextension=".db",initialfile="solodesk-backup.db")
   if path:self.db.commit();shutil.copy2(DB,path);messagebox.showinfo("Backup","Database backup saved.")
