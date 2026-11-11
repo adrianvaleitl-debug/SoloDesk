@@ -619,7 +619,7 @@ class SoloDesk(ctk.CTk):
   threading.Thread(target=download,daemon=True).start()
  def first_run_shortcut_prompt(self):
   if self.get("shortcut_prompted","0")=="1":return
-  shortcut=Path.home()/"Desktop"/"SoloDesk.lnk"
+  shortcut=self.desktop_folder()/"SoloDesk.lnk"
   self.set("shortcut_prompted","1")
   if shortcut.exists():return
   if messagebox.askyesno("Create a desktop shortcut?","Would you like a SoloDesk shortcut on your Windows desktop? You can change this later in Settings."):
