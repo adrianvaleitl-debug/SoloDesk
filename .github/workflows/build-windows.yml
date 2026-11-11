@@ -7,7 +7,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: solodesk-v1-9-release
+  group: solodesk-v2-0-release
   cancel-in-progress: true
 jobs:
   build:
@@ -27,8 +27,8 @@ jobs:
           python tools/generate_icon.py
           python -m py_compile solodesk.py tools/generate_icon.py
       - name: Build desktop application
-        run: python -m PyInstaller --noconfirm --clean --windowed --name SoloDesk --icon assets/solodesk.ico --add-data "assets/solodesk.ico;." --add-data "assets/solodesk.png;." --collect-all customtkinter --collect-all certifi solodesk.py
-      - name: Compile Windows installer
+        run: python -m PyInstaller --noconfirm --clean --windowed --name SoloDesk --icon assets/solodesk.ico --add-data "assets/solodesk.ico;." --add-data "assets/solodesk.png;." --collect-all customtkinter --collect-all certifi --collect-all PIL solodesk.py
+      - name: Smoke test packaged desktop app\n        shell: pwsh\n        run: |\n          $app = Start-Process -FilePath "dist/SoloDesk/SoloDesk.exe" -PassThru\n          Start-Sleep -Seconds 8\n          if ($app.HasExited) { throw "SoloDesk exited during startup smoke test" }\n          Stop-Process -Id $app.Id -Force\n      - name: Compile Windows installer
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path installer | Out-Null
@@ -44,12 +44,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Package portable application
         shell: pwsh
-        run: Compress-Archive -Path dist/SoloDesk/* -DestinationPath installer/SoloDesk-Portable-V1.9.zip -Force
+        run: Compress-Archive -Path dist/SoloDesk/* -DestinationPath installer/SoloDesk-Portable-V2.0.zip -Force
       - name: Publish GitHub release
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: V1.9
+          tag_name: V2.0
           target_commitish: main
           name: SoloDesk V1.9
           make_latest: true
