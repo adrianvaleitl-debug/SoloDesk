@@ -7,7 +7,7 @@ from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
 from PIL import Image, ImageDraw, ImageFilter, ImageTk
 
-APP_VERSION="V2.3"
+APP_VERSION="V2.4"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
@@ -154,7 +154,7 @@ class SoloDesk(ctk.CTk):
   if k in ("bg","side","panel","panel2","input"):
    try:
     def rgb(h):return tuple(int(h[i:i+2],16) for i in (1,3,5))
-    a,b=rgb(base),rgb(self.accent());amount={"bg":0.18,"side":0.17,"panel":0.13,"panel2":0.23,"input":0.12}[k]
+    a,b=rgb(base),rgb(self.accent());amount={"bg":0.04,"side":0.06,"panel":0.05,"panel2":0.08,"input":0.03}[k]
     base="#"+"".join(f"{round(x*(1-amount)+y*amount):02X}" for x,y in zip(a,b))
    except Exception:pass
   return base
