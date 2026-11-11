@@ -68,11 +68,11 @@ class SoloDesk(ctk.CTk):
    if widget in theme:theme[widget]["corner_radius"]=radius
   control_colors={"fg_color":[self.accent(),self.accent()],"hover_color":[self.accent2(),self.accent2()],"text_color":["#202020","#202020"]}
   if "CTkButton" in theme:theme["CTkButton"].update({**control_colors,"corner_radius":13})
-  if "CTkCheckBox" in theme:theme["CTkCheckBox"].update({"fg_color":["#B9B9B9","#B9B9B9"],"hover_color":["#C9C9C9","#C9C9C9"],"border_color":["#7F7F7F","#7F7F7F"],"checkmark_color":["#202020","#202020"]})
-  if "CTkSwitch" in theme:theme["CTkSwitch"].update({"progress_color":["#B9B9B9","#B9B9B9"]})
-  if "CTkSlider" in theme:theme["CTkSlider"].update({"progress_color":["#B9B9B9","#B9B9B9"],"button_color":["#E0E0E0","#E0E0E0"],"button_hover_color":["#FFFFFF","#FFFFFF"]})
+  if "CTkCheckBox" in theme:theme["CTkCheckBox"].update({"fg_color":[self.accent(),self.accent()],"hover_color":[self.accent2(),self.accent2()],"border_color":["#7F7F7F","#7F7F7F"],"checkmark_color":["#202020","#202020"]})
+  if "CTkSwitch" in theme:theme["CTkSwitch"].update({"progress_color":[self.accent(),self.accent()]})
+  if "CTkSlider" in theme:theme["CTkSlider"].update({"progress_color":[self.accent(),self.accent()],"button_color":[self.accent(),self.accent()],"button_hover_color":[self.accent2(),self.accent2()]})
   if "CTkComboBox" in theme:
-   theme["CTkComboBox"].update({"fg_color":["#1A1A1A","#1A1A1A"],"border_color":["#404040","#404040"],"button_color":["#B9B9B9","#B9B9B9"],"button_hover_color":["#C9C9C9","#C9C9C9"],"text_color":["#F2F2F2","#F2F2F2"],"dropdown_fg_color":["#1F1F1F","#1F1F1F"],"dropdown_hover_color":["#363636","#363636"],"dropdown_text_color":["#F2F2F2","#F2F2F2"]})
+   theme["CTkComboBox"].update({"fg_color":["#1A1A1A","#1A1A1A"],"border_color":["#404040","#404040"],"button_color":[self.accent(),self.accent()],"button_hover_color":[self.accent2(),self.accent2()],"text_color":["#F2F2F2","#F2F2F2"],"dropdown_fg_color":["#1F1F1F","#1F1F1F"],"dropdown_hover_color":["#363636","#363636"],"dropdown_text_color":["#F2F2F2","#F2F2F2"]})
   if "CTkOptionMenu" in theme:
    theme["CTkOptionMenu"].update({"fg_color":["#282828","#282828"],"button_color":["#B9B9B9","#B9B9B9"],"button_hover_color":["#C9C9C9","#C9C9C9"],"text_color":["#F2F2F2","#F2F2F2"],"dropdown_fg_color":["#1F1F1F","#1F1F1F"],"dropdown_hover_color":["#363636","#363636"],"dropdown_text_color":["#F2F2F2","#F2F2F2"]})
   ctk.set_appearance_mode(self.cfg["appearance"])
