@@ -65,10 +65,14 @@ class SoloDesk(ctk.CTk):
   theme=ctk.ThemeManager.theme
   for widget,radius in (("CTkFrame",22),("CTkButton",15),("CTkEntry",15),("CTkComboBox",15),("CTkOptionMenu",15)):
    if widget in theme:theme[widget]["corner_radius"]=radius
+  control_colors={"fg_color":["#DDB47E","#DDB47E"],"hover_color":["#E9C594","#E9C594"],"text_color":["#182319","#182319"]}
+  if "CTkButton" in theme:theme["CTkButton"].update({**control_colors,"corner_radius":13})
+  if "CTkCheckBox" in theme:theme["CTkCheckBox"].update({"fg_color":["#DDB47E","#DDB47E"],"hover_color":["#E9C594","#E9C594"],"border_color":["#6D8572","#6D8572"],"checkmark_color":["#182319","#182319"]})
+  if "CTkSwitch" in theme:theme["CTkSwitch"].update({"progress_color":["#DDB47E","#DDB47E"]})
   if "CTkComboBox" in theme:
-   theme["CTkComboBox"].update({"dropdown_fg_color":["#F7FAFF","#17263A"],"dropdown_hover_color":["#E4ECF7","#304966"],"dropdown_text_color":["#26374D","#EFF5FF"]})
+   theme["CTkComboBox"].update({"fg_color":["#101D15","#101D15"],"border_color":["#304638","#304638"],"button_color":["#DDB47E","#DDB47E"],"button_hover_color":["#E9C594","#E9C594"],"text_color":["#EDF4EE","#EDF4EE"],"dropdown_fg_color":["#14231A","#14231A"],"dropdown_hover_color":["#263B2D","#263B2D"],"dropdown_text_color":["#EDF4EE","#EDF4EE"]})
   if "CTkOptionMenu" in theme:
-   theme["CTkOptionMenu"].update({"dropdown_fg_color":["#F7FAFF","#17263A"],"dropdown_hover_color":["#E4ECF7","#304966"],"dropdown_text_color":["#26374D","#EFF5FF"]})
+   theme["CTkOptionMenu"].update({"fg_color":["#1B2D21","#1B2D21"],"button_color":["#DDB47E","#DDB47E"],"button_hover_color":["#E9C594","#E9C594"],"text_color":["#EDF4EE","#EDF4EE"],"dropdown_fg_color":["#14231A","#14231A"],"dropdown_hover_color":["#263B2D","#263B2D"],"dropdown_text_color":["#EDF4EE","#EDF4EE"]})
   ctk.set_appearance_mode(self.cfg["appearance"])
   super().__init__();self.title("SoloDesk "+APP_VERSION);screen_w=self.winfo_screenwidth();screen_h=self.winfo_screenheight();self.geometry(f"{min(1480,max(900,screen_w-80))}x{min(920,max(640,screen_h-100))}");self.minsize(min(1150,max(900,screen_w-80)),min(740,max(620,screen_h-100)))
   self.set_app_icon()
