@@ -5,7 +5,12 @@
 SoloDesk is a local-first Windows desktop workspace for freelancers and small businesses.
 
 ## What's new in V1.6
-- Recurring daily, weekly and monthly tasks with automatic next due dates.\n- Overdue task and unpaid invoice reminders.\n- Global search across customers, invoices, expenses, documents and tasks.\n- Monthly task calendar and customer activity timelines.
+- Redesigned top navigation and compact page ribbon replace the former vertical sidebar.
+- More horizontal room for business records, tables and global search, with refined spacing and rounded workspace panels.
+- Recurring daily, weekly and monthly tasks with automatic next due dates.
+- Overdue task and unpaid invoice reminders.
+- Global search across customers, invoices, expenses, documents and tasks.
+- Monthly task calendar and customer activity timelines.
 - New navy-and-blue interface identity with five distinct colour themes.
 - Website download buttons directly download the Windows installer.
 - Automatic updates can download and launch the latest Windows installer after confirmation.
