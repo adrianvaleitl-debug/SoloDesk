@@ -187,6 +187,7 @@ class SoloDesk(ctk.CTk):
   self.protocol("WM_DELETE_WINDOW",self.close);self.pages={};self.nav={};self.tables={}
   self.calendar_month=date.today().replace(day=1)
   self.build_shell();self.show("Overview");self.refresh()
+  self.after(350,self.apply_glass_effect)
   if self.cfg["tutorial_completed"]!="1":self.after(650,self.tutorial)
   else:self.after(900,self.first_run_shortcut_prompt)
   if self.cfg.get("auto_updates","1")=="1":self.after(1800,self.check_updates)
