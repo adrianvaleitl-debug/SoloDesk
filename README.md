@@ -1,11 +1,11 @@
-# SoloDesk V3.0
+# SoloDesk V3.1
 **Your business, in one place.**  
 **Created by Adrian Vale.**
 
-## What's new in V3.0
-- Rebuilt the Windows glass host using colour-key transparency so the acrylic backdrop can show through without fading text or controls.
-- Expanded the transparency slider's acrylic tint range and apply timing.
-- Moved the accent-colour nebula spotlight onto the transparent host layer.
+## What's new in V3.1
+- Stabilised accent-colour changes so the selected palette is consistently rebuilt across the workspace.
+- Removed expensive spotlight image regeneration during window resizing for smoother window movement.
+- Kept the existing glass backdrop and local business data intact.
 - Redesigned the in-app release history with a featured latest release and a previous-version timeline.
 - Existing customers, invoices, expenses, tasks, documents and settings are preserved.
 
@@ -23,7 +23,7 @@
 - Task manager with priorities, completion status and recurrence options.
 - Business document library with links to files stored on your computer.
 - Analytics summary for paid income, outstanding invoices and expenses.
-- Five SoloDesk colour themes: Ocean, Sage, Violet, Coral and Teal.
+- Six SoloDesk accent themes: Black, Amber, Azure, Lavender, Rose and Teal.
 - Five font choices: Segoe UI, Arial, Verdana, Trebuchet MS and Georgia.
 - Bold or regular typography throughout the app.
 - Dark, Light and System appearance modes.
