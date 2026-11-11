@@ -7,15 +7,16 @@ from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
 from PIL import Image, ImageDraw, ImageFilter, ImageTk
 
-APP_VERSION="V2.5"
+APP_VERSION="V2.6"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
 FONTS=["Segoe UI","Arial","Verdana","Trebuchet MS","Georgia"]
 THEMES={
-"Dollar":("#B9B9B9","#A0A0A0"),"Euro":("#C3C3C3","#ABABAB"),
-"Pound":("#C0C0C0","#A1A1A1"),"Yen":("#B2B2B2","#999999"),"Franc":("#C1C1C1","#A1A1A1")}
-LEGACY_THEMES={"Ocean":"Euro","Sage":"Dollar","Violet":"Pound","Coral":"Yen","Teal":"Franc"}
+"Black":("#B9B9B9","#A0A0A0"),"Amber":("#D7B77F","#BFA16A"),
+"Azure":("#91AFE0","#7897C8"),"Lavender":("#B5A0D8","#9B86BE"),
+"Rose":("#D99EAD","#C48495"),"Teal":("#91BEC3","#76A6AB")}
+LEGACY_THEMES={"Dollar":"Black","Euro":"Azure","Pound":"Lavender","Yen":"Rose","Franc":"Teal","Ocean":"Azure","Sage":"Teal","Violet":"Lavender","Coral":"Rose"}
 YOUTUBE="https://www.youtube.com/@Adrianvaleitl";TIKTOK="https://www.tiktok.com/@adrianvaleitl";KOFI="https://ko-fi.com/marketinsight"
 REPO="https://github.com/adrianvaleitl-debug/SoloDesk";RELEASES=REPO+"/releases/latest"
 GITHUB_SSL_CONTEXT=ssl.create_default_context(cafile=certifi.where())
@@ -54,18 +55,18 @@ class SoloDesk(ctk.CTk):
   task_columns={row["name"] for row in self.db.execute("PRAGMA table_info(tasks)")}
   if "recurrence" not in task_columns:self.db.execute("ALTER TABLE tasks ADD COLUMN recurrence TEXT DEFAULT 'None'")
   self.db.execute("CREATE INDEX IF NOT EXISTS idx_customer_activity_customer ON customer_activity(customer_id, id DESC)")
-  defaults={"business":"My Business","currency":"GBP","appearance":"Dark","colour_theme":"Dollar","font_family":"Segoe UI","bold_text":"1","tutorial_completed":"0","startup":"0","auto_updates":"1","transparency":"8"}
+  defaults={"business":"My Business","currency":"GBP","appearance":"Dark","colour_theme":"Black","font_family":"Segoe UI","bold_text":"1","tutorial_completed":"0","startup":"0","auto_updates":"1","transparency":"8"}
   for k,v in defaults.items():self.db.execute("INSERT OR IGNORE INTO settings VALUES(?,?)",(k,v))
   self.db.commit();self.cfg={r["k"]:r["v"] for r in self.db.execute("SELECT * FROM settings")}
   self.font_family=self.cfg["font_family"];self.bold=self.cfg["bold_text"]=="1"
   self.theme=LEGACY_THEMES.get(self.cfg["colour_theme"],self.cfg["colour_theme"])
-  if self.theme not in THEMES:self.theme="Euro"
+  if self.theme not in THEMES:self.theme="Black"
   self.set("colour_theme",self.theme)
   ctk.set_default_color_theme("blue")
   theme=ctk.ThemeManager.theme
   for widget,radius in (("CTkFrame",22),("CTkButton",15),("CTkEntry",15),("CTkComboBox",15),("CTkOptionMenu",15)):
    if widget in theme:theme[widget]["corner_radius"]=radius
-  control_colors={"fg_color":["#B9B9B9","#B9B9B9"],"hover_color":["#C9C9C9","#C9C9C9"],"text_color":["#202020","#202020"]}
+  control_colors={"fg_color":[self.accent(),self.accent()],"hover_color":[self.accent2(),self.accent2()],"text_color":["#202020","#202020"]}
   if "CTkButton" in theme:theme["CTkButton"].update({**control_colors,"corner_radius":13})
   if "CTkCheckBox" in theme:theme["CTkCheckBox"].update({"fg_color":["#B9B9B9","#B9B9B9"],"hover_color":["#C9C9C9","#C9C9C9"],"border_color":["#7F7F7F","#7F7F7F"],"checkmark_color":["#202020","#202020"]})
   if "CTkSwitch" in theme:theme["CTkSwitch"].update({"progress_color":["#B9B9B9","#B9B9B9"]})
@@ -176,7 +177,7 @@ class SoloDesk(ctk.CTk):
   self.top.grid(row=0,column=1,sticky="ew",padx=(8,14),pady=(14,8));self.top.grid_propagate(False)
   self.titlelabel=self.label(self.top,"Overview",16);self.titlelabel.pack(side="left",padx=25)
   self.search_open=False
-  self.global_search_entry=ctk.CTkEntry(self.top,placeholder_text="Search customers, invoices, expenses and tasks…",width=300,height=38,corner_radius=16,font=self.font(11),fg_color=self.col("input"),border_width=0,text_color=self.col("text"))
+  self.global_search_entry=ctk.CTkEntry(self.top,placeholder_text="Search records…",width=190,height=32,corner_radius=10,font=self.font(10),fg_color=self.col("input"),border_width=0,text_color=self.col("text"))
   self.global_search_entry.bind("<Return>",lambda _event:self.global_search())
   self.global_search_entry.bind("<Escape>",lambda _event:self.toggle_global_search(False))
   self.search_button=self.button(self.top,"⌕",lambda:self.toggle_global_search(),width=44)
@@ -300,11 +301,11 @@ class SoloDesk(ctk.CTk):
   if opening:
    self.global_search_entry.pack(side="right",before=self.search_button,padx=(8,4))
    self.global_search_entry.focus_set()
-   self.search_button.configure(text="× Close")
+   self.search_button.configure(text="×")
   else:
    self.global_search_entry.pack_forget()
    self.global_search_entry.delete(0,"end")
-   self.search_button.configure(text="⌕ Search")
+   self.search_button.configure(text="⌕")
  def global_search(self):
   query=self.global_search_entry.get().strip()
   if not query:return
@@ -599,7 +600,7 @@ class SoloDesk(ctk.CTk):
   p=self.pages["What's New"]
   for w in p.winfo_children():w.destroy()
   self.heading(p,"What's new in SoloDesk","Release notes and product improvements.")
-  notes=[("V2.5","A monochrome glass workspace",["Replaced colour themes and spotlights with a restrained black acrylic-glass interface.","Added an adjustable window transparency slider in Settings.","Applied neutral charcoal surfaces and softly tinted controls while preserving existing business records."]),("V1.8","A sharper financial picture",["Six-month cashflow pulse comparing paid invoices with recorded expenses.","Invoice ageing buckets to surface overdue receivables.","Spending breakdown by category with visual comparison."]),("V1.7","Workspace reliability improvements",["Refined Windows startup and update handoff behaviour."]),("V1.6","A new workspace layout",["A redesigned top navigation bar and compact page ribbon replace the old side menu.","A cleaner business workspace with more room for tables, search and day-to-day records.","Refined rounded panels, spacing and visual hierarchy across the app."]),("V1.5","More control over everyday work",["Recurring daily, weekly and monthly tasks with automatic next due dates.","Overdue task and unpaid invoice reminders.","Global search across all workspace records.","Monthly task calendar and customer activity history."]),("V1.4","A more personal SoloDesk",["A dedicated SoloDesk workspace icon and a fresh navy-and-blue visual identity.","Five distinct colour themes, five fonts, bold or regular text, and Dark, Light or System appearance.","Automatic updates can download and launch the latest Windows installer for you.","A direct website installer download and improved Windows app branding."]),("V1.3","A more complete business workspace",["Rounded interface, searchable records, analytics and local backups.","Five font choices, colour themes and Dark, Light or System modes.","Windows startup, desktop shortcut controls and release update checks."]),("V1.2","Business workspace refresh",["Overview dashboard, customers, invoices, expenses and tasks.","Invoice and expense editing, CSV exports and local database backups."])]
+  notes=[("V2.6","Compact search, clearer spacing and optional accent colours",["Replaced colour themes and spotlights with a restrained black acrylic-glass interface.","Reduced the global search control so its icon and expanding field fit cleanly inside the top bar.","Added Black, Amber, Azure, Lavender, Rose and Teal accent choices; Black remains the default and charcoal glass surfaces stay neutral.","Improved spacing around text and panel edges."]),("V1.8","A sharper financial picture",["Six-month cashflow pulse comparing paid invoices with recorded expenses.","Invoice ageing buckets to surface overdue receivables.","Spending breakdown by category with visual comparison."]),("V1.7","Workspace reliability improvements",["Refined Windows startup and update handoff behaviour."]),("V1.6","A new workspace layout",["A redesigned top navigation bar and compact page ribbon replace the old side menu.","A cleaner business workspace with more room for tables, search and day-to-day records.","Refined rounded panels, spacing and visual hierarchy across the app."]),("V1.5","More control over everyday work",["Recurring daily, weekly and monthly tasks with automatic next due dates.","Overdue task and unpaid invoice reminders.","Global search across all workspace records.","Monthly task calendar and customer activity history."]),("V1.4","A more personal SoloDesk",["A dedicated SoloDesk workspace icon and a fresh navy-and-blue visual identity.","Five distinct colour themes, five fonts, bold or regular text, and Dark, Light or System appearance.","Automatic updates can download and launch the latest Windows installer for you.","A direct website installer download and improved Windows app branding."]),("V1.3","A more complete business workspace",["Rounded interface, searchable records, analytics and local backups.","Five font choices, colour themes and Dark, Light or System modes.","Windows startup, desktop shortcut controls and release update checks."]),("V1.2","Business workspace refresh",["Overview dashboard, customers, invoices, expenses and tasks.","Invoice and expense editing, CSV exports and local database backups."])]
   for v,t,items in notes:
    card=self.panel(p);card.pack(fill="x",pady=7);self.label(card,v,17,"accent").pack(anchor="w",padx=18,pady=(14,2));self.label(card,t,14).pack(anchor="w",padx=18,pady=3)
    for item in items:self.label(card,"•  "+item,11,"muted",wraplength=900,justify="left").pack(anchor="w",padx=20,pady=3)
@@ -610,7 +611,7 @@ class SoloDesk(ctk.CTk):
   self.heading(p,"Settings","Personalise your workspace and manage your data.")
   sc=ctk.CTkScrollableFrame(p,fg_color="transparent");sc.pack(fill="both",expand=True)
   a=self.panel(sc);a.pack(fill="x",pady=6);self.label(a,"Appearance and personalisation",16).pack(anchor="w",padx=18,pady=(14,8))
-  self.setting_select(a,"Appearance","appearance",["Dark","Light","System"]);self.setting_transparency(a);self.setting_select(a,"Font family","font_family",FONTS);self.setting_switch(a,"Bold text","bold_text")
+  self.setting_select(a,"Appearance","appearance",["Dark","Light","System"]);self.setting_select(a,"Accent colour","colour_theme",["Black","Amber","Azure","Lavender","Rose","Teal"]);self.setting_transparency(a);self.setting_select(a,"Font family","font_family",FONTS);self.setting_switch(a,"Bold text","bold_text")
   b=self.panel(sc);b.pack(fill="x",pady=6);self.label(b,"Business preferences",16).pack(anchor="w",padx=18,pady=(14,8))
   self.bizvar=tk.StringVar(value=self.get("business"));self.curvar=tk.StringVar(value=self.get("currency","GBP"))
   self.setting_entry(b,"Business name",self.bizvar);self.setting_select_var(b,"Display currency",self.curvar,list(SYMBOLS))
@@ -631,7 +632,7 @@ class SoloDesk(ctk.CTk):
   slider.set(value);slider.pack(side="right",padx=8)
  def setting_select(self,p,label,key,opts):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left")
-  theme_labels={"Dollar":"Finance","Euro":"Operations","Pound":"Planning","Yen":"Clients","Franc":"Workspace"}
+  theme_labels={"Dollar":"Black","Euro":"Azure","Pound":"Lavender","Yen":"Rose","Franc":"Teal"}
   v=tk.StringVar(value=(theme_labels.get(self.get(key),self.get(key,opts[0])) if key=="colour_theme" else self.get(key,opts[0])))
   ctk.CTkComboBox(r,values=opts,variable=v,width=230,height=38,corner_radius=15,font=self.font(11),button_color=self.accent2(),button_hover_color=self.accent(),fg_color=self.col("input"),border_width=0,text_color=self.col("text"),dropdown_fg_color=self.col("panel"),dropdown_hover_color=self.col("hover"),dropdown_text_color=self.col("text"),command=lambda x,k=key:self.apply_setting(k,x)).pack(side="right")
  def setting_select_var(self,p,label,var,opts):
@@ -643,7 +644,7 @@ class SoloDesk(ctk.CTk):
   ctk.CTkSwitch(r,text="",variable=v,progress_color=self.accent2(),command=lambda:self.apply_setting(key,"1" if v.get() else "0")).pack(side="right")
  def apply_setting(self,k,v):
   if k=="colour_theme":
-   theme_map={"Finance":"Dollar","Operations":"Euro","Planning":"Pound","Clients":"Yen","Workspace":"Franc"}
+   theme_map={"Finance":"Black","Operations":"Azure","Planning":"Lavender","Clients":"Rose","Workspace":"Teal"}
    v=theme_map.get(v,v)
   self.set(k,v)
   if k=="appearance":ctk.set_appearance_mode(v)
