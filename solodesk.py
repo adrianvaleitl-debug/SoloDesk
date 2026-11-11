@@ -173,7 +173,7 @@ class SoloDesk(ctk.CTk):
   self.global_search_entry=ctk.CTkEntry(self.top,placeholder_text="Search customers, invoices, expenses and tasks…",width=300,height=38,corner_radius=16,font=self.font(11),fg_color=self.col("input"),border_width=0,text_color=self.col("text"))
   self.global_search_entry.bind("<Return>",lambda _event:self.global_search())
   self.global_search_entry.bind("<Escape>",lambda _event:self.toggle_global_search(False))
-  self.search_button=self.button(self.top,"⌕ Search",lambda:self.toggle_global_search(),width=104)
+  self.search_button=self.button(self.top,"⌕",lambda:self.toggle_global_search(),width=44)
   self.search_button.pack(side="right",padx=8)
   self.biz=self.label(self.top,self.get("business"),10,"accent",fg_color=self.col("panel2"),corner_radius=12,padx=13,pady=8)
   self.biz.pack(side="right",padx=12)
