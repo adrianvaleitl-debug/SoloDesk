@@ -7,7 +7,7 @@ from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
 from PIL import Image, ImageDraw, ImageFilter, ImageTk
 
-APP_VERSION="V2.6"
+APP_VERSION="V2.7"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
@@ -120,8 +120,8 @@ class SoloDesk(ctk.CTk):
  def get(self,k,d=""):return self.cfg.get(k,d)
  def set(self,k,v):
   self.cfg[k]=str(v);self.db.execute("INSERT INTO settings VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v",(k,str(v)));self.db.commit()
- def accent(self):return THEMES.get(self.theme,THEMES["Euro"])[0]
- def accent2(self):return THEMES.get(self.theme,THEMES["Euro"])[1]
+ def accent(self):return THEMES.get(self.theme,THEMES["Black"])[0]
+ def accent2(self):return THEMES.get(self.theme,THEMES["Black"])[1]
  def col(self,k):
   dark=ctk.get_appearance_mode()=="Dark"
   bases={"bg":"#101012" if dark else "#EDEDED","side":"#19191D" if dark else "#F3F3F3",
