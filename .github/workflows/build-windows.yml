@@ -28,7 +28,14 @@ jobs:
           python -m py_compile solodesk.py tools/generate_icon.py
       - name: Build desktop application
         run: python -m PyInstaller --noconfirm --clean --windowed --name SoloDesk --icon assets/solodesk.ico --add-data "assets/solodesk.ico;." --add-data "assets/solodesk.png;." --collect-all customtkinter --collect-all certifi --collect-all PIL solodesk.py
-      - name: Smoke test packaged desktop app\n        shell: pwsh\n        run: |\n          $app = Start-Process -FilePath "dist/SoloDesk/SoloDesk.exe" -PassThru\n          Start-Sleep -Seconds 8\n          if ($app.HasExited) { throw "SoloDesk exited during startup smoke test" }\n          Stop-Process -Id $app.Id -Force\n      - name: Compile Windows installer
+      - name: Smoke test packaged desktop app
+        shell: pwsh
+        run: |
+          $app = Start-Process -FilePath "dist/SoloDesk/SoloDesk.exe" -PassThru
+          Start-Sleep -Seconds 8
+          if ($app.HasExited) { throw "SoloDesk exited during startup smoke test" }
+          Stop-Process -Id $app.Id -Force
+      - name: Compile Windows installer
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path installer | Out-Null
@@ -62,12 +69,12 @@ jobs:
       - name: Upload Windows installer
         uses: actions/upload-artifact@v4
         with:
-          name: SoloDesk-Setup-V1.9
-          path: installer/SoloDesk-Setup-V1.9.exe
+          name: SoloDesk-Setup-V2.0
+          path: installer/SoloDesk-Setup-V2.0.exe
           if-no-files-found: error
       - name: Upload portable application
         uses: actions/upload-artifact@v4
         with:
-          name: SoloDesk-Portable-V1.9
+          name: SoloDesk-Portable-V2.0
           path: dist/SoloDesk/
           if-no-files-found: error
