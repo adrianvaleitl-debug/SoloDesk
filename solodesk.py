@@ -7,7 +7,7 @@ from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
 from PIL import Image
 
-APP_VERSION="V1.5"
+APP_VERSION="V1.6"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
@@ -100,29 +100,27 @@ class SoloDesk(ctk.CTk):
    text_color="#122033" if primary else self.col("text"),font=self.font(11))
  def build_shell(self):
   self.configure(fg_color=self.col("bg"))
-  self.side=ctk.CTkFrame(self,width=240,corner_radius=0,fg_color=self.col("side"));self.side.pack(side="left",fill="y");self.side.pack_propagate(False)
-  b=ctk.CTkFrame(self.side,fg_color="transparent");b.pack(fill="x",padx=20,pady=(25,25))
-  if self.brand_image:
-   ctk.CTkLabel(b,text="",image=self.brand_image).pack(side="left",padx=(0,8))
-  else:self.label(b,"▦",27,"accent").pack(side="left",padx=(0,8))
-  self.label(b,"SoloDesk",22).pack(side="left")
-  self.label(self.side,"YOUR BUSINESS, IN ONE PLACE",9,"muted").pack(anchor="w",padx=22,pady=(0,15))
-  for name,ico in [("Overview","⌂"),("Customers","♙"),("Invoices","▤"),("Expenses","↗"),("Tasks","✓"),("Task Calendar","▦"),("Customer Activity","◷"),("Documents","▧"),("Analytics","▥"),("What's New","✦"),("Settings","⚙")]:
-   x=self.button(self.side,ico+"   "+name,lambda n=name:self.show(n));x.configure(anchor="w",fg_color="transparent",text_color=self.col("muted"),hover_color=self.col("hover"),height=42);x.pack(fill="x",padx=12,pady=3);self.nav[name]=x
-  ctk.CTkFrame(self.side,height=2,fg_color=self.col("line")).pack(fill="x",padx=18,pady=(20,12))
-  self.label(self.side,"CREATED BY ADRIAN VALE",9,"muted").pack(anchor="w",padx=20,pady=(0,7))
-  for t,u in [("YouTube @Adrianvaleitl",YOUTUBE),("TikTok @adrianvaleitl",TIKTOK),("Support on Ko-fi",KOFI)]:
-   x=self.button(self.side,t,lambda url=u:webbrowser.open(url));x.configure(fg_color="transparent",text_color=self.accent(),anchor="w",height=29);x.pack(fill="x",padx=14,pady=1)
-  self.label(self.side,APP_VERSION,10,"muted").pack(side="bottom",anchor="w",padx=22,pady=16)
-  self.work=ctk.CTkFrame(self,fg_color=self.col("bg"),corner_radius=0);self.work.pack(side="left",fill="both",expand=True)
-  self.top=ctk.CTkFrame(self.work,height=72,fg_color=self.col("panel"),corner_radius=0);self.top.pack(fill="x");self.top.pack_propagate(False)
-  self.titlelabel=self.label(self.top,"Overview",20);self.titlelabel.pack(side="left",padx=28)
-  self.biz=self.label(self.top,self.get("business"),11,"accent",fg_color=self.col("panel2"),corner_radius=10,padx=13,pady=8);self.biz.pack(side="right",padx=25)
-  self.global_search_entry=ctk.CTkEntry(self.top,placeholder_text="Search customers, invoices, tasks…",width=270,height=35,corner_radius=10,font=self.font(11))
+  self.work=ctk.CTkFrame(self,fg_color=self.col("bg"),corner_radius=0);self.work.pack(fill="both",expand=True)
+  self.top=ctk.CTkFrame(self.work,height=76,fg_color=self.col("panel"),corner_radius=0);self.top.pack(fill="x");self.top.pack_propagate(False)
+  brand=ctk.CTkFrame(self.top,fg_color="transparent");brand.pack(side="left",padx=24)
+  if self.brand_image:ctk.CTkLabel(brand,text="",image=self.brand_image).pack(side="left",padx=(0,9))
+  else:self.label(brand,"▦",27,"accent").pack(side="left",padx=(0,9))
+  self.label(brand,"SoloDesk",22).pack(side="left")
+  self.biz=self.label(self.top,self.get("business"),10,"accent",fg_color=self.col("panel2"),corner_radius=12,padx=14,pady=8);self.biz.pack(side="right",padx=24)
+  self.global_search_entry=ctk.CTkEntry(self.top,placeholder_text="Search customers, invoices, expenses and tasks…",width=330,height=38,corner_radius=14,font=self.font(11))
   self.global_search_entry.pack(side="right",padx=8)
   self.global_search_entry.bind("<Return>",lambda _event:self.global_search())
-  self.button(self.top,"Search",self.global_search).pack(side="right",padx=4)
-  self.body=ctk.CTkFrame(self.work,fg_color="transparent");self.body.pack(fill="both",expand=True,padx=23,pady=20)
+  self.button(self.top,"⌕ Search",self.global_search).pack(side="right",padx=5)
+  self.nav_strip=ctk.CTkFrame(self.work,fg_color=self.col("side"),corner_radius=18,border_width=1,border_color=self.col("line"))
+  self.nav_strip.pack(fill="x",padx=24,pady=(13,0))
+  names=[("Overview","⌂"),("Customers","♙"),("Invoices","▤"),("Expenses","↗"),("Tasks","✓"),("Task Calendar","▦"),("Customer Activity","◷"),("Documents","▧"),("Analytics","▥"),("What's New","✦"),("Settings","⚙")]
+  self.nav={}
+  for col in range(6):self.nav_strip.grid_columnconfigure(col,weight=1)
+  for index,(name,ico) in enumerate(names):
+   x=self.button(self.nav_strip,ico+"  "+name,lambda n=name:self.show(n),width=100)
+   x.configure(anchor="center",height=38,corner_radius=12,fg_color="transparent",text_color=self.col("muted"),hover_color=self.col("hover"),font=self.font(10))
+   x.grid(row=index//6,column=index%6,sticky="ew",padx=5,pady=5);self.nav[name]=x
+  self.body=ctk.CTkFrame(self.work,fg_color="transparent");self.body.pack(fill="both",expand=True,padx=28,pady=20)
   for n in ["Overview","Customers","Invoices","Expenses","Tasks","Task Calendar","Customer Activity","Documents","Analytics","What's New","Settings"]:self.pages[n]=ctk.CTkFrame(self.body,fg_color="transparent")
  def show(self,n):
   for p in self.pages.values():p.pack_forget()
@@ -490,7 +488,7 @@ class SoloDesk(ctk.CTk):
   p=self.pages["What's New"]
   for w in p.winfo_children():w.destroy()
   self.heading(p,"What's new in SoloDesk","Release notes and product improvements.")
-  notes=[("V1.5","More control over everyday work",["Recurring daily, weekly and monthly tasks with automatic next due dates.","Overdue task and unpaid invoice reminders.","Global search across all workspace records.","Monthly task calendar and customer activity history."]),("V1.4","A more personal SoloDesk",["A dedicated SoloDesk workspace icon and a fresh navy-and-blue visual identity.","Five distinct colour themes, five fonts, bold or regular text, and Dark, Light or System appearance.","Automatic updates can download and launch the latest Windows installer for you.","A direct website installer download and improved Windows app branding."]),("V1.3","A more complete business workspace",["Rounded interface, searchable records, analytics and local backups.","Five font choices, colour themes and Dark, Light or System modes.","Windows startup, desktop shortcut controls and release update checks."]),("V1.2","Business workspace refresh",["Overview dashboard, customers, invoices, expenses and tasks.","Invoice and expense editing, CSV exports and local database backups."])]
+  notes=[("V1.6","A new workspace layout",["A redesigned top navigation bar and compact page ribbon replace the old side menu.","A cleaner business workspace with more room for tables, search and day-to-day records.","Refined rounded panels, spacing and visual hierarchy across the app."]),("V1.5","More control over everyday work",["Recurring daily, weekly and monthly tasks with automatic next due dates.","Overdue task and unpaid invoice reminders.","Global search across all workspace records.","Monthly task calendar and customer activity history."]),("V1.4","A more personal SoloDesk",["A dedicated SoloDesk workspace icon and a fresh navy-and-blue visual identity.","Five distinct colour themes, five fonts, bold or regular text, and Dark, Light or System appearance.","Automatic updates can download and launch the latest Windows installer for you.","A direct website installer download and improved Windows app branding."]),("V1.3","A more complete business workspace",["Rounded interface, searchable records, analytics and local backups.","Five font choices, colour themes and Dark, Light or System modes.","Windows startup, desktop shortcut controls and release update checks."]),("V1.2","Business workspace refresh",["Overview dashboard, customers, invoices, expenses and tasks.","Invoice and expense editing, CSV exports and local database backups."])]
   for v,t,items in notes:
    card=self.panel(p);card.pack(fill="x",pady=7);self.label(card,v,17,"accent").pack(anchor="w",padx=18,pady=(14,2));self.label(card,t,14).pack(anchor="w",padx=18,pady=3)
    for item in items:self.label(card,"•  "+item,11,"muted",wraplength=900,justify="left").pack(anchor="w",padx=20,pady=3)
