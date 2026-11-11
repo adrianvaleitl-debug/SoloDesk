@@ -1,5 +1,5 @@
 #define MyAppName "SoloDesk"
-#define MyAppVersion "1.3"
+#define MyAppVersion "1.4"
 #define MyAppPublisher "Adrian Vale"
 #define MyAppExeName "SoloDesk.exe"
 [Setup]
@@ -10,10 +10,14 @@ AppPublisher={#MyAppPublisher}
 DefaultDirName={autopf}\SoloDesk
 DefaultGroupName=SoloDesk
 OutputDir=installer
-OutputBaseFilename=SoloDesk-Setup-V1.3
+OutputBaseFilename=SoloDesk-Setup-V1.4
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
+SetupIconFile=assets\\solodesk.ico
+UninstallDisplayIcon={app}\\SoloDesk.exe
+CloseApplications=yes
+RestartApplications=yes
 ArchitecturesInstallIn64BitMode=x64
 [Tasks]
 Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional shortcuts:"
