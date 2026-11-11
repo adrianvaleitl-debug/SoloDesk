@@ -7,6 +7,71 @@ from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
 from PIL import Image, ImageDraw, ImageFilter, ImageTk
 
+GLASS_KEY = "#010101"
+
+def apply_windows_glass_backdrop(window, transparency=8, light=False):
+    """Expose a Windows acrylic backdrop through transparent Tk root pixels."""
+    if sys.platform != "win32":
+        return False
+    key = GLASS_KEY
+    try:
+        # Tk's colour-key transparency lets DWM draw acrylic behind the client
+        # area without fading child text, icons or controls.
+        window.wm_attributes("-transparentcolor", key)
+        window.configure(fg_color=key)
+    except Exception:
+        # Keep the app usable if colour-key transparency is unavailable.
+        try:
+            window.configure(fg_color="#EDEDED" if light else "#101012")
+        except Exception:
+            pass
+    try:
+        window.update_idletasks()
+        user32 = ctypes.windll.user32
+        hwnd = ctypes.c_void_p(window.winfo_id())
+        try:
+            user32.GetAncestor.argtypes = [ctypes.c_void_p, ctypes.c_uint]
+            user32.GetAncestor.restype = ctypes.c_void_p
+            hwnd = ctypes.c_void_p(user32.GetAncestor(hwnd, 2) or hwnd.value)
+        except Exception:
+            pass
+
+        # Windows 11 system backdrop (transient acrylic).
+        backdrop_ok = False
+        try:
+            backdrop = ctypes.c_int(3)
+            result = ctypes.windll.dwmapi.DwmSetWindowAttribute(
+                hwnd, 38, ctypes.byref(backdrop), ctypes.sizeof(backdrop))
+            backdrop_ok = (result == 0)
+        except Exception:
+            pass
+
+        # Acrylic fallback also supplies a user-adjustable tint on Windows 10.
+        class ACCENT_POLICY(ctypes.Structure):
+            _fields_ = [("AccentState", ctypes.c_int), ("AccentFlags", ctypes.c_int),
+                        ("GradientColor", ctypes.c_int), ("AnimationId", ctypes.c_int)]
+        class WINDOWCOMPOSITIONATTRIBDATA(ctypes.Structure):
+            _fields_ = [("Attribute", ctypes.c_int), ("Data", ctypes.c_void_p),
+                        ("SizeOfData", ctypes.c_size_t)]
+        amount = max(0, min(35, int(transparency)))
+        alpha = 0xE8 - round((0xE8 - 0x70) * amount / 35)
+        colour = 0x00F0F0F0 if light else 0x0017171B
+        policy = ACCENT_POLICY(4, 2, (alpha << 24) | colour, 0)
+        data = WINDOWCOMPOSITIONATTRIBDATA(19, ctypes.addressof(policy), ctypes.sizeof(policy))
+        apply_attribute = user32.SetWindowCompositionAttribute
+        apply_attribute.argtypes = [ctypes.c_void_p, ctypes.POINTER(WINDOWCOMPOSITIONATTRIBDATA)]
+        apply_attribute.restype = ctypes.c_bool
+        accent_ok = bool(apply_attribute(hwnd, ctypes.byref(data)))
+        try:
+            user32.SetWindowPos(hwnd, None, 0, 0, 0, 0,
+                                0x0001 | 0x0002 | 0x0004 | 0x0020)
+        except Exception:
+            pass
+        return backdrop_ok or accent_ok
+    except Exception:
+        return False
+
+
 
 def install_accent_spotlight(window, accent, background="#101012"):
     """Render a soft multi-layer nebula glow behind the app's glass surfaces."""
@@ -45,7 +110,7 @@ def install_accent_spotlight(window, accent, background="#101012"):
     except Exception:
         pass
 
-APP_VERSION="V2.9"
+APP_VERSION="V3.0"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
@@ -127,28 +192,11 @@ class SoloDesk(ctk.CTk):
   if self.cfg.get("auto_updates","1")=="1":self.after(1800,self.check_updates)
 
  def apply_glass_effect(self):
-  """Enable a real Windows acrylic backdrop (blurred content behind the window)."""
   try:
    if not sys.platform.startswith("win"):return
-   self.update_idletasks()
-   hwnd=ctypes.c_void_p(self.winfo_id())
-   try:
-    backdrop=ctypes.c_int(3)
-    ctypes.windll.dwmapi.DwmSetWindowAttribute(hwnd,38,ctypes.byref(backdrop),ctypes.sizeof(backdrop))
-   except Exception:pass
-   class ACCENT_POLICY(ctypes.Structure):
-    _fields_=[("AccentState",ctypes.c_int),("AccentFlags",ctypes.c_int),("GradientColor",ctypes.c_int),("AnimationId",ctypes.c_int)]
-   class WINDOWCOMPOSITIONATTRIBDATA(ctypes.Structure):
-    _fields_=[("Attribute",ctypes.c_int),("Data",ctypes.c_void_p),("SizeOfData",ctypes.c_size_t)]
-   transparency=int(self.get("transparency","8"))
-   alpha=max(0x78,min(0xD8,0xC8-round(transparency*1.1)))
-   policy=ACCENT_POLICY(4,2,(alpha<<24)|0x0017171B,0)
-   data=WINDOWCOMPOSITIONATTRIBDATA(19,ctypes.addressof(policy),ctypes.sizeof(policy))
-   apply_attribute=ctypes.windll.user32.SetWindowCompositionAttribute
-   apply_attribute.argtypes=[ctypes.c_void_p,ctypes.POINTER(WINDOWCOMPOSITIONATTRIBDATA)]
-   apply_attribute.restype=ctypes.c_bool
-   apply_attribute(hwnd,ctypes.byref(data))
+   apply_windows_glass_backdrop(self,int(self.get("transparency","8")),ctk.get_appearance_mode()=="Light")
   except Exception:pass
+
  def set_app_icon(self):
   try:
    base=Path(getattr(sys,"_MEIPASS",Path(__file__).resolve().parent))
@@ -183,8 +231,8 @@ class SoloDesk(ctk.CTk):
    fg_color=self.accent() if primary else self.col("panel2"),hover_color=self.accent2(),
    text_color="#1E1E1E" if primary else self.col("text"),font=self.font(11))
  def build_shell(self):
-  self.configure(fg_color=self.col("bg"))
-  install_accent_spotlight(self,self.accent(),"#EDEDED" if ctk.get_appearance_mode()=="Light" else "#101012")
+  self.configure(fg_color=GLASS_KEY if sys.platform=="win32" else self.col("bg"))
+  install_accent_spotlight(self,self.accent(),GLASS_KEY if sys.platform=="win32" else ("#EDEDED" if ctk.get_appearance_mode()=="Light" else "#101012"))
   self.work=ctk.CTkFrame(self,fg_color="transparent",corner_radius=18);self.work.pack(fill="both",expand=True)
   self.work.grid_columnconfigure(1,weight=1);self.work.grid_rowconfigure(1,weight=1)
   self.sidebar=ctk.CTkFrame(self.work,width=224,fg_color=self.col("side"),corner_radius=26,border_width=1,border_color=self.col("line"))
@@ -669,7 +717,7 @@ class SoloDesk(ctk.CTk):
   self.label(r,"Window transparency",11,"muted").pack(side="left")
   value=int(self.get("transparency","8"));display=self.label(r,f"{value}%",11,"text",width=52)
   display.pack(side="right",padx=(8,0))
-  slider=ctk.CTkSlider(r,from_=0,to=35,number_of_steps=35,width=230,command=lambda v:(self.set("transparency",round(v)),display.configure(text=f"{round(v)}%"),self.apply_glass_effect()))
+  slider=ctk.CTkSlider(r,from_=0,to=35,number_of_steps=35,width=230,command=lambda v:(self.set("transparency",round(v)),display.configure(text=f"{round(v)}%"),self.after_idle(self.apply_glass_effect)))
   slider.set(value);slider.pack(side="right",padx=8)
  def setting_select(self,p,label,key,opts):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left")
