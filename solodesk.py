@@ -7,7 +7,7 @@ from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
 from PIL import Image
 
-APP_VERSION="V1.6"
+APP_VERSION="V1.7"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
@@ -549,24 +549,27 @@ class SoloDesk(ctk.CTk):
      try:winreg.DeleteValue(k,"SoloDesk")
      except FileNotFoundError:pass
   except Exception as e:messagebox.showerror("Startup setting",str(e))
+ def desktop_folder(self):
+  try:
+   import winreg
+   with winreg.OpenKey(winreg.HKEY_CURRENT_USER,r"Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders") as key:value,_=winreg.QueryValueEx(key,"Desktop")
+   return Path(os.path.expandvars(value))
+  except Exception:return Path.home()/"Desktop"
  def create_shortcut(self,remove=False):
-  if sys.platform!="win32":
-   return messagebox.showinfo("Windows shortcut","Desktop shortcuts are available in the Windows app.")
-  desktop=Path.home()/"Desktop";shortcut=desktop/"SoloDesk.lnk"
+  if sys.platform!="win32":return messagebox.showinfo("Windows shortcut","Desktop shortcuts are available in the Windows app.")
+  shortcut=self.desktop_folder()/"SoloDesk.lnk"
   try:
    if remove:
     if shortcut.exists():shortcut.unlink()
     return messagebox.showinfo("Shortcut","SoloDesk desktop shortcut removed.")
-   if getattr(sys,"frozen",False):
-    target=sys.executable;args=""
-   else:
-    target=sys.executable;args='"'+str(Path(__file__).resolve())+'"'
-   q=lambda x:str(x).replace("'","''")
-   icon=(Path(target).parent/"_internal"/"solodesk.ico") if getattr(sys,"frozen",False) else (Path(__file__).resolve().parent/"assets"/"solodesk.ico")
-   icon_cmd="$s.IconLocation='"+q(icon)+",0'; " if icon.exists() else ""
-   command="$w=New-Object -ComObject WScript.Shell; $s=$w.CreateShortcut('"+q(shortcut)+"'); $s.TargetPath='"+q(target)+"'; $s.Arguments='"+q(args)+"'; $s.WorkingDirectory='"+q(str(Path(target).parent))+"'; $s.Description='SoloDesk business workspace'; "+icon_cmd+"$s.Save()"
-   import subprocess
-   subprocess.run(["powershell","-NoProfile","-ExecutionPolicy","Bypass","-Command",command],check=True,capture_output=True,text=True)
+   target=Path(sys.executable)
+   args="" if getattr(sys,"frozen",False) else '"'+str(Path(__file__).resolve())+'"'
+   base=Path(getattr(sys,"_MEIPASS",Path(__file__).resolve().parent))
+   icon=base/"solodesk.ico"
+   shortcut.parent.mkdir(parents=True,exist_ok=True)
+   ps="$w=New-Object -ComObject WScript.Shell; $s=$w.CreateShortcut("+repr(str(shortcut))+"); $s.TargetPath="+repr(str(target))+"; $s.Arguments="+repr(args)+"; $s.WorkingDirectory="+repr(str(target.parent))+"; $s.Description='SoloDesk business workspace'; $s.IconLocation="+repr(str(icon)+",0")+"; $s.Save()"
+   encoded=__import__("base64").b64encode(ps.encode("utf-16le")).decode("ascii")
+   subprocess.run(["powershell","-NoProfile","-ExecutionPolicy","Bypass","-EncodedCommand",encoded],check=True,capture_output=True)
    messagebox.showinfo("Shortcut","SoloDesk desktop shortcut created.")
   except Exception as e:messagebox.showerror("Shortcut error",str(e))
  def check_updates(self,manual=False):
@@ -585,7 +588,8 @@ class SoloDesk(ctk.CTk):
       out.append(int(digits))
      return tuple(out) if out else (0,)
     if parts(latest)>parts(APP_VERSION):
-     asset=next((x for x in data.get("assets",[]) if "setup" in x.get("name","").lower() and x.get("name","").lower().endswith(".exe")),None)
+     expected="solodesk-setup-"+str(latest).lower()+".exe"
+     asset=next((x for x in data.get("assets",[]) if x.get("name","").lower()==expected),None)
      self.after(0,lambda:self.offer_update(latest,asset))
     elif manual:self.after(0,lambda:messagebox.showinfo("SoloDesk is up to date",f"You are using {APP_VERSION}, the latest available release."))
    except Exception as e:
@@ -607,8 +611,8 @@ class SoloDesk(ctk.CTk):
     if not target.exists() or target.stat().st_size<100000:raise RuntimeError("The installer download appears incomplete.")
     def launch():
      try:
-      subprocess.Popen([str(target),"/SILENT","/CLOSEAPPLICATIONS","/RESTARTAPPLICATIONS"],close_fds=True)
-      self.after(350,self.close)
+      subprocess.Popen([str(target),"/SILENT","/CLOSEAPPLICATIONS","/NORESTART"],close_fds=True)
+      self.after(700,self.close)
      except Exception as e:messagebox.showerror("Update failed",f"Could not launch the installer.\\n\\n{e}")
     self.after(0,launch)
    except Exception as e:self.after(0,lambda err=str(e):messagebox.showerror("Update download failed",f"Could not download the update.\\n\\n{err}"))
