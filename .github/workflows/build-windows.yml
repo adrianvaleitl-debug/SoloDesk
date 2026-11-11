@@ -7,7 +7,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: solodesk-v1-3-release
+  group: solodesk-v1-4-release
   cancel-in-progress: true
 jobs:
   build:
@@ -63,11 +63,11 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: SoloDesk-Setup-V1.4
-          path: installer/SoloDesk-Setup-V1.3.exe
+          path: installer/SoloDesk-Setup-V1.4.exe
           if-no-files-found: error
       - name: Upload portable application
         uses: actions/upload-artifact@v4
         with:
-          name: SoloDesk-Portable-V1.3
+          name: SoloDesk-Portable-V1.4
           path: dist/SoloDesk/
           if-no-files-found: error
