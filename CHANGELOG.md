@@ -1,55 +1,40 @@
 # Changelog
 
+## V3.0 — 11 November 2026
+- Rebuilt the Windows glass host using colour-key transparency so acrylic can appear behind the app without fading text or controls.
+- Expanded the transparency control to a wider tint range and reapply it after the window is mapped.
+- Moved the accent-colour nebula spotlight onto the transparent host layer.
+- Replaced the old What's New bullet dump with a featured release and a compact version timeline.
+- Preserved existing customers, invoices, expenses, tasks, documents, settings and local database.
+
 ## V2.9 — 11 November 2026
-- Fixed accent-colour spotlight rendering with a multi-layer, softly blurred nebula effect that redraws on resize.
-- Improved Windows 11 acrylic/transient backdrop handling and retained a legacy acrylic fallback.
-- Kept the app content crisp by avoiding whole-window opacity changes for transparency adjustments.
-- Deferred fragile accent refresh work so theme changes do not immediately tear down the interface.
-- Preserved existing business records, settings and workflows.
+- Introduced the multi-layer accent-colour spotlight and initial Windows backdrop integration; the backdrop implementation is refined in V3.0.
 
 ## V2.8 — 11 November 2026
-- Added persistent Adrian Vale website and Donate · Ko-fi links to the desktop sidebar.
-- Added a soft, blurred spotlight that follows the selected accent colour.
-- Reapplied Windows acrylic blur whenever the transparency slider changes.
-- Kept existing business records, settings and workflows intact.
-
+- Added persistent Adrian Vale website and Donate · Ko-fi links to the desktop sidebar and Settings.
+- Added the first accent-colour spotlight layer.
 
 ## V2.7 — 11 November 2026
-- Fixed a startup crash caused by an invalid fallback accent-theme lookup (`KeyError: 'Euro'`).
+- Fixed a startup crash caused by an invalid fallback accent-theme lookup.
 - Made accent colour lookup safely fall back to Black when a saved theme is missing or invalid.
-- Kept existing saved business data and the six accent choices intact.
-
 
 ## V2.6 — 11 November 2026
-- Made global search more compact to prevent the search icon and field from colliding with the surrounding outline.
-- Restored six optional accent choices, with Black as the default while retaining neutral dark glass surfaces.
-- Refined spacing around text, controls and panel borders for clearer layouts.
-
+- Made global search more compact and refined spacing around text, controls and panel borders.
+- Restored six optional accent choices, with Black as the default.
 
 ## V1.4 — 11 November 2026
-- Introduced a dedicated SoloDesk icon for the app, installer, taskbar, website and desktop shortcuts.
-- Established an independent navy-and-blue interface identity rather than copying Market Insight's green theme.
-- Added five new colour themes: Ocean, Sage, Violet, Coral and Teal, while migrating existing saved theme choices.
-- Improved automatic updates so the app can download and launch the latest Windows installer after user confirmation.
-- Updated the website so its download buttons follow the latest Windows installer automatically.
+- Introduced the dedicated SoloDesk icon, additional themes and improved automatic updates.
 - Added a first-run desktop shortcut prompt and branded shortcut icon.
-- Updated the Windows installer and build process to package the new icon assets.
 
 ## V1.3 — 10 November 2026
-- Rebuilt the desktop interface around a shared quality standard with Market Insight: rounded cards and controls, consistent spacing and bold typography, with its own product layout.
-- Added five colour themes, five font families, bold/regular text and Dark, Light and System appearance modes.
 - Added searchable customer, invoice, expense, task and document workspaces.
-- Added document links, a business analytics view, first-launch quick-start guide and in-app What's New page.
-- Added creator links and project support links in the app and website.
-- Rebuilt the website to match the app's visual identity and added creator attribution.
+- Added analytics, local backups, customisation and the in-app What's New page.
 
 ## V1.2 — 10 November 2026
-- Added invoice and expense editing, improved dashboard summary and refreshed the product website.
-- Refined the Windows build and release workflow.
+- Added invoice and expense editing, dashboard improvements and refreshed website.
 
 ## V1.1 — 10 November 2026
-- Refreshed the desktop interface and added invoice and expense editing.
-- Improved Windows packaging and portable builds.
+- Refreshed the desktop interface and improved Windows packaging.
 
 ## V1.0
 - Initial local-first business organiser release.
