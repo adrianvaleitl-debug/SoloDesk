@@ -13,8 +13,8 @@ ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
 FONTS=["Segoe UI","Arial","Verdana","Trebuchet MS","Georgia"]
 THEMES={
-"Dollar":("#E8C98F","#C9A96D"),"Euro":("#9EBCE9","#7396C8"),
-"Pound":("#C4AFE7","#9B83C7"),"Yen":("#E9AEBC","#C98294"),"Franc":("#9FCBD0","#69AAB1")}
+"Dollar":("#DCC18F","#C5A875"),"Euro":("#A9BFE2","#879FC8"),
+"Pound":("#BFAFE0","#A08BC9"),"Yen":("#DFAFBA","#C68F9D"),"Franc":("#A9C9CC","#83ADB2")}
 LEGACY_THEMES={"Ocean":"Euro","Sage":"Dollar","Violet":"Pound","Coral":"Yen","Teal":"Franc"}
 YOUTUBE="https://www.youtube.com/@Adrianvaleitl";TIKTOK="https://www.tiktok.com/@adrianvaleitl";KOFI="https://ko-fi.com/marketinsight"
 REPO="https://github.com/adrianvaleitl-debug/SoloDesk";RELEASES=REPO+"/releases/latest"
@@ -126,7 +126,7 @@ class SoloDesk(ctk.CTk):
   if k in ("bg","side","panel","panel2","input"):
    try:
     def rgb(h):return tuple(int(h[i:i+2],16) for i in (1,3,5))
-    a,b=rgb(base),rgb(self.accent());amount={"bg":0.10,"side":0.09,"panel":0.07,"panel2":0.15,"input":0.06}[k]
+    a,b=rgb(base),rgb(self.accent());amount={"bg":0.18,"side":0.17,"panel":0.13,"panel2":0.23,"input":0.12}[k]
     base="#"+"".join(f"{round(x*(1-amount)+y*amount):02X}" for x,y in zip(a,b))
    except Exception:pass
   return base
