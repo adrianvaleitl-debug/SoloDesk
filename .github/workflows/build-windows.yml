@@ -58,12 +58,12 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             installer/SoloDesk-Setup-V1.7.exe
-            installer/SoloDesk-Portable-V1.6.zip
+            installer/SoloDesk-Portable-V1.7.zip
       - name: Upload Windows installer
         uses: actions/upload-artifact@v4
         with:
           name: SoloDesk-Setup-V1.7
-          path: installer/SoloDesk-Setup-V1.6.exe
+          path: installer/SoloDesk-Setup-V1.7.exe
           if-no-files-found: error
       - name: Upload portable application
         uses: actions/upload-artifact@v4
