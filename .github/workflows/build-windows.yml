@@ -7,7 +7,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: solodesk-v2-4-release
+  group: solodesk-v2-5-release
   cancel-in-progress: true
 jobs:
   build:
@@ -51,30 +51,30 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Package portable application
         shell: pwsh
-        run: Compress-Archive -Path dist/SoloDesk/* -DestinationPath installer/SoloDesk-Portable-V2.4.zip -Force
+        run: Compress-Archive -Path dist/SoloDesk/* -DestinationPath installer/SoloDesk-Portable-V2.5.zip -Force
       - name: Publish GitHub release
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: V2.4
+          tag_name: V2.5
           target_commitish: main
-          name: SoloDesk V2.4
+          name: SoloDesk V2.5
           make_latest: true
           overwrite_files: true
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
-            installer/SoloDesk-Setup-V2.4.exe
-            installer/SoloDesk-Portable-V2.4.zip
+            installer/SoloDesk-Setup-V2.5.exe
+            installer/SoloDesk-Portable-V2.5.zip
       - name: Upload Windows installer
         uses: actions/upload-artifact@v4
         with:
-          name: SoloDesk-Setup-V2.4
-          path: installer/SoloDesk-Setup-V2.4.exe
+          name: SoloDesk-Setup-V2.5
+          path: installer/SoloDesk-Setup-V2.5.exe
           if-no-files-found: error
       - name: Upload portable application
         uses: actions/upload-artifact@v4
         with:
-          name: SoloDesk-Portable-V2.4
+          name: SoloDesk-Portable-V2.5
           path: dist/SoloDesk/
           if-no-files-found: error
