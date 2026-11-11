@@ -1,5 +1,11 @@
 # Changelog
 
+## V3.1 — 11 November 2026
+- Improved accent-theme refresh stability and ensured the selected palette is applied consistently when the workspace is rebuilt.
+- Removed full-window Gaussian-blur regeneration from resize events to keep window dragging smooth.
+- Preserved the local database and saved preferences.
+
+
 ## V3.0 — 11 November 2026
 - Rebuilt the Windows glass host using colour-key transparency so acrylic can appear behind the app without fading text or controls.
 - Expanded the transparency control to a wider tint range and reapply it after the window is mapped.
