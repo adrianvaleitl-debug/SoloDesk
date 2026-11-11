@@ -14,8 +14,8 @@ OutputBaseFilename=SoloDesk-Setup-V1.4
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-SetupIconFile=assets\\solodesk.ico
-UninstallDisplayIcon={app}\\SoloDesk.exe
+SetupIconFile=assets\solodesk.ico
+UninstallDisplayIcon={app}\SoloDesk.exe
 CloseApplications=yes
 RestartApplications=yes
 ArchitecturesInstallIn64BitMode=x64
@@ -24,7 +24,7 @@ Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription:
 [Files]
 Source: "dist\SoloDesk\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 [Icons]
-Name: "{group}\SoloDesk"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\SoloDesk"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{group}\SoloDesk"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\_internal\solodesk.ico"
+Name: "{autodesktop}\SoloDesk"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\_internal\solodesk.ico"; Tasks: desktopicon
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "Launch SoloDesk"; Flags: postinstall nowait skipifsilent
