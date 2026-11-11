@@ -1,12 +1,13 @@
 import csv,os,shutil,sqlite3,sys,webbrowser,json,threading,urllib.request,subprocess,tempfile,ctypes,traceback
 from pathlib import Path
-from datetime import date
+from datetime import date, timedelta
+import calendar
 import tkinter as tk
 from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
 from PIL import Image
 
-APP_VERSION="V1.4"
+APP_VERSION="V1.5"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
@@ -43,8 +44,12 @@ class SoloDesk(ctk.CTk):
   CREATE TABLE IF NOT EXISTS customers(id INTEGER PRIMARY KEY,name TEXT,company TEXT,email TEXT,phone TEXT,notes TEXT);
   CREATE TABLE IF NOT EXISTS invoices(id INTEGER PRIMARY KEY,number TEXT UNIQUE,customer_id INTEGER,description TEXT,amount REAL,issued TEXT,due TEXT,status TEXT);
   CREATE TABLE IF NOT EXISTS expenses(id INTEGER PRIMARY KEY,category TEXT,description TEXT,amount REAL,date TEXT,supplier TEXT);
-  CREATE TABLE IF NOT EXISTS tasks(id INTEGER PRIMARY KEY,title TEXT,due TEXT,priority TEXT,done INTEGER DEFAULT 0);
-  CREATE TABLE IF NOT EXISTS documents(id INTEGER PRIMARY KEY,title TEXT,category TEXT,path TEXT,added TEXT);""")
+  CREATE TABLE IF NOT EXISTS tasks(id INTEGER PRIMARY KEY,title TEXT,due TEXT,priority TEXT,done INTEGER DEFAULT 0,recurrence TEXT DEFAULT 'None');
+  CREATE TABLE IF NOT EXISTS documents(id INTEGER PRIMARY KEY,title TEXT,category TEXT,path TEXT,added TEXT);
+  CREATE TABLE IF NOT EXISTS customer_activity(id INTEGER PRIMARY KEY,customer_id INTEGER,activity TEXT,created TEXT);""")
+  task_columns={row["name"] for row in self.db.execute("PRAGMA table_info(tasks)")}
+  if "recurrence" not in task_columns:self.db.execute("ALTER TABLE tasks ADD COLUMN recurrence TEXT DEFAULT 'None'")
+  self.db.execute("CREATE INDEX IF NOT EXISTS idx_customer_activity_customer ON customer_activity(customer_id, id DESC)")
   defaults={"business":"My Business","currency":"GBP","appearance":"Dark","colour_theme":"Dollar","font_family":"Segoe UI","bold_text":"1","tutorial_completed":"0","startup":"0","auto_updates":"1"}
   for k,v in defaults.items():self.db.execute("INSERT OR IGNORE INTO settings VALUES(?,?)",(k,v))
   self.db.commit();self.cfg={r["k"]:r["v"] for r in self.db.execute("SELECT * FROM settings")}
@@ -58,6 +63,7 @@ class SoloDesk(ctk.CTk):
   self.set_app_icon()
   if sys.platform=="win32":self.after(120,lambda:self.state("zoomed"))
   self.protocol("WM_DELETE_WINDOW",self.close);self.pages={};self.nav={};self.tables={}
+  self.calendar_month=date.today().replace(day=1)
   self.build_shell();self.show("Overview");self.refresh()
   if self.cfg["tutorial_completed"]!="1":self.after(650,self.tutorial)
   else:self.after(900,self.first_run_shortcut_prompt)
@@ -101,7 +107,7 @@ class SoloDesk(ctk.CTk):
   else:self.label(b,"▦",27,"accent").pack(side="left",padx=(0,8))
   self.label(b,"SoloDesk",22).pack(side="left")
   self.label(self.side,"YOUR BUSINESS, IN ONE PLACE",9,"muted").pack(anchor="w",padx=22,pady=(0,15))
-  for name,ico in [("Overview","⌂"),("Customers","♙"),("Invoices","▤"),("Expenses","↗"),("Tasks","✓"),("Documents","▧"),("Analytics","▥"),("What's New","✦"),("Settings","⚙")]:
+  for name,ico in [("Overview","⌂"),("Customers","♙"),("Invoices","▤"),("Expenses","↗"),("Tasks","✓"),("Task Calendar","▦"),("Customer Activity","◷"),("Documents","▧"),("Analytics","▥"),("What's New","✦"),("Settings","⚙")]:
    x=self.button(self.side,ico+"   "+name,lambda n=name:self.show(n));x.configure(anchor="w",fg_color="transparent",text_color=self.col("muted"),hover_color=self.col("hover"),height=42);x.pack(fill="x",padx=12,pady=3);self.nav[name]=x
   ctk.CTkFrame(self.side,height=2,fg_color=self.col("line")).pack(fill="x",padx=18,pady=(20,12))
   self.label(self.side,"CREATED BY ADRIAN VALE",9,"muted").pack(anchor="w",padx=20,pady=(0,7))
@@ -112,14 +118,20 @@ class SoloDesk(ctk.CTk):
   self.top=ctk.CTkFrame(self.work,height=72,fg_color=self.col("panel"),corner_radius=0);self.top.pack(fill="x");self.top.pack_propagate(False)
   self.titlelabel=self.label(self.top,"Overview",20);self.titlelabel.pack(side="left",padx=28)
   self.biz=self.label(self.top,self.get("business"),11,"accent",fg_color=self.col("panel2"),corner_radius=10,padx=13,pady=8);self.biz.pack(side="right",padx=25)
+  self.global_search_entry=ctk.CTkEntry(self.top,placeholder_text="Search customers, invoices, tasks…",width=270,height=35,corner_radius=10,font=self.font(11))
+  self.global_search_entry.pack(side="right",padx=8)
+  self.global_search_entry.bind("<Return>",lambda _event:self.global_search())
+  self.button(self.top,"Search",self.global_search).pack(side="right",padx=4)
   self.body=ctk.CTkFrame(self.work,fg_color="transparent");self.body.pack(fill="both",expand=True,padx=23,pady=20)
-  for n in ["Overview","Customers","Invoices","Expenses","Tasks","Documents","Analytics","What's New","Settings"]:self.pages[n]=ctk.CTkFrame(self.body,fg_color="transparent")
+  for n in ["Overview","Customers","Invoices","Expenses","Tasks","Task Calendar","Customer Activity","Documents","Analytics","What's New","Settings"]:self.pages[n]=ctk.CTkFrame(self.body,fg_color="transparent")
  def show(self,n):
   for p in self.pages.values():p.pack_forget()
   self.pages[n].pack(fill="both",expand=True);self.titlelabel.configure(text=n)
   for k,b in self.nav.items():b.configure(fg_color=self.col("panel2") if k==n else "transparent",text_color=self.accent() if k==n else self.col("muted"))
   if n=="Overview":self.overview()
   elif n in self.tables or n in ("Customers","Invoices","Expenses","Tasks","Documents"):self.table_page(n)
+  elif n=="Task Calendar":self.task_calendar()
+  elif n=="Customer Activity":self.customer_activity_page()
   elif n=="Analytics":self.analytics()
   elif n=="What's New":self.whats_new()
   else:self.settings_page()
@@ -170,12 +182,16 @@ class SoloDesk(ctk.CTk):
   if n=="Customers":return (r["id"],r["name"],r["company"],r["email"],r["phone"])
   if n=="Invoices":return (r["id"],r["number"],r["customer"],r["description"],self.money(r["amount"]),r["issued"],r["due"],r["status"])
   if n=="Expenses":return (r["id"],r["date"],r["category"],r["description"],r["supplier"],self.money(r["amount"]))
-  if n=="Tasks":return (r["id"],r["title"],r["due"],r["priority"],"Complete" if r["done"] else "Open")
+  if n=="Tasks":return (r["id"],r["title"],r["due"],r["priority"],r["recurrence"] or "None","Complete" if r["done"] else "Open")
   return (r["id"],r["title"],r["category"],r["path"],r["added"])
  def table_page(self,n):
   p=self.pages[n]
   for w in p.winfo_children():w.destroy()
   self.heading(p,n,{"Customers":"Customer directory and contact records.","Invoices":"Create, edit and track invoice payments.","Expenses":"Record business spending and suppliers.","Tasks":"Prioritise the next things to do.","Documents":"Keep business files linked in one place."}[n])
+  if n=="Tasks":
+   overdue_tasks=self.db.execute("SELECT COUNT(*) FROM tasks WHERE done=0 AND due<>'' AND due<?",(date.today().isoformat(),)).fetchone()[0]
+   overdue_invoices=self.db.execute("SELECT COUNT(*) FROM invoices WHERE status<>'Paid' AND due<>'' AND due<?",(date.today().isoformat(),)).fetchone()[0]
+   self.label(p,f"Overdue reminders: {overdue_tasks} tasks · {overdue_invoices} unpaid invoices",11,"danger").pack(anchor="w",pady=(0,10))
   bar=ctk.CTkFrame(p,fg_color="transparent");bar.pack(fill="x",pady=(0,12))
   self.search=tk.StringVar();e=ctk.CTkEntry(bar,textvariable=self.search,placeholder_text="Search records…",width=260,height=36,corner_radius=10,font=self.font(11));e.pack(side="left",padx=(0,10));e.bind("<KeyRelease>",lambda ev:self.refresh_table(n))
   acts={"Customers":[("＋ Add",self.add_customer),("Edit",self.edit_customer),("Delete",lambda:self.delete(n,"customers")),("CSV",lambda:self.export("customers"))],
@@ -185,7 +201,7 @@ class SoloDesk(ctk.CTk):
   "Documents":[("＋ Add document",self.add_document),("Open",self.open_document),("Delete",lambda:self.delete(n,"documents")),("CSV",lambda:self.export("documents"))]}
   for i,(t,fn) in enumerate(acts[n]):self.button(bar,t,fn,i==0,105 if i else 125).pack(side="left",padx=3)
   box=self.panel(p);box.pack(fill="both",expand=True)
-  cols={"Customers":("id","name","company","email","phone"),"Invoices":("id","number","customer","description","amount","issued","due","status"),"Expenses":("id","date","category","description","supplier","amount"),"Tasks":("id","title","due","priority","status"),"Documents":("id","title","category","path","added")}[n]
+  cols={"Customers":("id","name","company","email","phone"),"Invoices":("id","number","customer","description","amount","issued","due","status"),"Expenses":("id","date","category","description","supplier","amount"),"Tasks":("id","title","due","priority","recurrence","status"),"Documents":("id","title","category","path","added")}[n]
   self.tree=ttk.Treeview(box,columns=cols,show="headings");self.tree_style()
   for c in cols:self.tree.heading(c,text=c.replace("_"," ").title());self.tree.column(c,width=125)
   self.tree.pack(fill="both",expand=True,padx=10,pady=10);self.tables[n]=self.tree;self.refresh_table(n)
@@ -227,12 +243,17 @@ class SoloDesk(ctk.CTk):
   rows=self.db.execute("SELECT id,name FROM customers ORDER BY name").fetchall();return {f"{r['id']} - {r['name']}":r["id"] for r in rows}
  def add_customer(self):
   d=self.form("Add customer",[(k,k.title(),None) for k in ("name","company","email","phone","notes")])
-  if d and d["name"]:self.db.execute("INSERT INTO customers(name,company,email,phone,notes) VALUES(?,?,?,?,?)",tuple(d.values()));self.db.commit();self.refresh()
+  if d and d["name"]:
+   self.db.execute("INSERT INTO customers(name,company,email,phone,notes) VALUES(?,?,?,?,?)",tuple(d.values()));self.db.commit()
+   customer_id=self.db.execute("SELECT last_insert_rowid()").fetchone()[0];self.record_customer_activity(customer_id,"Customer record created")
+   self.refresh()
  def edit_customer(self):
   i=self.chosen("Customers")
   if i is None:return
   r=self.db.execute("SELECT * FROM customers WHERE id=?",(i,)).fetchone();d=self.form("Edit customer",[(k,k.title(),None) for k in ("name","company","email","phone","notes")],dict(r))
-  if d and d["name"]:self.db.execute("UPDATE customers SET name=?,company=?,email=?,phone=?,notes=? WHERE id=?",(d["name"],d["company"],d["email"],d["phone"],d["notes"],i));self.db.commit();self.refresh()
+  if d and d["name"]:
+   self.db.execute("UPDATE customers SET name=?,company=?,email=?,phone=?,notes=? WHERE id=?",(d["name"],d["company"],d["email"],d["phone"],d["notes"],i));self.db.commit()
+   self.record_customer_activity(i,"Customer details updated");self.refresh()
  def add_invoice(self):
   opts=self.customer_options()
   if not opts:return messagebox.showinfo("Add a customer first","Create a customer before an invoice.")
@@ -242,7 +263,9 @@ class SoloDesk(ctk.CTk):
    a=float(d["amount"]);date.fromisoformat(d["issued"]);date.fromisoformat(d["due"])
    if a<0:raise ValueError()
    num=f"SD-{date.today():%y%m%d}-{self.db.execute('SELECT COUNT(*) FROM invoices').fetchone()[0]+1:04d}"
-   self.db.execute("INSERT INTO invoices(number,customer_id,description,amount,issued,due,status) VALUES(?,?,?,?,?,?,?)",(num,opts[d["customer"]],d["description"],a,d["issued"],d["due"],d["status"]));self.db.commit();self.refresh()
+   customer_id=opts[d["customer"]]
+    self.db.execute("INSERT INTO invoices(number,customer_id,description,amount,issued,due,status) VALUES(?,?,?,?,?,?,?)",(num,customer_id,d["description"],a,d["issued"],d["due"],d["status"]));self.db.commit()
+    self.record_customer_activity(customer_id,f"Invoice {num} created · {self.money(a)}");self.refresh()
   except Exception:messagebox.showerror("Invalid invoice","Check invoice amount and dates.")
  def edit_invoice(self):
   i=self.chosen("Invoices")
@@ -277,8 +300,12 @@ class SoloDesk(ctk.CTk):
    self.db.execute("UPDATE expenses SET date=?,category=?,description=?,supplier=?,amount=? WHERE id=?",(d["date"],d["category"],d["description"],d["supplier"],a,i));self.db.commit();self.refresh()
   except Exception:messagebox.showerror("Invalid expense","Check expense date and amount.")
  def add_task(self):
-  d=self.form("Add task",[("title","Task",None),("due","Due date (optional)",None),("priority","Priority",["Low","Normal","High"])],{"priority":"Normal"})
-  if d and d["title"]:self.db.execute("INSERT INTO tasks(title,due,priority) VALUES(?,?,?)",tuple(d.values()));self.db.commit();self.refresh()
+  d=self.form("Add task",[("title","Task",None),("due","Due date (YYYY-MM-DD)",None),("priority","Priority",["Low","Normal","High"]),("recurrence","Repeat",["None","Daily","Weekly","Monthly"])],{"priority":"Normal","recurrence":"None"})
+  if d and d["title"]:
+   try:
+    if d["due"]:date.fromisoformat(d["due"])
+    self.db.execute("INSERT INTO tasks(title,due,priority,recurrence) VALUES(?,?,?,?)",(d["title"],d["due"],d["priority"],d["recurrence"]));self.db.commit();self.refresh()
+   except ValueError:messagebox.showerror("Invalid due date","Use YYYY-MM-DD for the task due date.")
  def add_document(self):
   path=filedialog.askopenfilename()
   if path:
@@ -295,7 +322,16 @@ class SoloDesk(ctk.CTk):
   if i:self.db.execute("UPDATE invoices SET status='Paid' WHERE id=?",(i,));self.db.commit();self.refresh()
  def toggle_task(self):
   i=self.chosen("Tasks")
-  if i:self.db.execute("UPDATE tasks SET done=1-done WHERE id=?",(i,));self.db.commit();self.refresh()
+  if i:
+   row=self.db.execute("SELECT * FROM tasks WHERE id=?",(i,)).fetchone()
+   if row and not row["done"] and row["recurrence"] not in (None,"","None") and row["due"]:
+    try:
+     next_due=self.next_recurrence_date(date.fromisoformat(row["due"]),row["recurrence"])
+     while next_due<=date.today():next_due=self.next_recurrence_date(next_due,row["recurrence"])
+     self.db.execute("UPDATE tasks SET due=?,done=0 WHERE id=?",(next_due.isoformat(),i))
+    except ValueError:self.db.execute("UPDATE tasks SET done=1 WHERE id=?",(i,))
+   else:self.db.execute("UPDATE tasks SET done=1-done WHERE id=?",(i,))
+   self.db.commit();self.refresh()
  def delete(self,n,table):
   i=self.chosen(n)
   if i and messagebox.askyesno("Delete","Permanently delete this record?"):self.db.execute(f"DELETE FROM {table} WHERE id=?",(i,));self.db.commit();self.refresh()
