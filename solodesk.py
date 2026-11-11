@@ -7,14 +7,14 @@ from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
 from PIL import Image, ImageDraw, ImageFilter, ImageTk
 
-APP_VERSION="V2.4"
+APP_VERSION="V2.5"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
 FONTS=["Segoe UI","Arial","Verdana","Trebuchet MS","Georgia"]
 THEMES={
-"Dollar":("#DDB47E","#C99A60"),"Euro":("#A8CDB6","#82B99A"),
-"Pound":("#B5C5B5","#8FA795"),"Yen":("#D8A99E","#C88E82"),"Franc":("#A8C9C0","#83AAA0")}
+"Dollar":("#B9B9B9","#A0A0A0"),"Euro":("#C3C3C3","#ABABAB"),
+"Pound":("#C0C0C0","#A1A1A1"),"Yen":("#B2B2B2","#999999"),"Franc":("#C1C1C1","#A1A1A1")}
 LEGACY_THEMES={"Ocean":"Euro","Sage":"Dollar","Violet":"Pound","Coral":"Yen","Teal":"Franc"}
 YOUTUBE="https://www.youtube.com/@Adrianvaleitl";TIKTOK="https://www.tiktok.com/@adrianvaleitl";KOFI="https://ko-fi.com/marketinsight"
 REPO="https://github.com/adrianvaleitl-debug/SoloDesk";RELEASES=REPO+"/releases/latest"
@@ -54,7 +54,7 @@ class SoloDesk(ctk.CTk):
   task_columns={row["name"] for row in self.db.execute("PRAGMA table_info(tasks)")}
   if "recurrence" not in task_columns:self.db.execute("ALTER TABLE tasks ADD COLUMN recurrence TEXT DEFAULT 'None'")
   self.db.execute("CREATE INDEX IF NOT EXISTS idx_customer_activity_customer ON customer_activity(customer_id, id DESC)")
-  defaults={"business":"My Business","currency":"GBP","appearance":"Dark","colour_theme":"Dollar","font_family":"Segoe UI","bold_text":"1","tutorial_completed":"0","startup":"0","auto_updates":"1"}
+  defaults={"business":"My Business","currency":"GBP","appearance":"Dark","colour_theme":"Dollar","font_family":"Segoe UI","bold_text":"1","tutorial_completed":"0","startup":"0","auto_updates":"1","transparency":"94"}
   for k,v in defaults.items():self.db.execute("INSERT OR IGNORE INTO settings VALUES(?,?)",(k,v))
   self.db.commit();self.cfg={r["k"]:r["v"] for r in self.db.execute("SELECT * FROM settings")}
   self.font_family=self.cfg["font_family"];self.bold=self.cfg["bold_text"]=="1"
@@ -65,14 +65,14 @@ class SoloDesk(ctk.CTk):
   theme=ctk.ThemeManager.theme
   for widget,radius in (("CTkFrame",22),("CTkButton",15),("CTkEntry",15),("CTkComboBox",15),("CTkOptionMenu",15)):
    if widget in theme:theme[widget]["corner_radius"]=radius
-  control_colors={"fg_color":["#DDB47E","#DDB47E"],"hover_color":["#E9C594","#E9C594"],"text_color":["#182319","#182319"]}
+  control_colors={"fg_color":["#B9B9B9","#B9B9B9"],"hover_color":["#C9C9C9","#C9C9C9"],"text_color":["#202020","#202020"]}
   if "CTkButton" in theme:theme["CTkButton"].update({**control_colors,"corner_radius":13})
-  if "CTkCheckBox" in theme:theme["CTkCheckBox"].update({"fg_color":["#DDB47E","#DDB47E"],"hover_color":["#E9C594","#E9C594"],"border_color":["#6D8572","#6D8572"],"checkmark_color":["#182319","#182319"]})
-  if "CTkSwitch" in theme:theme["CTkSwitch"].update({"progress_color":["#DDB47E","#DDB47E"]})
+  if "CTkCheckBox" in theme:theme["CTkCheckBox"].update({"fg_color":["#B9B9B9","#B9B9B9"],"hover_color":["#C9C9C9","#C9C9C9"],"border_color":["#7F7F7F","#7F7F7F"],"checkmark_color":["#202020","#202020"]})
+  if "CTkSwitch" in theme:theme["CTkSwitch"].update({"progress_color":["#B9B9B9","#B9B9B9"]})
   if "CTkComboBox" in theme:
-   theme["CTkComboBox"].update({"fg_color":["#101D15","#101D15"],"border_color":["#304638","#304638"],"button_color":["#DDB47E","#DDB47E"],"button_hover_color":["#E9C594","#E9C594"],"text_color":["#EDF4EE","#EDF4EE"],"dropdown_fg_color":["#14231A","#14231A"],"dropdown_hover_color":["#263B2D","#263B2D"],"dropdown_text_color":["#EDF4EE","#EDF4EE"]})
+   theme["CTkComboBox"].update({"fg_color":["#1A1A1A","#1A1A1A"],"border_color":["#404040","#404040"],"button_color":["#B9B9B9","#B9B9B9"],"button_hover_color":["#C9C9C9","#C9C9C9"],"text_color":["#F2F2F2","#F2F2F2"],"dropdown_fg_color":["#1F1F1F","#1F1F1F"],"dropdown_hover_color":["#363636","#363636"],"dropdown_text_color":["#F2F2F2","#F2F2F2"]})
   if "CTkOptionMenu" in theme:
-   theme["CTkOptionMenu"].update({"fg_color":["#1B2D21","#1B2D21"],"button_color":["#DDB47E","#DDB47E"],"button_hover_color":["#E9C594","#E9C594"],"text_color":["#EDF4EE","#EDF4EE"],"dropdown_fg_color":["#14231A","#14231A"],"dropdown_hover_color":["#263B2D","#263B2D"],"dropdown_text_color":["#EDF4EE","#EDF4EE"]})
+   theme["CTkOptionMenu"].update({"fg_color":["#282828","#282828"],"button_color":["#B9B9B9","#B9B9B9"],"button_hover_color":["#C9C9C9","#C9C9C9"],"text_color":["#F2F2F2","#F2F2F2"],"dropdown_fg_color":["#1F1F1F","#1F1F1F"],"dropdown_hover_color":["#363636","#363636"],"dropdown_text_color":["#F2F2F2","#F2F2F2"]})
   ctk.set_appearance_mode(self.cfg["appearance"])
   super().__init__();self.title("SoloDesk "+APP_VERSION);screen_w=self.winfo_screenwidth();screen_h=self.winfo_screenheight();self.geometry(f"{min(1480,max(900,screen_w-80))}x{min(920,max(640,screen_h-100))}");self.minsize(min(1150,max(900,screen_w-80)),min(740,max(620,screen_h-100)))
   self.set_app_icon()
@@ -89,13 +89,13 @@ class SoloDesk(ctk.CTk):
  def apply_glass_effect(self):
   """Subtle acrylic tint and transparency on supported Windows versions."""
   try:
-   self.attributes("-alpha",0.97)
+   self.attributes("-alpha",max(0.78,min(1.0,int(self.get("transparency","94"))/100)))
    if sys.platform!="win32":return
    class ACCENT_POLICY(ctypes.Structure):
     _fields_=[("AccentState",ctypes.c_int),("AccentFlags",ctypes.c_int),("GradientColor",ctypes.c_int),("AnimationId",ctypes.c_int)]
    class WINDOWCOMPOSITIONATTRIBDATA(ctypes.Structure):
     _fields_=[("Attribute",ctypes.c_int),("Data",ctypes.c_void_p),("SizeOfData",ctypes.c_size_t)]
-   policy=ACCENT_POLICY(4,2,0xCC14231A,0)
+   policy=ACCENT_POLICY(4,2,0xCC17171B,0)
    data=WINDOWCOMPOSITIONATTRIBDATA(19,ctypes.addressof(policy),ctypes.sizeof(policy))
    apply_attribute=ctypes.windll.user32.SetWindowCompositionAttribute
    apply_attribute.argtypes=[ctypes.c_void_p,ctypes.POINTER(WINDOWCOMPOSITIONATTRIBDATA)]
@@ -106,8 +106,8 @@ class SoloDesk(ctk.CTk):
   """Render soft, palette-tinted spotlight blooms behind the translucent workspace."""
   try:
    dark=ctk.get_appearance_mode()=="Dark"
-   base="#09120D" if dark else "#E9EEE8"
-   accents=[self.accent(), "#6F9D7D", "#C69A69", "#A6C8B3"]
+   base="#101010" if dark else "#EDEDED"
+   accents=[self.accent(), "#919191", "#A0A0A0", "#BFBFBF"]
    canvas=tk.Canvas(self,highlightthickness=0,bd=0,bg=base)
    canvas.place(x=0,y=0,relwidth=1,relheight=1)
    self._spotlight_canvas=canvas
@@ -149,11 +149,11 @@ class SoloDesk(ctk.CTk):
  def accent2(self):return THEMES.get(self.theme,THEMES["Euro"])[1]
  def col(self,k):
   dark=ctk.get_appearance_mode()=="Dark"
-  bases={"bg":"#09120D" if dark else "#E9EEE8","side":"#111F17" if dark else "#F0F4EE",
-  "panel":"#14231A" if dark else "#FAFCF8","panel2":"#1B2D21" if dark else "#E4EBE2",
-  "line":"#304638" if dark else "#D3DED2","text":"#EDF4EE" if dark else "#26372C",
-  "muted":"#9BAEA1" if dark else "#718276","input":"#101D15" if dark else "#F7FAF5",
-  "hover":"#263B2D" if dark else "#DCE7DA","accent":self.accent(),"danger":"#D88C82"}
+  bases={"bg":"#101010" if dark else "#EDEDED","side":"#1B1B1B" if dark else "#F3F3F3",
+  "panel":"#1F1F1F" if dark else "#FBFBFB","panel2":"#282828" if dark else "#E9E9E9",
+  "line":"#404040" if dark else "#DBDBDB","text":"#F2F2F2" if dark else "#333333",
+  "muted":"#A9A9A9" if dark else "#7E7E7E","input":"#1A1A1A" if dark else "#F9F9F9",
+  "hover":"#363636" if dark else "#E4E4E4","accent":self.accent(),"danger":"#9B9B9B"}
   base=bases[k]
   if k in ("bg","side","panel","panel2","input"):
    try:
@@ -168,7 +168,7 @@ class SoloDesk(ctk.CTk):
  def button(self,p,t,fn,primary=False,width=None):
   return ctk.CTkButton(p,text=t,command=fn,width=width or 120,height=37,corner_radius=11,
    fg_color=self.accent() if primary else self.col("panel2"),hover_color=self.accent2(),
-   text_color="#122033" if primary else self.col("text"),font=self.font(11))
+   text_color="#1E1E1E" if primary else self.col("text"),font=self.font(11))
  def build_shell(self):
   self.configure(fg_color=self.col("bg"))
   self.work=ctk.CTkFrame(self,fg_color="transparent",corner_radius=18);self.work.pack(fill="both",expand=True)
@@ -636,7 +636,7 @@ class SoloDesk(ctk.CTk):
   self.heading(p,"Settings","Personalise your workspace and manage your data.")
   sc=ctk.CTkScrollableFrame(p,fg_color="transparent");sc.pack(fill="both",expand=True)
   a=self.panel(sc);a.pack(fill="x",pady=6);self.label(a,"Appearance and personalisation",16).pack(anchor="w",padx=18,pady=(14,8))
-  self.setting_select(a,"Appearance","appearance",["Dark","Light","System"]);self.setting_select(a,"Colour theme","colour_theme",["Finance","Operations","Planning","Clients","Workspace"]);self.setting_select(a,"Font family","font_family",FONTS);self.setting_switch(a,"Bold text","bold_text")
+  self.setting_select(a,"Appearance","appearance",["Dark","Light","System"]);self.setting_transparency(a);self.setting_select(a,"Font family","font_family",FONTS);self.setting_switch(a,"Bold text","bold_text")
   b=self.panel(sc);b.pack(fill="x",pady=6);self.label(b,"Business preferences",16).pack(anchor="w",padx=18,pady=(14,8))
   self.bizvar=tk.StringVar(value=self.get("business"));self.curvar=tk.StringVar(value=self.get("currency","GBP"))
   self.setting_entry(b,"Business name",self.bizvar);self.setting_select_var(b,"Display currency",self.curvar,list(SYMBOLS))
