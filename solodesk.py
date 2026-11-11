@@ -48,8 +48,10 @@ class SoloDesk(ctk.CTk):
   try:
    base=Path(getattr(sys,"_MEIPASS",Path(__file__).resolve().parent))
    icon=base/"solodesk.ico"
+   if not icon.exists():icon=base/"assets"/"solodesk.ico"
    if icon.exists():self.iconbitmap(default=str(icon))
    logo=base/"solodesk.png"
+   if not logo.exists():logo=base/"assets"/"solodesk.png"
    self.brand_image=ctk.CTkImage(light_image=Image.open(logo),dark_image=Image.open(logo),size=(32,32)) if logo.exists() else None
   except Exception:self.brand_image=None
  def get(self,k,d=""):return self.cfg.get(k,d)
