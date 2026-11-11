@@ -40,6 +40,9 @@ def acquire_single_instance():
 
 class SoloDesk(ctk.CTk):
  def __init__(self):
+  if sys.platform=="win32":
+   try:ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID("AdrianVale.SoloDesk")
+   except Exception:pass
   self.db=sqlite3.connect(DB);self.db.row_factory=sqlite3.Row
   self.db.executescript("""CREATE TABLE IF NOT EXISTS settings(k TEXT PRIMARY KEY,v TEXT);
   CREATE TABLE IF NOT EXISTS customers(id INTEGER PRIMARY KEY,name TEXT,company TEXT,email TEXT,phone TEXT,notes TEXT);
@@ -79,6 +82,9 @@ class SoloDesk(ctk.CTk):
    logo=base/"solodesk.png"
    if not logo.exists():logo=base/"assets"/"solodesk.png"
    self.brand_image=ctk.CTkImage(light_image=Image.open(logo),dark_image=Image.open(logo),size=(32,32)) if logo.exists() else None
+   if logo.exists():
+    self._taskbar_icon_photo=tk.PhotoImage(file=str(logo))
+    self.iconphoto(True,self._taskbar_icon_photo)
   except Exception:self.brand_image=None
  def get(self,k,d=""):return self.cfg.get(k,d)
  def set(self,k,v):
