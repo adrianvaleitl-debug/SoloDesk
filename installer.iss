@@ -27,7 +27,7 @@ Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription:
 Source: "dist\SoloDesk\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 [Icons]
 Name: "{group}\Uninstall SoloDesk"; Filename: "{uninstallexe}"; WorkingDir: "{app}"
-Name: "{group}\SoloDesk"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\solodesk.ico"; AppUserModelID: "AdrianVale.SoloDesk"
-Name: "{autodesktop}\SoloDesk"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\solodesk.ico"; AppUserModelID: "AdrianVale.SoloDesk"; Tasks: desktopicon
+Name: "{group}\SoloDesk"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppExeName}"; AppUserModelID: "AdrianVale.SoloDesk"
+Name: "{autodesktop}\SoloDesk"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\{#MyAppExeName}"; AppUserModelID: "AdrianVale.SoloDesk"; Tasks: desktopicon
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "Launch SoloDesk"; Flags: postinstall nowait
