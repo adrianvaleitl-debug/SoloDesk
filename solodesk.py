@@ -432,8 +432,9 @@ class SoloDesk(ctk.CTk):
   if d and d["title"]:
    try:
     if d["due"]:date.fromisoformat(d["due"])
+    if d["recurrence"]!="None" and not d["due"]:raise ValueError("A repeating task needs a due date.")
     self.db.execute("INSERT INTO tasks(title,due,priority,recurrence) VALUES(?,?,?,?)",(d["title"],d["due"],d["priority"],d["recurrence"]));self.db.commit();self.refresh()
-   except ValueError:messagebox.showerror("Invalid due date","Use YYYY-MM-DD for the task due date.")
+   except ValueError:messagebox.showerror("Invalid due date","Use YYYY-MM-DD for the task due date. Repeating tasks must have a due date.")
  def add_document(self):
   path=filedialog.askopenfilename()
   if path:
