@@ -641,7 +641,13 @@ class SoloDesk(ctk.CTk):
    v=theme_map.get(v,v)
   self.set(k,v)
   if k=="appearance":ctk.set_appearance_mode(v)
-  elif k=="colour_theme":self.theme=v
+  elif k=="colour_theme":
+    self.theme=v
+    theme=ctk.ThemeManager.theme
+    if "CTkButton" in theme:theme["CTkButton"].update({"fg_color":[self.accent(),self.accent()],"hover_color":[self.accent2(),self.accent2()],"text_color":["#202020","#202020"]})
+    if "CTkCheckBox" in theme:theme["CTkCheckBox"].update({"fg_color":[self.accent(),self.accent()],"hover_color":[self.accent2(),self.accent2()]})
+    if "CTkSwitch" in theme:theme["CTkSwitch"].update({"progress_color":[self.accent(),self.accent()]})
+    if "CTkSlider" in theme:theme["CTkSlider"].update({"progress_color":[self.accent(),self.accent()],"button_color":[self.accent(),self.accent()]})
   elif k=="font_family":self.font_family=v
   elif k=="bold_text":self.bold=v=="1"
   elif k=="startup":self.startup(v=="1")
