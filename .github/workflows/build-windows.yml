@@ -51,14 +51,14 @@ jobs:
         with:
           tag_name: V2.0
           target_commitish: main
-          name: SoloDesk V1.9
+          name: SoloDesk V2.0
           make_latest: true
           overwrite_files: true
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
-            installer/SoloDesk-Setup-V1.9.exe
-            installer/SoloDesk-Portable-V1.9.zip
+            installer/SoloDesk-Setup-V2.0.exe
+            installer/SoloDesk-Portable-V2.0.zip
       - name: Upload Windows installer
         uses: actions/upload-artifact@v4
         with:
