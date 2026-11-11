@@ -1,5 +1,5 @@
 #define MyAppName "SoloDesk"
-#define MyAppVersion "3.0"
+#define MyAppVersion "3.1"
 #define MyAppPublisher "Adrian Vale"
 #define MyAppExeName "SoloDesk.exe"
 [Setup]
@@ -12,7 +12,7 @@ DefaultGroupName=SoloDesk
 DisableProgramGroupPage=yes
 PrivilegesRequired=admin
 OutputDir=installer
-OutputBaseFilename=SoloDesk-Setup-V3.0
+OutputBaseFilename=SoloDesk-Setup-V3.1
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
