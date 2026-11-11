@@ -761,6 +761,9 @@ class SoloDesk(ctk.CTk):
     if "CTkCheckBox" in theme:theme["CTkCheckBox"].update({"fg_color":[self.accent(),self.accent()],"hover_color":[self.accent2(),self.accent2()]})
     if "CTkSwitch" in theme:theme["CTkSwitch"].update({"progress_color":[self.accent(),self.accent()]})
     if "CTkSlider" in theme:theme["CTkSlider"].update({"progress_color":[self.accent(),self.accent()],"button_color":[self.accent(),self.accent()]})
+    if "CTkProgressBar" in theme:theme["CTkProgressBar"].update({"progress_color":[self.accent(),self.accent()]})
+    if "CTkRadioButton" in theme:theme["CTkRadioButton"].update({"fg_color":[self.accent(),self.accent()],"hover_color":[self.accent2(),self.accent2()]})
+    if "CTkOptionMenu" in theme:theme["CTkOptionMenu"].update({"button_color":[self.accent(),self.accent()],"button_hover_color":[self.accent2(),self.accent2()]})
   elif k=="font_family":self.font_family=v
   elif k=="bold_text":self.bold=v=="1"
   elif k=="startup":self.startup(v=="1")
