@@ -543,7 +543,7 @@ class SoloDesk(ctk.CTk):
    import winreg
    with winreg.OpenKey(winreg.HKEY_CURRENT_USER,r"Software\Microsoft\Windows\CurrentVersion\Run",0,winreg.KEY_SET_VALUE) as k:
     if on:
-     exe=sys.executable if getattr(sys,"frozen",False) else f'"{sys.executable}" "{Path(__file__).resolve()}"'
+     exe=f'"{sys.executable}"' if getattr(sys,"frozen",False) else f'"{sys.executable}" "{Path(__file__).resolve()}"'
      winreg.SetValueEx(k,"SoloDesk",0,winreg.REG_SZ,exe)
     else:
      try:winreg.DeleteValue(k,"SoloDesk")
