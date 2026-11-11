@@ -27,7 +27,7 @@ jobs:
           python tools/generate_icon.py
           python -m py_compile solodesk.py tools/generate_icon.py
       - name: Build desktop application
-        run: python -m PyInstaller --noconfirm --clean --windowed --name SoloDesk --icon assets/solodesk.ico --add-data "assets/solodesk.ico;." --collect-all customtkinter solodesk.py
+        run: python -m PyInstaller --noconfirm --clean --windowed --name SoloDesk --icon assets/solodesk.ico --add-data "assets/solodesk.ico;." --add-data "assets/solodesk.png;." --collect-all customtkinter solodesk.py
       - name: Compile Windows installer
         shell: pwsh
         run: |
