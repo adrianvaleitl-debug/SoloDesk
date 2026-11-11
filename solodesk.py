@@ -701,4 +701,47 @@ def run_app():
    except Exception:print(message+"\\n"+details)
   else:print(message+"\\n"+details)
 
-if __name__=="__main__" and acquire_single_instance():run_app()
+if __name__=="__main__" and acquire_single_instance():run_app()  def build_shell(self):
+   self.configure(fg_color=self.col("bg"))
+   self.work=ctk.CTkFrame(self,fg_color=self.col("bg"),corner_radius=0);self.work.pack(fill="both",expand=True)
+   self.work.grid_columnconfigure(1,weight=1);self.work.grid_rowconfigure(1,weight=1)
+   self.sidebar=ctk.CTkFrame(self.work,width=238,fg_color=self.col("side"),corner_radius=0)
+   self.sidebar.grid(row=0,column=0,rowspan=2,sticky="nsew");self.sidebar.grid_propagate(False)
+   brand=ctk.CTkFrame(self.sidebar,fg_color="transparent");brand.pack(fill="x",padx=20,pady=(24,26))
+   if self.brand_image:ctk.CTkLabel(brand,text="",image=self.brand_image).pack(side="left",padx=(0,9))
+   else:self.label(brand,"▦",27,"accent").pack(side="left",padx=(0,9))
+   brand_text=ctk.CTkFrame(brand,fg_color="transparent");brand_text.pack(side="left")
+   self.label(brand_text,"SoloDesk",20).pack(anchor="w")
+   self.label(brand_text,"BUSINESS WORKSPACE",8,"muted").pack(anchor="w",pady=(1,0))
+   nav_area=ctk.CTkScrollableFrame(self.sidebar,fg_color="transparent",corner_radius=0)
+   nav_area.pack(fill="both",expand=True,padx=12,pady=(0,8))
+   groups=[
+    ("WORKSPACE",[("Overview","⌂"),("Customers","♙"),("Customer Activity","◷")]),
+    ("MONEY",[("Invoices","▤"),("Expenses","↗"),("Analytics","▥")]),
+    ("ORGANISE",[("Tasks","✓"),("Task Calendar","▦"),("Documents","▧")]),
+    ("PREFERENCES",[("What's New","✦"),("Settings","⚙")])]
+   self.nav={}
+   for group,items in groups:
+    self.label(nav_area,group,9,"muted").pack(anchor="w",padx=12,pady=(15,7))
+    for name,ico in items:
+     x=self.button(nav_area,ico+"   "+name,lambda n=name:self.show(n),width=190)
+     x.configure(anchor="w",height=42,corner_radius=12,fg_color="transparent",text_color=self.col("muted"),hover_color=self.col("hover"),font=self.font(11))
+     x.pack(fill="x",padx=2,pady=2);self.nav[name]=x
+   foot=self.panel(self.sidebar);foot.pack(fill="x",padx=14,pady=14)
+   self.label(foot,"LOCAL-FIRST",8,"accent").pack(anchor="w",padx=12,pady=(10,3))
+   self.label(foot,"Your business records stay on this computer.",9,"muted",wraplength=180,justify="left").pack(anchor="w",padx=12,pady=(0,11))
+   self.top=ctk.CTkFrame(self.work,height=72,fg_color=self.col("panel"),corner_radius=0)
+   self.top.grid(row=0,column=1,sticky="ew");self.top.grid_propagate(False)
+   self.titlelabel=self.label(self.top,"Overview",16);self.titlelabel.pack(side="left",padx=25)
+   self.global_search_entry=ctk.CTkEntry(self.top,placeholder_text="Search customers, invoices, expenses and tasks…",width=310,height=38,corner_radius=13,font=self.font(11))
+   self.global_search_entry.pack(side="right",padx=(8,12));self.global_search_entry.bind("<Return>",lambda _event:self.global_search())
+   self.button(self.top,"⌕ Search",self.global_search).pack(side="right",padx=5)
+   self.biz=self.label(self.top,self.get("business"),10,"accent",fg_color=self.col("panel2"),corner_radius=12,padx=13,pady=8)
+   self.biz.pack(side="right",padx=12)
+   self.top.bind("<Configure>",lambda _event:self.global_search_entry.configure(width=170 if self.top.winfo_width()<1050 else 230 if self.top.winfo_width()<1250 else 310),add="+")
+   self.body=ctk.CTkFrame(self.work,fg_color="transparent")
+   self.body.grid(row=1,column=1,sticky="nsew",padx=26,pady=20)
+   for n in ["Overview","Customers","Invoices","Expenses","Tasks","Task Calendar","Customer Activity","Documents","Analytics","What's New","Settings"]:
+    self.pages[n]=ctk.CTkFrame(self.body,fg_color="transparent")
+
+
