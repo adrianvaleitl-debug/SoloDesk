@@ -1,5 +1,5 @@
 #define MyAppName "SoloDesk"
-#define MyAppVersion "1.6"
+#define MyAppVersion "1.7"
 #define MyAppPublisher "Adrian Vale"
 #define MyAppExeName "SoloDesk.exe"
 [Setup]
@@ -12,7 +12,7 @@ DefaultGroupName=SoloDesk
 DisableProgramGroupPage=yes
 PrivilegesRequired=admin
 OutputDir=installer
-OutputBaseFilename=SoloDesk-Setup-V1.6
+OutputBaseFilename=SoloDesk-Setup-V1.7
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
@@ -29,4 +29,4 @@ Source: "dist\SoloDesk\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
 Name: "{group}\SoloDesk"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\_internal\solodesk.ico"
 Name: "{autodesktop}\SoloDesk"; Filename: "{app}\{#MyAppExeName}"; IconFilename: "{app}\_internal\solodesk.ico"; Tasks: desktopicon
 [Run]
-Filename: "{app}\{#MyAppExeName}"; Description: "Launch SoloDesk"; Flags: postinstall nowait skipifsilent
+Filename: "{app}\{#MyAppExeName}"; Description: "Launch SoloDesk"; Flags: postinstall nowait
