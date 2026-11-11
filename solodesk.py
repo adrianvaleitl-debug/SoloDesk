@@ -55,8 +55,8 @@ class SoloDesk(ctk.CTk):
  def get(self,k,d=""):return self.cfg.get(k,d)
  def set(self,k,v):
   self.cfg[k]=str(v);self.db.execute("INSERT INTO settings VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v",(k,str(v)));self.db.commit()
- def accent(self):return THEMES.get(self.theme,THEMES["Dollar"])[0]
- def accent2(self):return THEMES.get(self.theme,THEMES["Dollar"])[1]
+ def accent(self):return THEMES.get(self.theme,THEMES["Ocean"])[0]
+ def accent2(self):return THEMES.get(self.theme,THEMES["Ocean"])[1]
  def col(self,k):
   dark=ctk.get_appearance_mode()=="Dark"
   return {"bg":"#0D1420" if dark else "#F2F6FC","side":"#111D2C" if dark else "#E8EFF8",
