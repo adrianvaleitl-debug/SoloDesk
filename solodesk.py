@@ -7,7 +7,35 @@ from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
 from PIL import Image, ImageDraw, ImageFilter, ImageTk
 
-APP_VERSION="V2.7"
+
+def install_accent_spotlight(window, accent, background="#101012"):
+    """Paint a restrained, blurred accent-colour glow behind the glass workspace."""
+    try:
+        if not isinstance(accent, str) or len(accent) != 7 or not accent.startswith("#"):
+            return
+        window.update_idletasks()
+        width = max(900, int(window.winfo_width()))
+        height = max(620, int(window.winfo_height()))
+        rgb = tuple(int(accent[index:index + 2], 16) for index in (1, 3, 5))
+        glow = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+        draw = ImageDraw.Draw(glow)
+        draw.ellipse((int(width * .50), -int(height * .35), int(width * 1.25), int(height * .58)), fill=(*rgb, 34))
+        draw.ellipse((-int(width * .30), int(height * .55), int(width * .35), int(height * 1.20)), fill=(*rgb, 12))
+        glow = glow.filter(ImageFilter.GaussianBlur(max(72, int(min(width, height) * .17))))
+        photo = ImageTk.PhotoImage(glow)
+        previous = getattr(window, "_accent_spotlight_canvas", None)
+        if previous is not None:
+            previous.destroy()
+        canvas = tk.Canvas(window, width=width, height=height, highlightthickness=0, borderwidth=0, bg=background)
+        canvas.place(x=0, y=0, relwidth=1, relheight=1)
+        canvas.create_image(0, 0, anchor="nw", image=photo)
+        canvas.lower()
+        window._accent_spotlight_canvas = canvas
+        window._accent_spotlight_photo = photo
+    except Exception:
+        pass
+
+APP_VERSION="V2.8"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
@@ -17,7 +45,7 @@ THEMES={
 "Azure":("#91AFE0","#7897C8"),"Lavender":("#B5A0D8","#9B86BE"),
 "Rose":("#D99EAD","#C48495"),"Teal":("#91BEC3","#76A6AB")}
 LEGACY_THEMES={"Dollar":"Black","Euro":"Azure","Pound":"Lavender","Yen":"Rose","Franc":"Teal","Ocean":"Azure","Sage":"Teal","Violet":"Lavender","Coral":"Rose"}
-YOUTUBE="https://www.youtube.com/@Adrianvaleitl";TIKTOK="https://www.tiktok.com/@adrianvaleitl";KOFI="https://ko-fi.com/marketinsight"
+YOUTUBE="https://www.youtube.com/@Adrianvaleitl";TIKTOK="https://www.tiktok.com/@adrianvaleitl";KOFI="https://ko-fi.com/marketinsight";PERSONAL_SITE="https://adrianvaleitl-debug.github.io/"
 REPO="https://github.com/adrianvaleitl-debug/SoloDesk";RELEASES=REPO+"/releases/latest"
 GITHUB_SSL_CONTEXT=ssl.create_default_context(cafile=certifi.where())
 _SINGLE_INSTANCE_MUTEX=None
@@ -139,6 +167,7 @@ class SoloDesk(ctk.CTk):
    text_color="#1E1E1E" if primary else self.col("text"),font=self.font(11))
  def build_shell(self):
   self.configure(fg_color=self.col("bg"))
+  install_accent_spotlight(self,self.accent(),"#EDEDED" if ctk.get_appearance_mode()=="Light" else "#101012")
   self.work=ctk.CTkFrame(self,fg_color="transparent",corner_radius=18);self.work.pack(fill="both",expand=True)
   self.work.grid_columnconfigure(1,weight=1);self.work.grid_rowconfigure(1,weight=1)
   self.sidebar=ctk.CTkFrame(self.work,width=224,fg_color=self.col("side"),corner_radius=26,border_width=1,border_color=self.col("line"))
@@ -165,7 +194,9 @@ class SoloDesk(ctk.CTk):
     x.pack(fill="x",padx=2,pady=2);self.nav[name]=x
   foot=self.panel(self.sidebar);foot.pack(fill="x",padx=14,pady=14)
   self.label(foot,"LOCAL-FIRST",8,"accent").pack(anchor="w",padx=12,pady=(10,3))
-  self.label(foot,"Your business records stay on this computer.",9,"muted",wraplength=180,justify="left").pack(anchor="w",padx=12,pady=(0,11))
+  self.label(foot,"Your business records stay on this computer.",9,"muted",wraplength=180,justify="left").pack(anchor="w",padx=12,pady=(0,8))
+  self.button(foot,"My website ↗",lambda:webbrowser.open(PERSONAL_SITE),width=180).pack(fill="x",padx=10,pady=3)
+  self.button(foot,"Donate · Ko-fi ↗",lambda:webbrowser.open(KOFI),True,180).pack(fill="x",padx=10,pady=(2,10))
   self.top=ctk.CTkFrame(self.work,height=68,fg_color=self.col("panel"),corner_radius=24,border_width=1,border_color=self.col("line"))
   self.top.grid(row=0,column=1,sticky="ew",padx=(8,14),pady=(14,8));self.top.grid_propagate(False)
   self.titlelabel=self.label(self.top,"Overview",16);self.titlelabel.pack(side="left",padx=25)
@@ -615,13 +646,13 @@ class SoloDesk(ctk.CTk):
   self.label(d,"Records are stored locally. Currency selection changes the displayed symbol only; no FX conversion or tax calculations are performed.",10,"muted",wraplength=900,justify="left").pack(anchor="w",padx=18,pady=(0,14))
   cr=self.panel(sc);cr.pack(fill="x",pady=6);self.label(cr,"Created by Adrian Vale",16).pack(anchor="w",padx=18,pady=(14,3));self.label(cr,"Follow the project and support development.",11,"muted").pack(anchor="w",padx=18)
   row=ctk.CTkFrame(cr,fg_color="transparent");row.pack(anchor="w",padx=12,pady=12)
-  for t,u in [("YouTube @Adrianvaleitl",YOUTUBE),("TikTok @adrianvaleitl",TIKTOK),("Support on Ko-fi",KOFI)]:self.button(row,t,lambda url=u:webbrowser.open(url)).pack(side="left",padx=4)
+  for t,u in [("My website ↗",PERSONAL_SITE),("YouTube @Adrianvaleitl",YOUTUBE),("TikTok @adrianvaleitl",TIKTOK),("Donate · Ko-fi",KOFI)]:self.button(row,t,lambda url=u:webbrowser.open(url)).pack(side="left",padx=4)
  def setting_transparency(self,p):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=7)
   self.label(r,"Window transparency",11,"muted").pack(side="left")
   value=int(self.get("transparency","8"));display=self.label(r,f"{value}%",11,"text",width=52)
   display.pack(side="right",padx=(8,0))
-  slider=ctk.CTkSlider(r,from_=0,to=35,number_of_steps=35,width=230,command=lambda v:(self.set("transparency",round(v)),display.configure(text=f"{round(v)}%"),self.attributes("-alpha",1-round(v)/100)))
+  slider=ctk.CTkSlider(r,from_=0,to=35,number_of_steps=35,width=230,command=lambda v:(self.set("transparency",round(v)),display.configure(text=f"{round(v)}%"),self.attributes("-alpha",1-round(v)/100),self.apply_glass_effect()))
   slider.set(value);slider.pack(side="right",padx=8)
  def setting_select(self,p,label,key,opts):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left")

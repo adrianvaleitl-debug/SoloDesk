@@ -1,8 +1,10 @@
-# SoloDesk V2.7
+# SoloDesk V2.8
 **Your business, in one place.**  
 **Created by Adrian Vale.**
 
-## What's new in V2.7
+## What's new in V2.8
+- Persistent sidebar shortcuts to the Adrian Vale website and Donate · Ko-fi.
+- Accent-colour blurred spotlight and responsive acrylic transparency.
 - **Startup crash fixed:** corrected the invalid Euro accent-theme fallback that could stop SoloDesk opening.
 - **Safer accent settings:** missing or outdated saved accent values now fall back safely to Black.
 - **Accent choices retained:** Black, Amber, Azure, Lavender, Rose and Teal remain available.

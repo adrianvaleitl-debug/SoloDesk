@@ -1,5 +1,12 @@
 # Changelog
 
+## V2.8 — 11 November 2026
+- Added persistent Adrian Vale website and Donate · Ko-fi links to the desktop sidebar.
+- Added a soft, blurred spotlight that follows the selected accent colour.
+- Reapplied Windows acrylic blur whenever the transparency slider changes.
+- Kept existing business records, settings and workflows intact.
+
+
 ## V2.7 — 11 November 2026
 - Fixed a startup crash caused by an invalid fallback accent-theme lookup (`KeyError: 'Euro'`).
 - Made accent colour lookup safely fall back to Black when a saved theme is missing or invalid.
