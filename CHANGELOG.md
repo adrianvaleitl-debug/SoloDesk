@@ -1,5 +1,11 @@
 # Changelog
 
+## V2.6 — 11 November 2026
+- Made global search more compact to prevent the search icon and field from colliding with the surrounding outline.
+- Restored six optional accent choices, with Black as the default while retaining neutral dark glass surfaces.
+- Refined spacing around text, controls and panel borders for clearer layouts.
+
+
 ## V1.4 — 11 November 2026
 - Introduced a dedicated SoloDesk icon for the app, installer, taskbar, website and desktop shortcuts.
 - Established an independent navy-and-blue interface identity rather than copying Market Insight's green theme.
