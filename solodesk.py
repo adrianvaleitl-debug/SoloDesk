@@ -173,8 +173,8 @@ class SoloDesk(ctk.CTk):
   self.global_search_entry=ctk.CTkEntry(self.top,placeholder_text="Search records…",width=190,height=32,corner_radius=10,font=self.font(10),fg_color=self.col("input"),border_width=0,text_color=self.col("text"))
   self.global_search_entry.bind("<Return>",lambda _event:self.global_search())
   self.global_search_entry.bind("<Escape>",lambda _event:self.toggle_global_search(False))
-  self.search_button=self.button(self.top,"⌕",lambda:self.toggle_global_search(),width=44)
-  self.search_button.pack(side="right",padx=8)
+  self.search_button=ctk.CTkButton(self.top,text="⌕",command=self.toggle_global_search,width=32,height=30,corner_radius=9,fg_color=self.col("panel2"),hover_color=self.col("hover"),text_color=self.col("text"),font=self.font(17),border_width=0)
+  self.search_button.pack(side="right",padx=(4,12),pady=8)
   self.biz=self.label(self.top,self.get("business"),10,"accent",fg_color=self.col("panel2"),corner_radius=12,padx=13,pady=8)
   self.biz.pack(side="right",padx=12)
   self.top.bind("<Configure>",lambda _event:self.global_search_entry.configure(width=170 if self.top.winfo_width()<1050 else 230 if self.top.winfo_width()<1250 else 310),add="+")
@@ -292,7 +292,7 @@ class SoloDesk(ctk.CTk):
   if opening==self.search_open:return
   self.search_open=opening
   if opening:
-   self.global_search_entry.pack(side="right",before=self.search_button,padx=(8,4))
+   self.global_search_entry.pack(side="right",before=self.search_button,padx=(6,2),pady=8)
    self.global_search_entry.focus_set()
    self.search_button.configure(text="×")
   else:
