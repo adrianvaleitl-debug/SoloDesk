@@ -33,6 +33,8 @@ SoloDesk is a local-first Windows desktop workspace for freelancers and small bu
 - YouTube, TikTok and Ko-fi creator links.
 
 ## Creator
+
+- **Adrian Vale — personal website:** https://adrianvaleitl-debug.github.io/
 SoloDesk is created by **Adrian Vale**.
 - YouTube: https://www.youtube.com/@Adrianvaleitl
 - TikTok: https://www.tiktok.com/@adrianvaleitl
