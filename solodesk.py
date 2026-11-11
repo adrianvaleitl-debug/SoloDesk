@@ -5,7 +5,7 @@ import calendar
 import tkinter as tk
 from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFilter, ImageTk
 
 APP_VERSION="V2.3"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
@@ -73,6 +73,7 @@ class SoloDesk(ctk.CTk):
   super().__init__();self.title("SoloDesk "+APP_VERSION);screen_w=self.winfo_screenwidth();screen_h=self.winfo_screenheight();self.geometry(f"{min(1480,max(900,screen_w-80))}x{min(920,max(640,screen_h-100))}");self.minsize(min(1150,max(900,screen_w-80)),min(740,max(620,screen_h-100)))
   self.set_app_icon()
   self.apply_glass_effect()
+  self.apply_spotlight_background()
   if sys.platform=="win32":self.after(120,lambda:self.state("zoomed"))
   self.protocol("WM_DELETE_WINDOW",self.close);self.pages={};self.nav={};self.tables={}
   self.calendar_month=date.today().replace(day=1)
@@ -97,6 +98,33 @@ class SoloDesk(ctk.CTk):
    apply_attribute.restype=ctypes.c_bool
    apply_attribute(ctypes.c_void_p(self.winfo_id()),ctypes.byref(data))
   except Exception:pass
+ def apply_spotlight_background(self):
+  """Render soft, palette-tinted spotlight blooms behind the translucent workspace."""
+  try:
+   dark=ctk.get_appearance_mode()=="Dark"
+   base=self.col("bg")
+   accents=[self.accent(), "#8EAEDB", "#C4AFE7"]
+   canvas=tk.Canvas(self,highlightthickness=0,bd=0,bg=base)
+   canvas.place(x=0,y=0,relwidth=1,relheight=1)
+   self._spotlight_canvas=canvas
+   def render(event=None):
+    if event is not None and event.widget is not self:return
+    w=max(480,self.winfo_width());h=max(360,self.winfo_height())
+    glow=Image.new("RGBA",(w,h),(0,0,0,0));draw=ImageDraw.Draw(glow)
+    alpha=76 if dark else 34
+    spots=[(-.12,-.12,.72,accents[0]),(.78,.12,.62,accents[1]),(.48,.88,.72,accents[2])]
+    for x,y,r,color in spots:
+     rgb=tuple(int(color[i:i+2],16) for i in (1,3,5))
+     cx,cy=x*w,y*h;rad=r*min(w,h)
+     draw.ellipse((cx-rad,cy-rad,cx+rad,cy+rad),fill=(*rgb,alpha))
+    glow=glow.filter(ImageFilter.GaussianBlur(max(65,int(min(w,h)*.17))))
+    image=Image.new("RGBA",(w,h),base);image.alpha_composite(glow)
+    self._spotlight_photo=ImageTk.PhotoImage(image.convert("RGB"))
+    canvas.delete("all");canvas.create_image(0,0,anchor="nw",image=self._spotlight_photo);canvas.lower()
+   self.bind("<Configure>",lambda e:render(e),add="+")
+   self.after(120,render)
+  except Exception:
+   pass
  def set_app_icon(self):
   try:
    base=Path(getattr(sys,"_MEIPASS",Path(__file__).resolve().parent))
