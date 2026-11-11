@@ -13,8 +13,8 @@ ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
 FONTS=["Segoe UI","Arial","Verdana","Trebuchet MS","Georgia"]
 THEMES={
-"Dollar":("#DCC18F","#C5A875"),"Euro":("#A9BFE2","#879FC8"),
-"Pound":("#BFAFE0","#A08BC9"),"Yen":("#DFAFBA","#C68F9D"),"Franc":("#A9C9CC","#83ADB2")}
+"Dollar":("#DDB47E","#C99A60"),"Euro":("#A8CDB6","#82B99A"),
+"Pound":("#B5C5B5","#8FA795"),"Yen":("#D8A99E","#C88E82"),"Franc":("#A8C9C0","#83AAA0")}
 LEGACY_THEMES={"Ocean":"Euro","Sage":"Dollar","Violet":"Pound","Coral":"Yen","Teal":"Franc"}
 YOUTUBE="https://www.youtube.com/@Adrianvaleitl";TIKTOK="https://www.tiktok.com/@adrianvaleitl";KOFI="https://ko-fi.com/marketinsight"
 REPO="https://github.com/adrianvaleitl-debug/SoloDesk";RELEASES=REPO+"/releases/latest"
@@ -91,7 +91,7 @@ class SoloDesk(ctk.CTk):
     _fields_=[("AccentState",ctypes.c_int),("AccentFlags",ctypes.c_int),("GradientColor",ctypes.c_int),("AnimationId",ctypes.c_int)]
    class WINDOWCOMPOSITIONATTRIBDATA(ctypes.Structure):
     _fields_=[("Attribute",ctypes.c_int),("Data",ctypes.c_void_p),("SizeOfData",ctypes.c_size_t)]
-   policy=ACCENT_POLICY(4,2,0xCC17263A,0)
+   policy=ACCENT_POLICY(4,2,0xCC14231A,0)
    data=WINDOWCOMPOSITIONATTRIBDATA(19,ctypes.addressof(policy),ctypes.sizeof(policy))
    apply_attribute=ctypes.windll.user32.SetWindowCompositionAttribute
    apply_attribute.argtypes=[ctypes.c_void_p,ctypes.POINTER(WINDOWCOMPOSITIONATTRIBDATA)]
@@ -102,8 +102,8 @@ class SoloDesk(ctk.CTk):
   """Render soft, palette-tinted spotlight blooms behind the translucent workspace."""
   try:
    dark=ctk.get_appearance_mode()=="Dark"
-   base="#080F1B" if dark else "#EAF0F8"
-   accents=[self.accent(), "#789FE0", "#B69AE8", "#75C7C0"]
+   base="#09120D" if dark else "#E9EEE8"
+   accents=[self.accent(), "#6F9D7D", "#C69A69", "#A6C8B3"]
    canvas=tk.Canvas(self,highlightthickness=0,bd=0,bg=base)
    canvas.place(x=0,y=0,relwidth=1,relheight=1)
    self._spotlight_canvas=canvas
@@ -111,7 +111,7 @@ class SoloDesk(ctk.CTk):
     if event is not None and event.widget is not self:return
     w=max(480,self.winfo_width());h=max(360,self.winfo_height())
     glow=Image.new("RGBA",(w,h),(0,0,0,0));draw=ImageDraw.Draw(glow)
-    alpha=174 if dark else 82
+    alpha=150 if dark else 62
     spots=[(-.08,-.10,.66,accents[0]),(.84,.12,.58,accents[1]),(.48,.92,.64,accents[2]),(.10,.62,.42,accents[3])]
     for x,y,r,color in spots:
      rgb=tuple(int(color[i:i+2],16) for i in (1,3,5))
@@ -159,7 +159,7 @@ class SoloDesk(ctk.CTk):
    except Exception:pass
   return base
  def font(self,n=12):return ctk.CTkFont(family=self.font_family,size=n,weight="bold" if self.bold else "normal")
- def panel(self,p):return ctk.CTkFrame(p,fg_color=self.col("panel"),corner_radius=22,border_width=0,border_color=self.col("line"))
+ def panel(self,p):return ctk.CTkFrame(p,fg_color=self.col("panel"),corner_radius=22,border_width=1,border_color=self.col("line"))
  def label(self,p,t,size=12,color="text",**kw):return ctk.CTkLabel(p,text=t,font=self.font(size),text_color=self.col(color),**kw)
  def button(self,p,t,fn,primary=False,width=None):
   return ctk.CTkButton(p,text=t,command=fn,width=width or 120,height=37,corner_radius=11,
@@ -169,7 +169,7 @@ class SoloDesk(ctk.CTk):
   self.configure(fg_color=self.col("bg"))
   self.work=ctk.CTkFrame(self,fg_color="transparent",corner_radius=18);self.work.pack(fill="both",expand=True)
   self.work.grid_columnconfigure(1,weight=1);self.work.grid_rowconfigure(1,weight=1)
-  self.sidebar=ctk.CTkFrame(self.work,width=238,fg_color=self.col("side"),corner_radius=24,border_width=0,border_color=self.col("line"))
+  self.sidebar=ctk.CTkFrame(self.work,width=224,fg_color=self.col("side"),corner_radius=26,border_width=1,border_color=self.col("line"))
   self.sidebar.grid(row=0,column=0,rowspan=2,sticky="nsew",padx=(14,8),pady=14);self.sidebar.grid_propagate(False)
   brand=ctk.CTkFrame(self.sidebar,fg_color="transparent");brand.pack(fill="x",padx=20,pady=(24,26))
   if self.brand_image:ctk.CTkLabel(brand,text="",image=self.brand_image).pack(side="left",padx=(0,9))
@@ -194,7 +194,7 @@ class SoloDesk(ctk.CTk):
   foot=self.panel(self.sidebar);foot.pack(fill="x",padx=14,pady=14)
   self.label(foot,"LOCAL-FIRST",8,"accent").pack(anchor="w",padx=12,pady=(10,3))
   self.label(foot,"Your business records stay on this computer.",9,"muted",wraplength=180,justify="left").pack(anchor="w",padx=12,pady=(0,11))
-  self.top=ctk.CTkFrame(self.work,height=72,fg_color=self.col("panel"),corner_radius=22,border_width=0,border_color=self.col("line"))
+  self.top=ctk.CTkFrame(self.work,height=68,fg_color=self.col("panel"),corner_radius=24,border_width=1,border_color=self.col("line"))
   self.top.grid(row=0,column=1,sticky="ew",padx=(8,14),pady=(14,8));self.top.grid_propagate(False)
   self.titlelabel=self.label(self.top,"Overview",16);self.titlelabel.pack(side="left",padx=25)
   self.search_open=False
