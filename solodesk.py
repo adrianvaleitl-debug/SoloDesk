@@ -533,7 +533,7 @@ class SoloDesk(ctk.CTk):
   self.heading(p,"Settings","Personalise your workspace and manage your data.")
   sc=ctk.CTkScrollableFrame(p,fg_color="transparent");sc.pack(fill="both",expand=True)
   a=self.panel(sc);a.pack(fill="x",pady=6);self.label(a,"Appearance and personalisation",16).pack(anchor="w",padx=18,pady=(14,8))
-  self.setting_select(a,"Appearance","appearance",["Dark","Light","System"]);self.setting_select(a,"Colour theme","colour_theme",list(THEMES));self.setting_select(a,"Font family","font_family",FONTS);self.setting_switch(a,"Bold text","bold_text")
+  self.setting_select(a,"Appearance","appearance",["Dark","Light","System"]);self.setting_select(a,"Colour theme","colour_theme",["Finance","Operations","Planning","Clients","Workspace"]);self.setting_select(a,"Font family","font_family",FONTS);self.setting_switch(a,"Bold text","bold_text")
   b=self.panel(sc);b.pack(fill="x",pady=6);self.label(b,"Business preferences",16).pack(anchor="w",padx=18,pady=(14,8))
   self.bizvar=tk.StringVar(value=self.get("business"));self.curvar=tk.StringVar(value=self.get("currency","GBP"))
   self.setting_entry(b,"Business name",self.bizvar);self.setting_select_var(b,"Display currency",self.curvar,list(SYMBOLS))
@@ -547,7 +547,7 @@ class SoloDesk(ctk.CTk):
   for t,u in [("YouTube @Adrianvaleitl",YOUTUBE),("TikTok @adrianvaleitl",TIKTOK),("Support on Ko-fi",KOFI)]:self.button(row,t,lambda url=u:webbrowser.open(url)).pack(side="left",padx=4)
  def setting_select(self,p,label,key,opts):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left")
-  v=tk.StringVar(value=self.get(key,opts[0]));ctk.CTkComboBox(r,values=opts,variable=v,width=230,height=34,corner_radius=10,font=self.font(11),button_color=self.accent2(),button_hover_color=self.accent(),command=lambda x,k=key:self.apply_setting(k,x)).pack(side="right")
+  v=tk.StringVar(value=({"Dollar":"Finance","Euro":"Operations","Pound":"Planning","Yen":"Clients","Franc":"Workspace"}.get(self.get(key),self.get(key,opts[0])) if key=="colour_theme" else self.get(key,opts[0])));ctk.CTkComboBox(r,values=opts,variable=v,width=230,height=34,corner_radius=10,font=self.font(11),button_color=self.accent2(),button_hover_color=self.accent(),command=lambda x,k=key:self.apply_setting(k,x)).pack(side="right")
  def setting_select_var(self,p,label,var,opts):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left");ctk.CTkComboBox(r,values=opts,variable=var,width=230,height=34,corner_radius=10,font=self.font(11),button_color=self.accent2(),button_hover_color=self.accent()).pack(side="right")
  def setting_entry(self,p,label,var):
