@@ -41,6 +41,7 @@ class SoloDesk(ctk.CTk):
   self.protocol("WM_DELETE_WINDOW",self.close);self.pages={};self.nav={};self.tables={}
   self.build_shell();self.show("Overview");self.refresh()
   if self.cfg["tutorial_completed"]!="1":self.after(650,self.tutorial)
+  else:self.after(900,self.first_run_shortcut_prompt)
   if self.cfg.get("auto_updates","1")=="1":self.after(1800,self.check_updates)
 
  def set_app_icon(self):
@@ -372,7 +373,9 @@ class SoloDesk(ctk.CTk):
    else:
     target=sys.executable;args='"'+str(Path(__file__).resolve())+'"'
    q=lambda x:str(x).replace("'","''")
-   command="$w=New-Object -ComObject WScript.Shell; $s=$w.CreateShortcut('"+q(shortcut)+"'); $s.TargetPath='"+q(target)+"'; $s.Arguments='"+q(args)+"'; $s.WorkingDirectory='"+q(str(Path(target).parent))+"'; $s.Description='SoloDesk business workspace'; $s.Save()"
+   icon=(Path(target).parent/"_internal"/"solodesk.ico") if getattr(sys,"frozen",False) else (Path(__file__).resolve().parent/"assets"/"solodesk.ico")
+   icon_cmd="$s.IconLocation='"+q(icon)+",0'; " if icon.exists() else ""
+   command="$w=New-Object -ComObject WScript.Shell; $s=$w.CreateShortcut('"+q(shortcut)+"'); $s.TargetPath='"+q(target)+"'; $s.Arguments='"+q(args)+"'; $s.WorkingDirectory='"+q(str(Path(target).parent))+"'; $s.Description='SoloDesk business workspace'; "+icon_cmd+"$s.Save()"
    import subprocess
    subprocess.run(["powershell","-NoProfile","-ExecutionPolicy","Bypass","-Command",command],check=True,capture_output=True,text=True)
    messagebox.showinfo("Shortcut","SoloDesk desktop shortcut created.")
@@ -421,6 +424,13 @@ class SoloDesk(ctk.CTk):
     self.after(0,launch)
    except Exception as e:self.after(0,lambda err=str(e):messagebox.showerror("Update download failed",f"Could not download the update.\\n\\n{err}"))
   threading.Thread(target=download,daemon=True).start()
+ def first_run_shortcut_prompt(self):
+  if self.get("shortcut_prompted","0")=="1":return
+  shortcut=Path.home()/"Desktop"/"SoloDesk.lnk"
+  self.set("shortcut_prompted","1")
+  if shortcut.exists():return
+  if messagebox.askyesno("Create a desktop shortcut?","Would you like a SoloDesk shortcut on your Windows desktop? You can change this later in Settings."):
+   self.create_shortcut()
  def backup(self):
   path=filedialog.asksaveasfilename(defaultextension=".db",initialfile="solodesk-backup.db")
   if path:self.db.commit();shutil.copy2(DB,path);messagebox.showinfo("Backup","Database backup saved.")
@@ -439,7 +449,9 @@ class SoloDesk(ctk.CTk):
   ]
   for title,desc in steps:
    card=self.panel(scroll);card.pack(fill="x",padx=8,pady=5);self.label(card,title,13).pack(anchor="w",padx=14,pady=(9,2));self.label(card,desc,10,"muted",wraplength=590,justify="left").pack(anchor="w",padx=14,pady=(0,9))
-  def done():self.set("tutorial_completed","1");w.destroy()
+  def done():
+   self.set("tutorial_completed","1");w.destroy()
+   self.after(350,self.first_run_shortcut_prompt)
   self.button(w,"Get started",done,True,140).pack(anchor="e",padx=25,pady=14)
  def close(self):
   self.db.commit();self.db.close();self.destroy()
