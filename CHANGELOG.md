@@ -1,7 +1,16 @@
 # Changelog
 
+## V1.4 — 11 November 2026
+- Introduced a dedicated SoloDesk icon for the app, installer, taskbar, website and desktop shortcuts.
+- Established an independent navy-and-blue interface identity rather than copying Market Insight's green theme.
+- Added five new colour themes: Ocean, Sage, Violet, Coral and Teal, while migrating existing saved theme choices.
+- Improved automatic updates so the app can download and launch the latest Windows installer after user confirmation.
+- Updated the website so its download buttons follow the latest Windows installer automatically.
+- Added a first-run desktop shortcut prompt and branded shortcut icon.
+- Updated the Windows installer and build process to package the new icon assets.
+
 ## V1.3 — 10 November 2026
-- Rebuilt the desktop interface around the Market Insight design language: dark-first surfaces, rounded cards and controls, consistent spacing and bold typography.
+- Rebuilt the desktop interface around a shared quality standard with Market Insight: rounded cards and controls, consistent spacing and bold typography, with its own product layout.
 - Added five colour themes, five font families, bold/regular text and Dark, Light and System appearance modes.
 - Added searchable customer, invoice, expense, task and document workspaces.
 - Added document links, a business analytics view, first-launch quick-start guide and in-app What's New page.
