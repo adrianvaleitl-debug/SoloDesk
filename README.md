@@ -1,25 +1,20 @@
-# SoloDesk V2.8
+# SoloDesk V3.0
 **Your business, in one place.**  
 **Created by Adrian Vale.**
 
-## What's new in V2.8
-- Persistent sidebar shortcuts to the Adrian Vale website and Donate · Ko-fi.
-- Accent-colour blurred spotlight and responsive acrylic transparency.
-- **Startup crash fixed:** corrected the invalid Euro accent-theme fallback that could stop SoloDesk opening.
-- **Safer accent settings:** missing or outdated saved accent values now fall back safely to Black.
-- **Accent choices retained:** Black, Amber, Azure, Lavender, Rose and Teal remain available.
-- Existing customers, invoices, expenses, tasks and other local business data are preserved.
+## What's new in V3.0
+- Rebuilt the Windows glass host using colour-key transparency so the acrylic backdrop can show through without fading text or controls.
+- Expanded the transparency slider's acrylic tint range and apply timing.
+- Moved the accent-colour nebula spotlight onto the transparent host layer.
+- Redesigned the in-app release history with a featured latest release and a previous-version timeline.
+- Existing customers, invoices, expenses, tasks, documents and settings are preserved.
 
-## What's new in V2.6
-- **Compact global search:** reduced the search control so its icon and field fit cleanly inside the top bar.
-- **Six optional accent choices:** Black remains the default while charcoal glass surfaces stay neutral.
-- **Clearer spacing:** refined text, controls and panel borders to avoid collisions.
+## Previous release highlights
+- **V2.8:** Added persistent Adrian Vale website and Donate · Ko-fi shortcuts.
+- **V2.7:** Improved saved accent compatibility and safe fallback handling.
+- **V2.6:** Refined global search, spacing and optional accent colours.
 
 
-**Your business, in one place.**  
-**Created by Adrian Vale.**
-
-SoloDesk is a local-first Windows desktop workspace for freelancers and small businesses.
 ## Features
 - Business overview with paid income, outstanding invoices, expenses and customer totals.
 - Customer directory with searchable contact records, editing and CSV export.
