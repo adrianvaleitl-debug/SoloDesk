@@ -13,9 +13,9 @@ ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
 FONTS=["Segoe UI","Arial","Verdana","Trebuchet MS","Georgia"]
 THEMES={
-"Ocean":("#B8D8FF","#6F9FE0"),"Sage":("#BFE6D2","#6DBB91"),
-"Violet":("#D6C8F5","#9A82D7"),"Coral":("#FFD0C2","#E58F79"),"Teal":("#B8E8E4","#62B9B1")}
-LEGACY_THEMES={"Dollar":"Sage","Euro":"Ocean","Pound":"Violet","Yen":"Coral","Franc":"Teal"}
+"Dollar":("#E8C98F","#C9A96D"),"Euro":("#9EBCE9","#7396C8"),
+"Pound":("#C4AFE7","#9B83C7"),"Yen":("#E9AEBC","#C98294"),"Franc":("#9FCBD0","#69AAB1")}
+LEGACY_THEMES={"Ocean":"Euro","Sage":"Dollar","Violet":"Pound","Coral":"Yen","Teal":"Franc"}
 YOUTUBE="https://www.youtube.com/@Adrianvaleitl";TIKTOK="https://www.tiktok.com/@adrianvaleitl";KOFI="https://ko-fi.com/marketinsight"
 REPO="https://github.com/adrianvaleitl-debug/SoloDesk";RELEASES=REPO+"/releases/latest"
 _SINGLE_INSTANCE_MUTEX=None
@@ -55,7 +55,7 @@ class SoloDesk(ctk.CTk):
   self.db.commit();self.cfg={r["k"]:r["v"] for r in self.db.execute("SELECT * FROM settings")}
   self.font_family=self.cfg["font_family"];self.bold=self.cfg["bold_text"]=="1"
   self.theme=LEGACY_THEMES.get(self.cfg["colour_theme"],self.cfg["colour_theme"])
-  if self.theme not in THEMES:self.theme="Ocean"
+  if self.theme not in THEMES:self.theme="Euro"
   self.set("colour_theme",self.theme)
   ctk.set_default_color_theme("blue")
   ctk.set_appearance_mode(self.cfg["appearance"])
@@ -82,7 +82,7 @@ class SoloDesk(ctk.CTk):
  def get(self,k,d=""):return self.cfg.get(k,d)
  def set(self,k,v):
   self.cfg[k]=str(v);self.db.execute("INSERT INTO settings VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v",(k,str(v)));self.db.commit()
- def accent(self):return THEMES.get(self.theme,THEMES["Ocean"])[0]
+ def accent(self):return THEMES.get(self.theme,THEMES["Euro"])[0]
  def accent2(self):return THEMES.get(self.theme,THEMES["Ocean"])[1]
  def col(self,k):
   dark=ctk.get_appearance_mode()=="Dark"
