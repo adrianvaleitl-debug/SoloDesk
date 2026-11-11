@@ -7,7 +7,7 @@ from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
 from PIL import Image
 
-APP_VERSION="V1.7"
+APP_VERSION="V1.8"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
@@ -480,16 +480,49 @@ class SoloDesk(ctk.CTk):
  def analytics(self):
   p=self.pages["Analytics"]
   for w in p.winfo_children():w.destroy()
-  self.heading(p,"Business analytics","A simple summary of recorded income and spending.")
-  vals=[("Paid income",self.db.execute("SELECT COALESCE(SUM(amount),0) FROM invoices WHERE status='Paid'").fetchone()[0]),("Outstanding",self.db.execute("SELECT COALESCE(SUM(amount),0) FROM invoices WHERE status IN ('Draft','Sent')").fetchone()[0]),("Expenses",self.db.execute("SELECT COALESCE(SUM(amount),0) FROM expenses").fetchone()[0])]
-  for title,v in vals:
-   card=self.panel(p);card.pack(fill="x",pady=7);self.label(card,title,14).pack(anchor="w",padx=18,pady=(12,2));self.label(card,self.money(v),23,"accent").pack(anchor="w",padx=18,pady=(0,12))
-  self.label(p,"These figures reflect records saved in this local database. Currency is a display preference only.",10,"muted").pack(anchor="w",pady=10)
+  self.heading(p,"Business analytics","A clearer picture of cash flow, payment timing and spending patterns.")
+  now=date.today()
+  paid=self.db.execute("SELECT COALESCE(SUM(amount),0) FROM invoices WHERE status='Paid'").fetchone()[0]
+  outstanding=self.db.execute("SELECT COALESCE(SUM(amount),0) FROM invoices WHERE status IN ('Draft','Sent')").fetchone()[0]
+  spent=self.db.execute("SELECT COALESCE(SUM(amount),0) FROM expenses").fetchone()[0]
+  metrics=ctk.CTkFrame(p,fg_color="transparent");metrics.pack(fill="x",pady=7)
+  for title,value,sub in [("Paid income",self.money(paid),"All-time recorded"),("Outstanding",self.money(outstanding),"Draft and sent invoices"),("Recorded expenses",self.money(spent),"All-time recorded")]:
+   card=self.panel(metrics);card.pack(side="left",fill="both",expand=True,padx=5)
+   self.label(card,title.upper(),9,"muted").pack(anchor="w",padx=15,pady=(13,3));self.label(card,value,21,"accent").pack(anchor="w",padx=15);self.label(card,sub,9,"muted").pack(anchor="w",padx=15,pady=(2,13))
+  trend=self.panel(p);trend.pack(fill="x",pady=8)
+  self.label(trend,"Six-month cashflow pulse",15).pack(anchor="w",padx=16,pady=(14,4))
+  self.label(trend,"Paid invoices compared with recorded expenses by month.",10,"muted").pack(anchor="w",padx=16,pady=(0,8))
+  for offset in range(5,-1,-1):
+   month=(now.replace(day=1)-timedelta(days=offset*31)).replace(day=1)
+   next_month=(month.replace(day=28)+timedelta(days=4)).replace(day=1)
+   income=self.db.execute("SELECT COALESCE(SUM(amount),0) FROM invoices WHERE status='Paid' AND issued>=? AND issued<?",(month.isoformat(),next_month.isoformat())).fetchone()[0]
+   costs=self.db.execute("SELECT COALESCE(SUM(amount),0) FROM expenses WHERE date>=? AND date<?",(month.isoformat(),next_month.isoformat())).fetchone()[0]
+   row=ctk.CTkFrame(trend,fg_color="transparent");row.pack(fill="x",padx=16,pady=5)
+   self.label(row,month.strftime("%b %Y"),10,"muted",width=90,anchor="w").pack(side="left")
+   self.label(row,"In  "+self.money(income),10,"accent",width=180,anchor="w").pack(side="left",padx=8)
+   self.label(row,"Out  "+self.money(costs),10,"text",anchor="w").pack(side="left",padx=8)
+  ageing=self.panel(p);ageing.pack(fill="x",pady=8)
+  self.label(ageing,"Invoice ageing",15).pack(anchor="w",padx=16,pady=(14,8))
+  buckets=[("Not overdue", "due>=?",(now.isoformat(),)),("1–7 days overdue","due<? AND due>=?",(now.isoformat(),(now-timedelta(days=7)).isoformat())),("8–30 days overdue","due<? AND due>=?",((now-timedelta(days=7)).isoformat(),(now-timedelta(days=30)).isoformat())),("Over 30 days overdue","due<?",( (now-timedelta(days=30)).isoformat(),))]
+  for title,condition,args in buckets:
+   amount=self.db.execute("SELECT COALESCE(SUM(amount),0) FROM invoices WHERE status<>'Paid' AND due<>'' AND "+condition,args).fetchone()[0]
+   self.label(ageing,f"{title}   ·   {self.money(amount)}",11,"danger" if "overdue" in title.lower() else "text").pack(anchor="w",padx=18,pady=4)
+  categories=self.panel(p);categories.pack(fill="x",pady=8)
+  self.label(categories,"Spending by category",15).pack(anchor="w",padx=16,pady=(14,8))
+  rows=self.db.execute("SELECT COALESCE(NULLIF(category,''),'Uncategorised') category,COALESCE(SUM(amount),0) total FROM expenses GROUP BY category ORDER BY total DESC LIMIT 8").fetchall()
+  max_total=max([float(x["total"] or 0) for x in rows] or [1]) or 1
+  for item in rows:
+   line=ctk.CTkFrame(categories,fg_color="transparent");line.pack(fill="x",padx=16,pady=5)
+   self.label(line,item["category"],10,"text",width=150,anchor="w").pack(side="left")
+   bar=ctk.CTkProgressBar(line,height=10,progress_color=self.accent());bar.pack(side="left",fill="x",expand=True,padx=10);bar.set(float(item["total"] or 0)/max_total)
+   self.label(line,self.money(item["total"]),10,"muted",width=120,anchor="e").pack(side="right")
+  if not rows:self.label(categories,"Expense categories will appear here once you add spending.",10,"muted").pack(anchor="w",padx=18,pady=(0,14))
+  self.label(p,"These insights use records stored in this local database. Currency is a display preference only; this is not accounting or tax advice.",10,"muted",wraplength=900,justify="left").pack(anchor="w",pady=10)
  def whats_new(self):
   p=self.pages["What's New"]
   for w in p.winfo_children():w.destroy()
   self.heading(p,"What's new in SoloDesk","Release notes and product improvements.")
-  notes=[("V1.6","A new workspace layout",["A redesigned top navigation bar and compact page ribbon replace the old side menu.","A cleaner business workspace with more room for tables, search and day-to-day records.","Refined rounded panels, spacing and visual hierarchy across the app."]),("V1.5","More control over everyday work",["Recurring daily, weekly and monthly tasks with automatic next due dates.","Overdue task and unpaid invoice reminders.","Global search across all workspace records.","Monthly task calendar and customer activity history."]),("V1.4","A more personal SoloDesk",["A dedicated SoloDesk workspace icon and a fresh navy-and-blue visual identity.","Five distinct colour themes, five fonts, bold or regular text, and Dark, Light or System appearance.","Automatic updates can download and launch the latest Windows installer for you.","A direct website installer download and improved Windows app branding."]),("V1.3","A more complete business workspace",["Rounded interface, searchable records, analytics and local backups.","Five font choices, colour themes and Dark, Light or System modes.","Windows startup, desktop shortcut controls and release update checks."]),("V1.2","Business workspace refresh",["Overview dashboard, customers, invoices, expenses and tasks.","Invoice and expense editing, CSV exports and local database backups."])]
+  notes=[("V1.8","A sharper financial picture",["Six-month cashflow pulse comparing paid invoices with recorded expenses.","Invoice ageing buckets to surface overdue receivables.","Spending breakdown by category with visual comparison."]),("V1.7","Workspace reliability improvements",["Refined Windows startup and update handoff behaviour."]),("V1.6","A new workspace layout",["A redesigned top navigation bar and compact page ribbon replace the old side menu.","A cleaner business workspace with more room for tables, search and day-to-day records.","Refined rounded panels, spacing and visual hierarchy across the app."]),("V1.5","More control over everyday work",["Recurring daily, weekly and monthly tasks with automatic next due dates.","Overdue task and unpaid invoice reminders.","Global search across all workspace records.","Monthly task calendar and customer activity history."]),("V1.4","A more personal SoloDesk",["A dedicated SoloDesk workspace icon and a fresh navy-and-blue visual identity.","Five distinct colour themes, five fonts, bold or regular text, and Dark, Light or System appearance.","Automatic updates can download and launch the latest Windows installer for you.","A direct website installer download and improved Windows app branding."]),("V1.3","A more complete business workspace",["Rounded interface, searchable records, analytics and local backups.","Five font choices, colour themes and Dark, Light or System modes.","Windows startup, desktop shortcut controls and release update checks."]),("V1.2","Business workspace refresh",["Overview dashboard, customers, invoices, expenses and tasks.","Invoice and expense editing, CSV exports and local database backups."])]
   for v,t,items in notes:
    card=self.panel(p);card.pack(fill="x",pady=7);self.label(card,v,17,"accent").pack(anchor="w",padx=18,pady=(14,2));self.label(card,t,14).pack(anchor="w",padx=18,pady=3)
    for item in items:self.label(card,"•  "+item,11,"muted",wraplength=900,justify="left").pack(anchor="w",padx=20,pady=3)
