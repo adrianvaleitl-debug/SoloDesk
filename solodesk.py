@@ -7,7 +7,7 @@ from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
 from PIL import Image
 
-APP_VERSION="V2.1"
+APP_VERSION="V2.2"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
@@ -65,6 +65,7 @@ class SoloDesk(ctk.CTk):
   ctk.set_appearance_mode(self.cfg["appearance"])
   super().__init__();self.title("SoloDesk "+APP_VERSION);screen_w=self.winfo_screenwidth();screen_h=self.winfo_screenheight();self.geometry(f"{min(1480,max(900,screen_w-80))}x{min(920,max(640,screen_h-100))}");self.minsize(min(1150,max(900,screen_w-80)),min(740,max(620,screen_h-100)))
   self.set_app_icon()
+  self.apply_glass_effect()
   if sys.platform=="win32":self.after(120,lambda:self.state("zoomed"))
   self.protocol("WM_DELETE_WINDOW",self.close);self.pages={};self.nav={};self.tables={}
   self.calendar_month=date.today().replace(day=1)
@@ -73,6 +74,19 @@ class SoloDesk(ctk.CTk):
   else:self.after(900,self.first_run_shortcut_prompt)
   if self.cfg.get("auto_updates","1")=="1":self.after(1800,self.check_updates)
 
+ def apply_glass_effect(self):
+  """Subtle acrylic tint and transparency on supported Windows versions."""
+  try:
+   self.attributes("-alpha",0.97)
+   if sys.platform!="win32":return
+   class ACCENT_POLICY(ctypes.Structure):
+    _fields_=[("AccentState",ctypes.c_int),("AccentFlags",ctypes.c_int),("GradientColor",ctypes.c_int),("AnimationId",ctypes.c_int)]
+   class WINDOWCOMPOSITIONATTRIBDATA(ctypes.Structure):
+    _fields_=[("Attribute",ctypes.c_int),("Data",ctypes.c_void_p),("SizeOfData",ctypes.c_size_t)]
+   policy=ACCENT_POLICY(4,2,0xCC17263A,0)
+   data=WINDOWCOMPOSITIONATTRIBDATA(19,ctypes.addressof(policy),ctypes.sizeof(policy))
+   ctypes.windll.user32.SetWindowCompositionAttribute(self.winfo_id(),ctypes.byref(data))
+  except Exception:pass
  def set_app_icon(self):
   try:
    base=Path(getattr(sys,"_MEIPASS",Path(__file__).resolve().parent))
@@ -93,13 +107,21 @@ class SoloDesk(ctk.CTk):
  def accent2(self):return THEMES.get(self.theme,THEMES["Euro"])[1]
  def col(self,k):
   dark=ctk.get_appearance_mode()=="Dark"
-  return {"bg":"#0C1422" if dark else "#EAF0F8","side":"#142236" if dark else "#F7FAFF",
+  bases={"bg":"#0C1422" if dark else "#EAF0F8","side":"#142236" if dark else "#F7FAFF",
   "panel":"#17263A" if dark else "#FFFFFF","panel2":"#20344D" if dark else "#EAF1FA",
   "line":"#2A405B" if dark else "#DCE6F3","text":"#EFF5FF" if dark else "#26374D",
   "muted":"#9AAAC0" if dark else "#71839C","input":"#1C2A3B" if dark else "#FAFCFF",
-  "hover":"#263C55" if dark else "#DCE8F6","accent":self.accent(),"danger":"#D77F7F" }[k]
+  "hover":"#263C55" if dark else "#DCE8F6","accent":self.accent(),"danger":"#D77F7F"}
+  base=bases[k]
+  if k in ("bg","side","panel","panel2","input"):
+   try:
+    def rgb(h):return tuple(int(h[i:i+2],16) for i in (1,3,5))
+    a,b=rgb(base),rgb(self.accent());amount={"bg":0.10,"side":0.09,"panel":0.07,"panel2":0.15,"input":0.06}[k]
+    base="#"+"".join(f"{round(x*(1-amount)+y*amount):02X}" for x,y in zip(a,b))
+   except Exception:pass
+  return base
  def font(self,n=12):return ctk.CTkFont(family=self.font_family,size=n,weight="bold" if self.bold else "normal")
- def panel(self,p):return ctk.CTkFrame(p,fg_color=self.col("panel"),corner_radius=22,border_width=1,border_color=self.col("line"))
+ def panel(self,p):return ctk.CTkFrame(p,fg_color=self.col("panel"),corner_radius=22,border_width=0,border_color=self.col("line"))
  def label(self,p,t,size=12,color="text",**kw):return ctk.CTkLabel(p,text=t,font=self.font(size),text_color=self.col(color),**kw)
  def button(self,p,t,fn,primary=False,width=None):
   return ctk.CTkButton(p,text=t,command=fn,width=width or 120,height=37,corner_radius=11,
@@ -107,9 +129,9 @@ class SoloDesk(ctk.CTk):
    text_color="#122033" if primary else self.col("text"),font=self.font(11))
  def build_shell(self):
   self.configure(fg_color=self.col("bg"))
-  self.work=ctk.CTkFrame(self,fg_color=self.col("bg"),corner_radius=0);self.work.pack(fill="both",expand=True)
+  self.work=ctk.CTkFrame(self,fg_color=self.col("bg"),corner_radius=18);self.work.pack(fill="both",expand=True)
   self.work.grid_columnconfigure(1,weight=1);self.work.grid_rowconfigure(1,weight=1)
-  self.sidebar=ctk.CTkFrame(self.work,width=238,fg_color=self.col("side"),corner_radius=24,border_width=1,border_color=self.col("line"))
+  self.sidebar=ctk.CTkFrame(self.work,width=238,fg_color=self.col("side"),corner_radius=24,border_width=0,border_color=self.col("line"))
   self.sidebar.grid(row=0,column=0,rowspan=2,sticky="nsew",padx=(14,8),pady=14);self.sidebar.grid_propagate(False)
   brand=ctk.CTkFrame(self.sidebar,fg_color="transparent");brand.pack(fill="x",padx=20,pady=(24,26))
   if self.brand_image:ctk.CTkLabel(brand,text="",image=self.brand_image).pack(side="left",padx=(0,9))
@@ -117,7 +139,7 @@ class SoloDesk(ctk.CTk):
   brand_text=ctk.CTkFrame(brand,fg_color="transparent");brand_text.pack(side="left")
   self.label(brand_text,"SoloDesk",20).pack(anchor="w")
   self.label(brand_text,"BUSINESS WORKSPACE",8,"muted").pack(anchor="w",pady=(1,0))
-  nav_area=ctk.CTkScrollableFrame(self.sidebar,fg_color="transparent",corner_radius=0)
+  nav_area=ctk.CTkScrollableFrame(self.sidebar,fg_color="transparent",corner_radius=18)
   nav_area.pack(fill="both",expand=True,padx=12,pady=(0,8))
   groups=[
    ("WORKSPACE",[("Overview","⌂"),("Customers","♙"),("Customer Activity","◷")]),
@@ -134,12 +156,15 @@ class SoloDesk(ctk.CTk):
   foot=self.panel(self.sidebar);foot.pack(fill="x",padx=14,pady=14)
   self.label(foot,"LOCAL-FIRST",8,"accent").pack(anchor="w",padx=12,pady=(10,3))
   self.label(foot,"Your business records stay on this computer.",9,"muted",wraplength=180,justify="left").pack(anchor="w",padx=12,pady=(0,11))
-  self.top=ctk.CTkFrame(self.work,height=72,fg_color=self.col("panel"),corner_radius=22,border_width=1,border_color=self.col("line"))
+  self.top=ctk.CTkFrame(self.work,height=72,fg_color=self.col("panel"),corner_radius=22,border_width=0,border_color=self.col("line"))
   self.top.grid(row=0,column=1,sticky="ew",padx=(8,14),pady=(14,8));self.top.grid_propagate(False)
   self.titlelabel=self.label(self.top,"Overview",16);self.titlelabel.pack(side="left",padx=25)
-  self.global_search_entry=ctk.CTkEntry(self.top,placeholder_text="Search customers, invoices, expenses and tasks…",width=310,height=38,corner_radius=13,font=self.font(11))
-  self.global_search_entry.pack(side="right",padx=(8,12));self.global_search_entry.bind("<Return>",lambda _event:self.global_search())
-  self.button(self.top,"⌕ Search",self.global_search).pack(side="right",padx=5)
+  self.search_open=False
+  self.global_search_entry=ctk.CTkEntry(self.top,placeholder_text="Search customers, invoices, expenses and tasks…",width=300,height=38,corner_radius=16,font=self.font(11),fg_color=self.col("input"),border_width=0,text_color=self.col("text"))
+  self.global_search_entry.bind("<Return>",lambda _event:self.global_search())
+  self.global_search_entry.bind("<Escape>",lambda _event:self.toggle_global_search(False))
+  self.search_button=self.button(self.top,"⌕ Search",lambda:self.toggle_global_search(),width=104)
+  self.search_button.pack(side="right",padx=8)
   self.biz=self.label(self.top,self.get("business"),10,"accent",fg_color=self.col("panel2"),corner_radius=12,padx=13,pady=8)
   self.biz.pack(side="right",padx=12)
   self.top.bind("<Configure>",lambda _event:self.global_search_entry.configure(width=170 if self.top.winfo_width()<1050 else 230 if self.top.winfo_width()<1250 else 310),add="+")
@@ -252,6 +277,18 @@ class SoloDesk(ctk.CTk):
   for n in list(self.tables):self.refresh_table(n)
   self.refresh_recent()
   if hasattr(self,"pages") and self.pages["Overview"].winfo_children():self.overview()
+ def toggle_global_search(self,force=None):
+  opening=(not self.search_open) if force is None else bool(force)
+  if opening==self.search_open:return
+  self.search_open=opening
+  if opening:
+   self.global_search_entry.pack(side="right",before=self.search_button,padx=(8,4))
+   self.global_search_entry.focus_set()
+   self.search_button.configure(text="× Close")
+  else:
+   self.global_search_entry.pack_forget()
+   self.global_search_entry.delete(0,"end")
+   self.search_button.configure(text="⌕ Search")
  def global_search(self):
   query=self.global_search_entry.get().strip()
   if not query:return
@@ -314,7 +351,7 @@ class SoloDesk(ctk.CTk):
   weeks=calendar.monthcalendar(month.year,month.month)
   for row_index,week in enumerate(weeks,1):
    for col,day_num in enumerate(week):
-    cell=ctk.CTkFrame(grid,fg_color=self.col("panel"),corner_radius=9,border_width=1,border_color=self.col("line"),height=62)
+    cell=ctk.CTkFrame(grid,fg_color=self.col("panel"),corner_radius=9,border_width=0,border_color=self.col("line"),height=62)
     cell.grid(row=row_index,column=col,sticky="nsew",padx=3,pady=3);cell.grid_propagate(False)
     if day_num:
      key=date(month.year,month.month,day_num).isoformat()
@@ -571,7 +608,9 @@ class SoloDesk(ctk.CTk):
   for t,u in [("YouTube @Adrianvaleitl",YOUTUBE),("TikTok @adrianvaleitl",TIKTOK),("Support on Ko-fi",KOFI)]:self.button(row,t,lambda url=u:webbrowser.open(url)).pack(side="left",padx=4)
  def setting_select(self,p,label,key,opts):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left")
-  v=tk.StringVar(value=({"Dollar":"Finance","Euro":"Operations","Pound":"Planning","Yen":"Clients","Franc":"Workspace"}.get(self.get(key),self.get(key,opts[0])) if key=="colour_theme" else self.get(key,opts[0])));ctk.CTkComboBox(r,values=opts,variable=v,width=230,height=34,corner_radius=10,font=self.font(11),button_color=self.accent2(),button_hover_color=self.accent(),command=lambda x,k=key:self.apply_setting(k,x)).pack(side="right")
+  theme_labels={"Dollar":"Finance","Euro":"Operations","Pound":"Planning","Yen":"Clients","Franc":"Workspace"}
+  v=tk.StringVar(value=(theme_labels.get(self.get(key),self.get(key,opts[0])) if key=="colour_theme" else self.get(key,opts[0])))
+  ctk.CTkComboBox(r,values=opts,variable=v,width=230,height=38,corner_radius=15,font=self.font(11),button_color=self.accent2(),button_hover_color=self.accent(),fg_color=self.col("input"),border_width=0,text_color=self.col("text"),dropdown_fg_color=self.col("panel"),dropdown_hover_color=self.col("hover"),dropdown_text_color=self.col("text"),command=lambda x,k=key:self.apply_setting(k,x)).pack(side="right")
  def setting_select_var(self,p,label,var,opts):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left");ctk.CTkComboBox(r,values=opts,variable=var,width=230,height=34,corner_radius=10,font=self.font(11),button_color=self.accent2(),button_hover_color=self.accent()).pack(side="right")
  def setting_entry(self,p,label,var):
@@ -580,6 +619,9 @@ class SoloDesk(ctk.CTk):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=5);self.label(r,label,11,"muted").pack(side="left");v=tk.BooleanVar(value=self.get(key,"0")=="1")
   ctk.CTkSwitch(r,text="",variable=v,progress_color=self.accent2(),command=lambda:self.apply_setting(key,"1" if v.get() else "0")).pack(side="right")
  def apply_setting(self,k,v):
+  if k=="colour_theme":
+   theme_map={"Finance":"Dollar","Operations":"Euro","Planning":"Pound","Clients":"Yen","Workspace":"Franc"}
+   v=theme_map.get(v,v)
   self.set(k,v)
   if k=="appearance":ctk.set_appearance_mode(v)
   elif k=="colour_theme":self.theme=v
