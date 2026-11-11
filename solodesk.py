@@ -92,7 +92,10 @@ class SoloDesk(ctk.CTk):
     _fields_=[("Attribute",ctypes.c_int),("Data",ctypes.c_void_p),("SizeOfData",ctypes.c_size_t)]
    policy=ACCENT_POLICY(4,2,0xCC17263A,0)
    data=WINDOWCOMPOSITIONATTRIBDATA(19,ctypes.addressof(policy),ctypes.sizeof(policy))
-   ctypes.windll.user32.SetWindowCompositionAttribute(self.winfo_id(),ctypes.byref(data))
+   apply_attribute=ctypes.windll.user32.SetWindowCompositionAttribute
+   apply_attribute.argtypes=[ctypes.c_void_p,ctypes.POINTER(WINDOWCOMPOSITIONATTRIBDATA)]
+   apply_attribute.restype=ctypes.c_bool
+   apply_attribute(ctypes.c_void_p(self.winfo_id()),ctypes.byref(data))
   except Exception:pass
  def set_app_icon(self):
   try:
