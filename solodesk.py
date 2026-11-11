@@ -74,7 +74,7 @@ class SoloDesk(ctk.CTk):
   if "CTkComboBox" in theme:
    theme["CTkComboBox"].update({"fg_color":["#1A1A1A","#1A1A1A"],"border_color":["#404040","#404040"],"button_color":[self.accent(),self.accent()],"button_hover_color":[self.accent2(),self.accent2()],"text_color":["#F2F2F2","#F2F2F2"],"dropdown_fg_color":["#1F1F1F","#1F1F1F"],"dropdown_hover_color":["#363636","#363636"],"dropdown_text_color":["#F2F2F2","#F2F2F2"]})
   if "CTkOptionMenu" in theme:
-   theme["CTkOptionMenu"].update({"fg_color":["#282828","#282828"],"button_color":["#B9B9B9","#B9B9B9"],"button_hover_color":["#C9C9C9","#C9C9C9"],"text_color":["#F2F2F2","#F2F2F2"],"dropdown_fg_color":["#1F1F1F","#1F1F1F"],"dropdown_hover_color":["#363636","#363636"],"dropdown_text_color":["#F2F2F2","#F2F2F2"]})
+   theme["CTkOptionMenu"].update({"fg_color":["#282828","#282828"],"button_color":[self.accent(),self.accent()],"button_hover_color":[self.accent2(),self.accent2()],"text_color":["#F2F2F2","#F2F2F2"],"dropdown_fg_color":["#1F1F1F","#1F1F1F"],"dropdown_hover_color":["#363636","#363636"],"dropdown_text_color":["#F2F2F2","#F2F2F2"]})
   ctk.set_appearance_mode(self.cfg["appearance"])
   super().__init__();self.title("SoloDesk "+APP_VERSION);screen_w=self.winfo_screenwidth();screen_h=self.winfo_screenheight();self.geometry(f"{min(1480,max(900,screen_w-80))}x{min(920,max(640,screen_h-100))}");self.minsize(min(1150,max(900,screen_w-80)),min(740,max(620,screen_h-100)))
   self.set_app_icon()
