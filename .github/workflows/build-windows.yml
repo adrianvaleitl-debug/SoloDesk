@@ -21,9 +21,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
-          python -m pip install pyinstaller
+          python -m pip install pyinstaller pillow
+      - name: Generate app icon and validate source
+        run: |
+          python tools/generate_icon.py
+          python -m py_compile solodesk.py tools/generate_icon.py
       - name: Build desktop application
-        run: python -m PyInstaller --noconfirm --clean --windowed --name SoloDesk --collect-all customtkinter solodesk.py
+        run: python -m PyInstaller --noconfirm --clean --windowed --name SoloDesk --icon assets/solodesk.ico --add-data "assets/solodesk.ico;." --collect-all customtkinter solodesk.py
       - name: Compile Windows installer
         shell: pwsh
         run: |
@@ -40,25 +44,25 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Package portable application
         shell: pwsh
-        run: Compress-Archive -Path dist/SoloDesk/* -DestinationPath installer/SoloDesk-Portable-V1.3.zip -Force
+        run: Compress-Archive -Path dist/SoloDesk/* -DestinationPath installer/SoloDesk-Portable-V1.4.zip -Force
       - name: Publish GitHub release
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: V1.3
+          tag_name: V1.4
           target_commitish: main
-          name: SoloDesk V1.3
+          name: SoloDesk V1.4
           make_latest: true
           overwrite_files: true
           generate_release_notes: true
           fail_on_unmatched_files: true
           files: |
-            installer/SoloDesk-Setup-V1.3.exe
-            installer/SoloDesk-Portable-V1.3.zip
+            installer/SoloDesk-Setup-V1.4.exe
+            installer/SoloDesk-Portable-V1.4.zip
       - name: Upload Windows installer
         uses: actions/upload-artifact@v4
         with:
-          name: SoloDesk-Setup-V1.3
+          name: SoloDesk-Setup-V1.4
           path: installer/SoloDesk-Setup-V1.3.exe
           if-no-files-found: error
       - name: Upload portable application
