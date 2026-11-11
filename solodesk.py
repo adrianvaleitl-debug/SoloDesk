@@ -1,6 +1,6 @@
 import csv,os,shutil,sqlite3,sys,webbrowser,json,threading,urllib.request,subprocess,tempfile,ctypes,traceback
 from pathlib import Path
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import calendar
 import tkinter as tk
 from tkinter import ttk,messagebox,filedialog
@@ -154,6 +154,11 @@ class SoloDesk(ctk.CTk):
   for w in p.winfo_children():w.destroy()
   self.heading(p,"Business overview","A clear view of what is happening across your business.")
   row=ctk.CTkFrame(p,fg_color="transparent");row.pack(fill="x",pady=10)
+  overdue_tasks=self.db.execute("SELECT COUNT(*) FROM tasks WHERE done=0 AND due<>'' AND due<?",(date.today().isoformat(),)).fetchone()[0]
+  overdue_invoices=self.db.execute("SELECT COUNT(*) FROM invoices WHERE status<>'Paid' AND due<>'' AND due<?",(date.today().isoformat(),)).fetchone()[0]
+  if overdue_tasks or overdue_invoices:
+   alert=self.panel(p);alert.pack(fill="x",pady=(3,8))
+   self.label(alert,f"Overdue reminders  ·  {overdue_tasks} tasks  ·  {overdue_invoices} unpaid invoices",12,"danger").pack(anchor="w",padx=16,pady=12)
   paid=self.db.execute("SELECT COALESCE(SUM(amount),0) FROM invoices WHERE status='Paid'").fetchone()[0]
   due=self.db.execute("SELECT COALESCE(SUM(amount),0) FROM invoices WHERE status IN ('Draft','Sent')").fetchone()[0]
   spent=self.db.execute("SELECT COALESCE(SUM(amount),0) FROM expenses").fetchone()[0]
@@ -224,6 +229,129 @@ class SoloDesk(ctk.CTk):
   for n in list(self.tables):self.refresh_table(n)
   self.refresh_recent()
   if hasattr(self,"pages") and self.pages["Overview"].winfo_children():self.overview()
+ def global_search(self):
+  query=self.global_search_entry.get().strip()
+  if not query:return
+  like="%"+query+"%"
+  searches=[
+   ("Customers","SELECT id,name || ' · ' || COALESCE(company,'') FROM customers WHERE name LIKE ? OR company LIKE ? OR email LIKE ? OR phone LIKE ? OR notes LIKE ?",(like,like,like,like,like)),
+   ("Invoices","SELECT id,number || ' · ' || description FROM invoices WHERE number LIKE ? OR description LIKE ?",(like,like)),
+   ("Expenses","SELECT id,category || ' · ' || description FROM expenses WHERE category LIKE ? OR description LIKE ? OR supplier LIKE ?",(like,like,like)),
+   ("Tasks","SELECT id,title || ' · ' || due FROM tasks WHERE title LIKE ? OR due LIKE ?",(like,like)),
+   ("Documents","SELECT id,title || ' · ' || path FROM documents WHERE title LIKE ? OR category LIKE ? OR path LIKE ?",(like,like,like)),
+  ]
+  found=[]
+  for category,sql,args in searches:
+   for row in self.db.execute(sql,args).fetchall():found.append((category,row[0],row[1]))
+  win=ctk.CTkToplevel(self);win.title("Search results");win.geometry("760x500");win.transient(self)
+  self.label(win,f"Search results for: {query}",18).pack(anchor="w",padx=20,pady=(18,8))
+  tree=ttk.Treeview(win,columns=("type","id","record"),show="headings");self.tree_style()
+  for col,title,width in [("type","Type",130),("id","ID",65),("record","Matching record",500)]:
+   tree.heading(col,text=title);tree.column(col,width=width)
+  tree.pack(fill="both",expand=True,padx=18,pady=12)
+  for item in found:tree.insert("","end",values=item)
+  def open_result(_event=None):
+   selected=tree.selection()
+   if not selected:return
+   category,record_id,_=tree.item(selected[0],"values");win.destroy();self.show(category)
+   def select_record():
+    target=self.tables.get(category)
+    if target:
+     for iid in target.get_children():
+      if str(target.item(iid,"values")[0])==str(record_id):
+       target.selection_set(iid);target.focus(iid);target.see(iid);break
+   self.after(180,select_record)
+  tree.bind("<Double-1>",open_result)
+  if not found:self.label(win,"No matching records found.",12,"muted").pack(anchor="w",padx=22,pady=5)
+  else:self.label(win,f"{len(found)} matching records · double-click a result to open it",10,"muted").pack(anchor="w",padx=20,pady=(0,12))
+
+ def next_recurrence_date(self,current,recurrence):
+  if recurrence=="Daily":return current+timedelta(days=1)
+  if recurrence=="Weekly":return current+timedelta(days=7)
+  if recurrence=="Monthly":
+   year=current.year+(1 if current.month==12 else 0);month=1 if current.month==12 else current.month+1
+   return date(year,month,min(current.day,calendar.monthrange(year,month)[1]))
+  return current
+
+ def task_calendar(self):
+  p=self.pages["Task Calendar"]
+  for w in p.winfo_children():w.destroy()
+  month=self.calendar_month
+  self.heading(p,"Task calendar","A monthly view of dated tasks, with a list of everything scheduled this month.")
+  bar=ctk.CTkFrame(p,fg_color="transparent");bar.pack(fill="x",pady=(0,12))
+  self.button(bar,"← Previous",lambda:self.change_calendar_month(-1)).pack(side="left",padx=4)
+  self.label(bar,month.strftime("%B %Y"),16,"accent").pack(side="left",padx=18)
+  self.button(bar,"Next →",lambda:self.change_calendar_month(1)).pack(side="left",padx=4)
+  grid=ctk.CTkFrame(p,fg_color="transparent");grid.pack(fill="x",pady=5)
+  for col,day_name in enumerate(["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]):
+   self.label(grid,day_name,10,"muted").grid(row=0,column=col,sticky="nsew",padx=3,pady=4);grid.grid_columnconfigure(col,weight=1)
+  month_tasks=self.db.execute("SELECT * FROM tasks WHERE due>=? AND due<=? ORDER BY due,done",(month.isoformat(),date(month.year,month.month,calendar.monthrange(month.year,month.month)[1]).isoformat())).fetchall()
+  counts={}
+  for task in month_tasks:counts[task["due"]]=counts.get(task["due"],0)+1
+  weeks=calendar.monthcalendar(month.year,month.month)
+  for row_index,week in enumerate(weeks,1):
+   for col,day_num in enumerate(week):
+    cell=ctk.CTkFrame(grid,fg_color=self.col("panel"),corner_radius=9,border_width=1,border_color=self.col("line"),height=62)
+    cell.grid(row=row_index,column=col,sticky="nsew",padx=3,pady=3);cell.grid_propagate(False)
+    if day_num:
+     key=date(month.year,month.month,day_num).isoformat()
+     self.label(cell,str(day_num),12).pack(anchor="nw",padx=8,pady=(5,0))
+     if counts.get(key):self.label(cell,f"{counts[key]} task(s)",9,"accent").pack(anchor="nw",padx=8)
+  listing=self.panel(p);listing.pack(fill="x",pady=12)
+  self.label(listing,"Tasks this month",14).pack(anchor="w",padx=16,pady=(12,5))
+  if not month_tasks:self.label(listing,"No dated tasks for this month yet.",11,"muted").pack(anchor="w",padx=16,pady=(0,12))
+  for task in month_tasks:
+   status="Complete" if task["done"] else "Open"
+   self.label(listing,f"{task['due']}  ·  {task['title']}  ·  {task['priority']}  ·  {status}",10,"muted").pack(anchor="w",padx=16,pady=3)
+
+ def change_calendar_month(self,offset):
+  year=self.calendar_month.year+(self.calendar_month.month-1+offset)//12
+  month=(self.calendar_month.month-1+offset)%12+1
+  self.calendar_month=date(year,month,1);self.task_calendar()
+
+ def record_customer_activity(self,customer_id,activity):
+  self.db.execute("INSERT INTO customer_activity(customer_id,activity,created) VALUES(?,?,?)",(customer_id,activity,datetime.now().strftime("%Y-%m-%d %H:%M")))
+  self.db.commit()
+
+ def customer_activity_page(self):
+  p=self.pages["Customer Activity"]
+  for w in p.winfo_children():w.destroy()
+  self.heading(p,"Customer activity history","Keep a timeline of conversations, follow-ups and important customer updates.")
+  options=self.customer_options()
+  if not options:
+   self.label(p,"Add a customer first to start an activity history.",12,"muted").pack(anchor="w",pady=12);return
+  row=ctk.CTkFrame(p,fg_color="transparent");row.pack(fill="x",pady=8)
+  self.activity_customer_var=tk.StringVar(value=next(iter(options)))
+  ctk.CTkComboBox(row,values=list(options),variable=self.activity_customer_var,width=320,font=self.font(11),command=lambda _value:self.refresh_customer_activity()).pack(side="left",padx=4)
+  self.activity_note=ctk.CTkTextbox(p,height=100,corner_radius=12);self.activity_note.pack(fill="x",pady=8)
+  self.button(p,"＋ Add activity",self.add_customer_activity,True,150).pack(anchor="e",pady=5)
+  self.activity_timeline=ctk.CTkScrollableFrame(p,fg_color="transparent");self.activity_timeline.pack(fill="both",expand=True,pady=10)
+  self.refresh_customer_activity()
+
+ def selected_activity_customer(self):
+  label=self.activity_customer_var.get()
+  try:return int(label.split(" - ",1)[0])
+  except Exception:return None
+
+ def add_customer_activity(self):
+  customer_id=self.selected_activity_customer()
+  note=self.activity_note.get("1.0","end").strip()
+  if not customer_id or not note:return messagebox.showinfo("Add an activity","Choose a customer and write a short note first.")
+  self.record_customer_activity(customer_id,note)
+  self.activity_note.delete("1.0","end");self.refresh_customer_activity()
+
+ def refresh_customer_activity(self):
+  if not hasattr(self,"activity_timeline") or not self.activity_timeline.winfo_exists():return
+  for w in self.activity_timeline.winfo_children():w.destroy()
+  customer_id=self.selected_activity_customer()
+  if not customer_id:return
+  rows=self.db.execute("SELECT activity,created FROM customer_activity WHERE customer_id=? ORDER BY id DESC",(customer_id,)).fetchall()
+  if not rows:self.label(self.activity_timeline,"No activity recorded for this customer yet.",11,"muted").pack(anchor="w",pady=8)
+  for item in rows:
+   card=self.panel(self.activity_timeline);card.pack(fill="x",pady=5)
+   self.label(card,item["created"],9,"accent").pack(anchor="w",padx=14,pady=(9,2))
+   self.label(card,item["activity"],11,"text",wraplength=850,justify="left").pack(anchor="w",padx=14,pady=(0,9))
+
  def chosen(self,n):
   tree=self.tables.get(n)
   if not tree or not tree.selection():messagebox.showinfo("Select a record","Select a record first.");return None
@@ -264,8 +392,8 @@ class SoloDesk(ctk.CTk):
    if a<0:raise ValueError()
    num=f"SD-{date.today():%y%m%d}-{self.db.execute('SELECT COUNT(*) FROM invoices').fetchone()[0]+1:04d}"
    customer_id=opts[d["customer"]]
-    self.db.execute("INSERT INTO invoices(number,customer_id,description,amount,issued,due,status) VALUES(?,?,?,?,?,?,?)",(num,customer_id,d["description"],a,d["issued"],d["due"],d["status"]));self.db.commit()
-    self.record_customer_activity(customer_id,f"Invoice {num} created · {self.money(a)}");self.refresh()
+   self.db.execute("INSERT INTO invoices(number,customer_id,description,amount,issued,due,status) VALUES(?,?,?,?,?,?,?)",(num,customer_id,d["description"],a,d["issued"],d["due"],d["status"]));self.db.commit()
+   self.record_customer_activity(customer_id,f"Invoice {num} created · {self.money(a)}");self.refresh()
   except Exception:messagebox.showerror("Invalid invoice","Check invoice amount and dates.")
  def edit_invoice(self):
   i=self.chosen("Invoices")
@@ -319,7 +447,11 @@ class SoloDesk(ctk.CTk):
    else:messagebox.showwarning("Missing file","The original file could not be found.")
  def mark_paid(self):
   i=self.chosen("Invoices")
-  if i:self.db.execute("UPDATE invoices SET status='Paid' WHERE id=?",(i,));self.db.commit();self.refresh()
+  if i:
+   row=self.db.execute("SELECT customer_id,number,amount FROM invoices WHERE id=?",(i,)).fetchone()
+   self.db.execute("UPDATE invoices SET status='Paid' WHERE id=?",(i,));self.db.commit()
+   if row:self.record_customer_activity(row["customer_id"],f"Invoice {row['number']} marked paid · {self.money(row['amount'])}")
+   self.refresh()
  def toggle_task(self):
   i=self.chosen("Tasks")
   if i:
