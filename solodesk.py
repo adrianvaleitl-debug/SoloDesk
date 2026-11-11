@@ -1,4 +1,4 @@
-import csv,os,shutil,sqlite3,sys,webbrowser,json,threading,urllib.request,subprocess,tempfile,ctypes,traceback
+import csv,os,shutil,sqlite3,sys,webbrowser,json,threading,urllib.request,subprocess,tempfile,ctypes,traceback,ssl,certifi
 from pathlib import Path
 from datetime import date, timedelta, datetime
 import calendar
@@ -7,7 +7,7 @@ from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
 from PIL import Image
 
-APP_VERSION="V1.8"
+APP_VERSION="V1.9"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
@@ -18,6 +18,7 @@ THEMES={
 LEGACY_THEMES={"Ocean":"Euro","Sage":"Dollar","Violet":"Pound","Coral":"Yen","Teal":"Franc"}
 YOUTUBE="https://www.youtube.com/@Adrianvaleitl";TIKTOK="https://www.tiktok.com/@adrianvaleitl";KOFI="https://ko-fi.com/marketinsight"
 REPO="https://github.com/adrianvaleitl-debug/SoloDesk";RELEASES=REPO+"/releases/latest"
+GITHUB_SSL_CONTEXT=ssl.create_default_context(cafile=certifi.where())
 _SINGLE_INSTANCE_MUTEX=None
 
 def acquire_single_instance():
@@ -59,7 +60,7 @@ class SoloDesk(ctk.CTk):
   self.set("colour_theme",self.theme)
   ctk.set_default_color_theme("blue")
   ctk.set_appearance_mode(self.cfg["appearance"])
-  super().__init__();self.title("SoloDesk "+APP_VERSION);self.geometry("1480x920");self.minsize(1150,740)
+  super().__init__();self.title("SoloDesk "+APP_VERSION);screen_w=self.winfo_screenwidth();screen_h=self.winfo_screenheight();self.geometry(f"{min(1480,max(900,screen_w-80))}x{min(920,max(640,screen_h-100))}");self.minsize(min(1150,max(900,screen_w-80)),min(740,max(620,screen_h-100)))
   self.set_app_icon()
   if sys.platform=="win32":self.after(120,lambda:self.state("zoomed"))
   self.protocol("WM_DELETE_WINDOW",self.close);self.pages={};self.nav={};self.tables={}
@@ -611,7 +612,7 @@ class SoloDesk(ctk.CTk):
   def worker():
    try:
     req=urllib.request.Request("https://api.github.com/repos/adrianvaleitl-debug/SoloDesk/releases/latest",headers={"User-Agent":"SoloDesk"})
-    with urllib.request.urlopen(req,timeout=12) as response:data=json.loads(response.read().decode("utf-8"))
+    with urllib.request.urlopen(req,timeout=20,context=GITHUB_SSL_CONTEXT) as response:data=json.loads(response.read().decode("utf-8"))
     latest=data.get("tag_name","V1.0")
     def parts(v):
      out=[]
@@ -640,7 +641,7 @@ class SoloDesk(ctk.CTk):
    try:
     target=Path(tempfile.gettempdir())/("SoloDesk-Setup-"+str(version)+".exe")
     req=urllib.request.Request(asset["browser_download_url"],headers={"User-Agent":"SoloDesk-Updater"})
-    with urllib.request.urlopen(req,timeout=90) as response,target.open("wb") as output:shutil.copyfileobj(response,output)
+    with urllib.request.urlopen(req,timeout=120,context=GITHUB_SSL_CONTEXT) as response,target.open("wb") as output:shutil.copyfileobj(response,output)
     if not target.exists() or target.stat().st_size<100000:raise RuntimeError("The installer download appears incomplete.")
     def launch():
      try:
