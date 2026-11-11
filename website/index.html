@@ -204,7 +204,7 @@ body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-
     const exactVersion=asset=>(asset.name.match(/\d+(?:\.\d+)+/)||[])[0]===version;
     const installer=assets.find(asset=>/^SoloDesk-Setup-.*\.exe$/i.test(asset.name)&&version&&exactVersion(asset));
     const portable=assets.find(asset=>/^SoloDesk-Portable-.*\.zip$/i.test(asset.name)&&version&&exactVersion(asset));
-    const installerUrl=installer?.browser_download_url||release.html_url||fallback;
+    const installerUrl=installer?.browser_download_url||fallback;
     document.querySelectorAll("[data-latest-installer]").forEach(link=>{
       link.href=installerUrl;
       link.textContent=installer?"Download "+tag+" ↓":"View latest release downloads ↗";
