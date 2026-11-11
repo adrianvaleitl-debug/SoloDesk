@@ -175,3 +175,21 @@ html[data-av-mode="light"] .btn.primary,html[data-av-mode="light"] .primary,html
 (()=>{const root=document.documentElement,key='av-theme-'+location.pathname;let mode='dark',accent='euro';try{mode=localStorage.getItem(key+'-mode')||mode;accent=localStorage.getItem(key+'-accent')||accent}catch{}const valid=['dollar','euro','pound','yen','franc'];function apply(){root.dataset.avMode=mode;root.dataset.avAccent=valid.includes(accent)?accent:'euro';document.querySelector('meta[name="theme-color"]')?.setAttribute('content',mode==='dark'?'#171820':'#f5f3f0');const mb=document.getElementById('av-mode');if(mb){mb.textContent=mode==='dark'?'☀ Light':'☾ Dark';mb.setAttribute('aria-pressed',String(mode==='light'))}document.querySelectorAll('[data-av-choice]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.avChoice===accent)))}function persist(){try{localStorage.setItem(key+'-mode',mode);localStorage.setItem(key+'-accent',accent)}catch{}apply()}const tools=document.createElement('div');tools.className='av-theme-tools';tools.setAttribute('aria-label','Appearance settings');tools.innerHTML='<button id="av-mode" type="button">☀ Light</button>'+[['dollar','#e8c98f','Finance'],['euro','#9ebce9','Operations'],['pound','#c4afe7','Planning'],['yen','#e9aebc','Clients'],['franc','#9fcbd0','Workspace']].map(([n,col,label])=>'<button type="button" data-av-choice="'+n+'"><i class="av-dot" style="background:'+col+'"></i>'+label+'</button>').join('');const nav=document.querySelector('.nav');if(nav)nav.append(tools);else document.body.prepend(tools);document.getElementById('av-mode').addEventListener('click',()=>{mode=mode==='dark'?'light':'dark';persist()});tools.querySelectorAll('[data-av-choice]').forEach(b=>b.addEventListener('click',()=>{accent=b.dataset.avChoice;persist()}));apply()})();
 </script>
 </body></html>
+
+<script id="importance-first-section-order">
+(()=> {
+ const ids=["setup","whats-new","features","about","creator"];
+ const nodes=ids.map(id=>document.getElementById(id)).filter(Boolean);
+ if(nodes.length<2)return;
+ const parent=nodes[0].parentElement;
+ if(!parent||nodes.some(node=>node.parentElement!==parent))return;
+ const hero=Array.from(parent.children).find(el=>el.id==="hero"||el.classList?.contains("hero"))||null;
+ const nodeSet=new Set(nodes);
+ const anchor=hero ? Array.from(parent.children).find(el=>el!==hero&&!nodeSet.has(el)&&el.compareDocumentPosition(hero)&Node.DOCUMENT_POSITION_PRECEDING) : null;
+ // Place the priority sections directly after the hero/intro, preserving the remaining content.
+ let reference=hero?.nextElementSibling||null;
+ while(reference&&nodeSet.has(reference))reference=reference.nextElementSibling;
+ if(!hero)reference=Array.from(parent.children).find(el=>!nodeSet.has(el))||null;
+ for(const node of nodes)parent.insertBefore(node,reference);
+})();
+</script>
