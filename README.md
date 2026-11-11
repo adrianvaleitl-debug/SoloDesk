@@ -14,7 +14,7 @@
 
 SoloDesk is a local-first Windows desktop workspace for freelancers and small businesses.
 
-## What's new in V1.6
+## Earlier improvements (V1.6)
 - Redesigned top navigation and compact page ribbon replace the former vertical sidebar.
 - More horizontal room for business records, tables and global search, with refined spacing and rounded workspace panels.
 - Recurring daily, weekly and monthly tasks with automatic next due dates.
