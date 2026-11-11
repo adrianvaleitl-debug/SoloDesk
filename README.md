@@ -1,8 +1,14 @@
-# SoloDesk V1.3
+# SoloDesk V1.4
 **Your business, in one place.**  
 **Created by Adrian Vale.**
 
 SoloDesk is a local-first Windows desktop workspace for freelancers and small businesses.
+
+## What's new in V1.4
+- Dedicated SoloDesk workspace icon for the app, installer, taskbar and desktop shortcuts.
+- New navy-and-blue interface identity with five distinct colour themes.
+- Website download buttons directly download the Windows installer.
+- Automatic updates can download and launch the latest Windows installer after confirmation.
 
 ## Features
 - Business overview with paid income, outstanding invoices, expenses and customer totals.
@@ -12,13 +18,13 @@ SoloDesk is a local-first Windows desktop workspace for freelancers and small bu
 - Task manager with priorities and completion status.
 - Business document library with links to files stored on your computer.
 - Analytics summary for paid income, outstanding invoices and expenses.
-- Five colour themes: Dollar, Euro, Pound, Yen and Franc.
+- Five SoloDesk colour themes: Ocean, Sage, Violet, Coral and Teal.
 - Five font choices: Segoe UI, Arial, Verdana, Trebuchet MS and Georgia.
 - Bold or regular typography throughout the app.
 - Dark, Light and System appearance modes.
-- First-launch quick-start guide and in-app What's New release notes.
+- First-launch seven-step quick-start guide, one-time desktop shortcut prompt and in-app What's New release notes.
 - Optional Windows startup launch and desktop shortcut create/remove controls.
-- Automatic and manual GitHub release checks, manual database backups and in-app update links.
+- Automatic and manual GitHub release checks, automatic installer download and launch, manual database backups and in-app update controls.
 - YouTube, TikTok and Ko-fi creator links.
 
 ## Creator
