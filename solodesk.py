@@ -124,19 +124,12 @@ class SoloDesk(ctk.CTk):
  def accent2(self):return THEMES.get(self.theme,THEMES["Euro"])[1]
  def col(self,k):
   dark=ctk.get_appearance_mode()=="Dark"
-  bases={"bg":"#101010" if dark else "#EDEDED","side":"#1B1B1B" if dark else "#F3F3F3",
-  "panel":"#1F1F1F" if dark else "#FBFBFB","panel2":"#282828" if dark else "#E9E9E9",
-  "line":"#404040" if dark else "#DBDBDB","text":"#F2F2F2" if dark else "#333333",
-  "muted":"#A9A9A9" if dark else "#7E7E7E","input":"#1A1A1A" if dark else "#F9F9F9",
-  "hover":"#363636" if dark else "#E4E4E4","accent":self.accent(),"danger":"#9B9B9B"}
-  base=bases[k]
-  if k in ("bg","side","panel","panel2","input"):
-   try:
-    def rgb(h):return tuple(int(h[i:i+2],16) for i in (1,3,5))
-    a,b=rgb(base),rgb(self.accent());amount={"bg":0.04,"side":0.06,"panel":0.05,"panel2":0.08,"input":0.03}[k]
-    base="#"+"".join(f"{round(x*(1-amount)+y*amount):02X}" for x,y in zip(a,b))
-   except Exception:pass
-  return base
+  bases={"bg":"#101012" if dark else "#EDEDED","side":"#19191D" if dark else "#F3F3F3",
+   "panel":"#202024" if dark else "#FBFBFB","panel2":"#29292E" if dark else "#E9E9E9",
+   "line":"#38383E" if dark else "#DBDBDB","text":"#F2F2F2" if dark else "#333333",
+   "muted":"#A9A9A9" if dark else "#7E7E7E","input":"#1B1B20" if dark else "#F9F9F9",
+   "hover":"#36363D" if dark else "#E4E4E4","accent":self.accent(),"danger":"#9B9B9B"}
+  return bases[k]
  def font(self,n=12):return ctk.CTkFont(family=self.font_family,size=n,weight="bold" if self.bold else "normal")
  def panel(self,p):return ctk.CTkFrame(p,fg_color=self.col("panel"),corner_radius=22,border_width=1,border_color=self.col("line"))
  def label(self,p,t,size=12,color="text",**kw):return ctk.CTkLabel(p,text=t,font=self.font(size),text_color=self.col(color),**kw)
