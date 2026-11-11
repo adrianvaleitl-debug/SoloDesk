@@ -77,7 +77,7 @@ class SoloDesk(ctk.CTk):
   super().__init__();self.title("SoloDesk "+APP_VERSION);screen_w=self.winfo_screenwidth();screen_h=self.winfo_screenheight();self.geometry(f"{min(1480,max(900,screen_w-80))}x{min(920,max(640,screen_h-100))}");self.minsize(min(1150,max(900,screen_w-80)),min(740,max(620,screen_h-100)))
   self.set_app_icon()
   self.apply_glass_effect()
-  self.apply_spotlight_background()
+
   if sys.platform=="win32":self.after(120,lambda:self.state("zoomed"))
   self.protocol("WM_DELETE_WINDOW",self.close);self.pages={};self.nav={};self.tables={}
   self.calendar_month=date.today().replace(day=1)
