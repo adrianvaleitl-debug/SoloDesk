@@ -105,13 +105,9 @@ def install_accent_spotlight(window, accent, background="#101012"):
         window._accent_spotlight_canvas=canvas
         window._accent_spotlight_photo=photo
         window._active_spotlight_colour=accent
-        if not getattr(window,"_accent_spotlight_resize_bound",False):
-            def redraw(event):
-                if event.widget is window:
-                    window.after_idle(lambda:install_accent_spotlight(
-                        window,window._active_spotlight_colour,background))
-            window.bind("<Configure>",redraw,add="+")
-            window._accent_spotlight_resize_bound=True
+        # Keep the pre-rendered accent haze stable during interactive resizing.
+        # Recreating and blurring a full-window bitmap on every Configure event
+        # made dragging the window edge unnecessarily expensive.
     except Exception:
         pass
 
