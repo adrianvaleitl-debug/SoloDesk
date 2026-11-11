@@ -1,18 +1,19 @@
-import csv,os,shutil,sqlite3,sys,webbrowser,json,threading,urllib.request
+import csv,os,shutil,sqlite3,sys,webbrowser,json,threading,urllib.request,subprocess,tempfile
 from pathlib import Path
 from datetime import date
 import tkinter as tk
 from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
 
-APP_VERSION="V1.3"
+APP_VERSION="V1.4"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
 FONTS=["Segoe UI","Arial","Verdana","Trebuchet MS","Georgia"]
 THEMES={
-"Dollar":("#B8E4C7","#6EB88A"),"Euro":("#B8D5F5","#6E9FD9"),
-"Pound":("#D3C2F2","#9678D0"),"Yen":("#F2C1CC","#D77F96"),"Franc":("#B4E7E0","#58B5AA")}
+"Ocean":("#B8D8FF","#6F9FE0"),"Sage":("#BFE6D2","#6DBB91"),
+"Violet":("#D6C8F5","#9A82D7"),"Coral":("#FFD0C2","#E58F79"),"Teal":("#B8E8E4","#62B9B1")}
+LEGACY_THEMES={"Dollar":"Sage","Euro":"Ocean","Pound":"Violet","Yen":"Coral","Franc":"Teal"}
 YOUTUBE="https://www.youtube.com/@Adrianvaleitl";TIKTOK="https://www.tiktok.com/@adrianvaleitl";KOFI="https://ko-fi.com/marketinsight"
 REPO="https://github.com/adrianvaleitl-debug/SoloDesk";RELEASES=REPO+"/releases/latest"
 
@@ -28,15 +29,25 @@ class SoloDesk(ctk.CTk):
   defaults={"business":"My Business","currency":"GBP","appearance":"Dark","colour_theme":"Dollar","font_family":"Segoe UI","bold_text":"1","tutorial_completed":"0","startup":"0","auto_updates":"1"}
   for k,v in defaults.items():self.db.execute("INSERT OR IGNORE INTO settings VALUES(?,?)",(k,v))
   self.db.commit();self.cfg={r["k"]:r["v"] for r in self.db.execute("SELECT * FROM settings")}
-  self.font_family=self.cfg["font_family"];self.bold=self.cfg["bold_text"]=="1";self.theme=self.cfg["colour_theme"]
+  self.font_family=self.cfg["font_family"];self.bold=self.cfg["bold_text"]=="1"
+  self.theme=LEGACY_THEMES.get(self.cfg["colour_theme"],self.cfg["colour_theme"])
+  if self.theme not in THEMES:self.theme="Ocean"
+  self.set("colour_theme",self.theme)
   ctk.set_default_color_theme("green")
   ctk.set_appearance_mode(self.cfg["appearance"])
   super().__init__();self.title("SoloDesk "+APP_VERSION);self.geometry("1480x920");self.minsize(1150,740)
+  self.set_app_icon()
   self.protocol("WM_DELETE_WINDOW",self.close);self.pages={};self.nav={};self.tables={}
   self.build_shell();self.show("Overview");self.refresh()
   if self.cfg["tutorial_completed"]!="1":self.after(650,self.tutorial)
   if self.cfg.get("auto_updates","1")=="1":self.after(1800,self.check_updates)
 
+ def set_app_icon(self):
+  try:
+   base=Path(getattr(sys,"_MEIPASS",Path(__file__).resolve().parent))
+   icon=base/"solodesk.ico"
+   if icon.exists():self.iconbitmap(default=str(icon))
+  except Exception:pass
  def get(self,k,d=""):return self.cfg.get(k,d)
  def set(self,k,v):
   self.cfg[k]=str(v);self.db.execute("INSERT INTO settings VALUES(?,?) ON CONFLICT(k) DO UPDATE SET v=excluded.v",(k,str(v)));self.db.commit()
