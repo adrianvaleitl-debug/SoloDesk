@@ -1,30 +1,23 @@
-# SoloDesk V1.8
+# SoloDesk V2.7
 **Your business, in one place.**  
 **Created by Adrian Vale.**
 
-## What's new in V1.8
-- **Six-month cashflow pulse:** compare paid invoice totals with recorded expenses month by month.
-- **Invoice ageing:** group outstanding balances into not overdue, 1–7 days, 8–30 days and over 30 days overdue.
-- **Spending by category:** see expense totals with proportional visual bars.
-- Analytics are calculated from records stored locally. Currency is a display preference only; this is not accounting or tax advice.
+## What's new in V2.7
+- **Startup crash fixed:** corrected the invalid Euro accent-theme fallback that could stop SoloDesk opening.
+- **Safer accent settings:** missing or outdated saved accent values now fall back safely to Black.
+- **Accent choices retained:** Black, Amber, Azure, Lavender, Rose and Teal remain available.
+- Existing customers, invoices, expenses, tasks and other local business data are preserved.
+
+## What's new in V2.6
+- **Compact global search:** reduced the search control so its icon and field fit cleanly inside the top bar.
+- **Six optional accent choices:** Black remains the default while charcoal glass surfaces stay neutral.
+- **Clearer spacing:** refined text, controls and panel borders to avoid collisions.
 
 
 **Your business, in one place.**  
 **Created by Adrian Vale.**
 
 SoloDesk is a local-first Windows desktop workspace for freelancers and small businesses.
-
-## Earlier improvements (V1.6)
-- Redesigned top navigation and compact page ribbon replace the former vertical sidebar.
-- More horizontal room for business records, tables and global search, with refined spacing and rounded workspace panels.
-- Recurring daily, weekly and monthly tasks with automatic next due dates.
-- Overdue task and unpaid invoice reminders.
-- Global search across customers, invoices, expenses, documents and tasks.
-- Monthly task calendar and customer activity timelines.
-- New navy-and-blue interface identity with five distinct colour themes.
-- Website download buttons directly download the Windows installer.
-- Automatic updates can download and launch the latest Windows installer after confirmation.
-
 ## Features
 - Business overview with paid income, outstanding invoices, expenses and customer totals.
 - Customer directory with searchable contact records, editing and CSV export.
