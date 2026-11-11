@@ -34,7 +34,7 @@ class SoloDesk(ctk.CTk):
   self.theme=LEGACY_THEMES.get(self.cfg["colour_theme"],self.cfg["colour_theme"])
   if self.theme not in THEMES:self.theme="Ocean"
   self.set("colour_theme",self.theme)
-  ctk.set_default_color_theme("green")
+  ctk.set_default_color_theme("blue")
   ctk.set_appearance_mode(self.cfg["appearance"])
   super().__init__();self.title("SoloDesk "+APP_VERSION);self.geometry("1480x920");self.minsize(1150,740)
   self.set_app_icon()
