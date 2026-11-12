@@ -111,7 +111,7 @@ def install_accent_spotlight(window, accent, background="#101012"):
     except Exception:
         pass
 
-APP_VERSION="V3.1"
+APP_VERSION="V3.2"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
@@ -189,9 +189,7 @@ class SoloDesk(ctk.CTk):
   self.calendar_month=date.today().replace(day=1)
   self.build_shell();self.show("Overview");self.refresh()
   self.after(350,self.apply_glass_effect)
-  if self.cfg["tutorial_completed"]!="1":self.after(650,self.tutorial)
-  else:self.after(900,self.first_run_shortcut_prompt)
-  if self.cfg.get("auto_updates","1")=="1":self.after(1800,self.check_updates)
+  self.after(650,self.show_legal_notice)
 
  def apply_glass_effect(self):
   try:
@@ -711,6 +709,39 @@ class SoloDesk(ctk.CTk):
    self.label(row,title,12,"text").pack(side="left",padx=12)
    self.label(card,detail,10,"muted",wraplength=900,justify="left").pack(anchor="w",padx=18,pady=(2,13))
 
+ def show_legal_notice(self,force=False):
+  version="2026-11-12"
+  if not force and self.get("legal_notice_version","") == version:
+   self.continue_after_legal_notice()
+   return
+  w=ctk.CTkToplevel(self);w.title("SoloDesk · Important information");w.geometry("720x650");w.minsize(600,520);w.transient(self);w.grab_set();w.protocol("WM_DELETE_WINDOW",self.close);w.configure(fg_color=self.col("bg"))
+  self.label(w,"Before you use SoloDesk",24).pack(anchor="w",padx=24,pady=(22,5))
+  self.label(w,"Please read and acknowledge this business software risk notice.",12,"muted").pack(anchor="w",padx=24,pady=(0,12))
+  body=ctk.CTkScrollableFrame(w,fg_color=self.col("panel"));body.pack(fill="both",expand=True,padx=20,pady=(0,14))
+  notice=("GENERAL ORGANISATION SOFTWARE ONLY\n\n"
+   "SoloDesk is a local business organiser for recording customers, invoices, expenses, tasks and links to documents. It is not accounting, bookkeeping, tax, legal or financial advice software. It does not process payments, submit tax or VAT returns, verify invoice compliance, or convert currencies. Currency selection changes the display symbol only.\n\n"
+   "CHECK YOUR RECORDS\n\n"
+   "You are responsible for checking customer details, amounts, invoice numbers, dates, tax treatment, payment status, expenses, task details and exported records before using or sharing them. Calculations, summaries, exports and displayed information may contain errors or omissions and should not replace your own checks or professional advice.\n\n"
+   "LOCAL DATA AND BACKUPS\n\n"
+   "Business records are stored locally on this device. Device failure, accidental deletion, corrupted files, operating-system problems or user actions may cause data loss. Use the backup and export features regularly and keep copies somewhere safe. Document entries link to files at their current local paths; SoloDesk does not guarantee those files will remain available.\n\n"
+   "AVAILABILITY AND THIRD-PARTY SERVICES\n\n"
+   "The app is provided as an organisational aid. Features may change, become unavailable or contain defects. Update checks and downloads rely on third-party services, including GitHub, which are outside the developer's control.\n\n"
+   "LIMITATION OF LIABILITY\n\n"
+   "To the fullest extent permitted by applicable law, Adrian Vale and the people involved in creating or maintaining SoloDesk exclude responsibility for losses, damage or costs arising from use of, inability to use, or reliance on the app, including data loss, business interruption, incorrect records, missed tasks or decisions made using its outputs. This does not exclude or limit any liability or consumer right that cannot lawfully be excluded or limited.\n\n"
+   "Using SoloDesk does not create an accounting, tax, legal, financial or other professional relationship with Adrian Vale. If you do not agree with this notice, do not continue using the app.")
+  self.label(body,notice,11,"text",wraplength=620,justify="left").pack(fill="both",expand=True,padx=16,pady=16)
+  actions=ctk.CTkFrame(w,fg_color="transparent");actions.pack(fill="x",padx=20,pady=(0,18))
+  self.button(actions,"Exit SoloDesk",self.close).pack(side="left")
+  def accept():
+   self.set("legal_notice_version",version)
+   w.grab_release();w.destroy();self.continue_after_legal_notice()
+  self.button(actions,"I understand — continue",accept,True,190).pack(side="right")
+ def continue_after_legal_notice(self):
+  if self.cfg.get("tutorial_completed","0")!="1":self.after(250,self.tutorial)
+  else:self.after(250,self.first_run_shortcut_prompt)
+  if self.cfg.get("auto_updates","1")=="1":self.after(1800,self.check_updates)
+ def show_legal_from_settings(self):
+  self.show_legal_notice(force=True)
  def settings_page(self):
   p=self.pages["Settings"]
   for w in p.winfo_children():w.destroy()
@@ -726,6 +757,9 @@ class SoloDesk(ctk.CTk):
   row=ctk.CTkFrame(d,fg_color="transparent");row.pack(anchor="w",padx=12,pady=10)
   for t,fn in [("Back up database",self.backup),("Create desktop shortcut",self.create_shortcut),("Remove desktop shortcut",lambda:self.create_shortcut(True)),("Replay quick-start guide",self.tutorial),("Check for updates",lambda:self.check_updates(True)),("Open GitHub",lambda:webbrowser.open(REPO))]:self.button(row,t,fn).pack(side="left",padx=4)
   self.label(d,"Records are stored locally. Currency selection changes the displayed symbol only; no FX conversion or tax calculations are performed.",10,"muted",wraplength=900,justify="left").pack(anchor="w",padx=18,pady=(0,14))
+  legal=self.panel(sc);legal.pack(fill="x",pady=6);self.label(legal,"Legal & important information",16).pack(anchor="w",padx=18,pady=(14,5))
+  self.label(legal,"SoloDesk is an organiser, not accounting or tax software. Review the full risk, data and liability notice before relying on records.",10,"muted",wraplength=900,justify="left").pack(anchor="w",padx=18,pady=(0,8))
+  self.button(legal,"Read legal & liability notice",self.show_legal_from_settings).pack(anchor="w",padx=18,pady=(0,14))
   cr=self.panel(sc);cr.pack(fill="x",pady=6);self.label(cr,"Created by Adrian Vale",16).pack(anchor="w",padx=18,pady=(14,3));self.label(cr,"Follow the project and support development.",11,"muted").pack(anchor="w",padx=18)
   row=ctk.CTkFrame(cr,fg_color="transparent");row.pack(anchor="w",padx=12,pady=12)
   for t,u in [("My website ↗",PERSONAL_SITE),("YouTube @Adrianvaleitl",YOUTUBE),("TikTok @adrianvaleitl",TIKTOK),("Donate · Ko-fi",KOFI)]:self.button(row,t,lambda url=u:webbrowser.open(url)).pack(side="left",padx=4)
