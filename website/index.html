@@ -208,7 +208,7 @@ body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-
     const exactVersion=asset=>(asset.name.match(/\d+(?:\.\d+)+/)||[])[0]===version;
     const installer=assets.find(asset=>/^SoloDesk-Setup-.*\.exe$/i.test(asset.name)&&version&&exactVersion(asset));
     const portable=assets.find(asset=>/^SoloDesk-Portable-.*\.zip$/i.test(asset.name)&&version&&exactVersion(asset));
-    const installerUrl=installer?.browser_download_url||fallback;
+    const installerUrl=installer?.browser_download_url||release.html_url||releaseFallback;
     document.querySelectorAll("[data-latest-installer]").forEach(link=>{
       link.href=installerUrl;
       link.textContent=installer?"Download "+tag+" ↓":"View latest release downloads ↗";
@@ -216,9 +216,10 @@ body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-
     });
     document.querySelectorAll("[data-latest-release]").forEach(link=>{link.href=release.html_url||releaseFallback;});
     document.querySelectorAll("[data-latest-version]").forEach(node=>{node.textContent=tag||node.textContent;});
-    document.querySelectorAll("[data-latest-portable]").forEach(link=>{link.href=portable?.browser_download_url||"https://github.com/adrianvaleitl-debug/SoloDesk/releases/download/V3.0/SoloDesk-Portable-V3.0.zip";});
+    document.querySelectorAll("[data-latest-portable]").forEach(link=>{link.href=portable?.browser_download_url||release.html_url||releaseFallback;});
   }catch(error){
-    document.querySelectorAll("[data-latest-installer],[data-latest-portable]").forEach(link=>link.href=fallback);
+    document.querySelectorAll("[data-latest-installer]").forEach(link=>link.href=fallback);
+    document.querySelectorAll("[data-latest-portable]").forEach(link=>link.href="https://github.com/adrianvaleitl-debug/SoloDesk/releases/download/V3.0/SoloDesk-Portable-V3.0.zip");
     document.querySelectorAll("[data-latest-release]").forEach(link=>link.href=releaseFallback);
   }
 })();
