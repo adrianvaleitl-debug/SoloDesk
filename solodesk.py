@@ -714,7 +714,11 @@ class SoloDesk(ctk.CTk):
   if not force and self.get("legal_notice_version","") == version:
    self.continue_after_legal_notice()
    return
-  w=ctk.CTkToplevel(self);w.title("SoloDesk · Important information");w.geometry("720x650");w.minsize(600,520);w.transient(self);w.grab_set();w.protocol("WM_DELETE_WINDOW",self.close);w.configure(fg_color=self.col("bg"))
+  w=ctk.CTkToplevel(self);w.title("SoloDesk · Important information");w.geometry("720x650");w.minsize(600,520);w.transient(self);w.grab_set();w.configure(fg_color=self.col("bg"))
+  def dismiss():
+   if force:w.grab_release();w.destroy()
+   else:self.close()
+  w.protocol("WM_DELETE_WINDOW",dismiss)
   self.label(w,"Before you use SoloDesk",24).pack(anchor="w",padx=24,pady=(22,5))
   self.label(w,"Please read and acknowledge this business software risk notice.",12,"muted").pack(anchor="w",padx=24,pady=(0,12))
   body=ctk.CTkScrollableFrame(w,fg_color=self.col("panel"));body.pack(fill="both",expand=True,padx=20,pady=(0,14))
@@ -731,10 +735,11 @@ class SoloDesk(ctk.CTk):
    "Using SoloDesk does not create an accounting, tax, legal, financial or other professional relationship with Adrian Vale. If you do not agree with this notice, do not continue using the app.")
   self.label(body,notice,11,"text",wraplength=620,justify="left").pack(fill="both",expand=True,padx=16,pady=16)
   actions=ctk.CTkFrame(w,fg_color="transparent");actions.pack(fill="x",padx=20,pady=(0,18))
-  self.button(actions,"Exit SoloDesk",self.close).pack(side="left")
+  self.button(actions,"Exit SoloDesk",dismiss).pack(side="left")
   def accept():
    self.set("legal_notice_version",version)
-   w.grab_release();w.destroy();self.continue_after_legal_notice()
+   w.grab_release();w.destroy()
+   if not force:self.continue_after_legal_notice()
   self.button(actions,"I understand — continue",accept,True,190).pack(side="right")
  def continue_after_legal_notice(self):
   if self.cfg.get("tutorial_completed","0")!="1":self.after(250,self.tutorial)
