@@ -7,7 +7,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: solodesk-v3-1-release
+  group: solodesk-v3-2-release
   cancel-in-progress: true
 jobs:
   build:
@@ -51,12 +51,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Package portable application
         shell: pwsh
-        run: Compress-Archive -Path dist/SoloDesk/* -DestinationPath installer/SoloDesk-Portable-V3.1.zip -Force
+        run: Compress-Archive -Path dist/SoloDesk/* -DestinationPath installer/SoloDesk-Portable-V3.2.zip -Force
       - name: Publish GitHub release
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: V3.1
+          tag_name: V3.2
           target_commitish: main
           name: SoloDesk V3.1
           make_latest: true
