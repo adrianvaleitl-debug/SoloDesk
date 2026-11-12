@@ -1,13 +1,16 @@
-# SoloDesk V3.1
+# SoloDesk V3.2
 **Your business, in one place.**  
 **Created by Adrian Vale.**
 
-## What's new in V3.1
-- Stabilised accent-colour changes so the selected palette is consistently rebuilt across the workspace.
-- Removed expensive spotlight image regeneration during window resizing for smoother window movement.
-- Kept the existing glass backdrop and local business data intact.
-- Redesigned the in-app release history with a featured latest release and a previous-version timeline.
+## What's new in V3.2
+- Added a required first-launch legal and liability notice before the app can be used.
+- Added a Legal & Important Information section to Settings so the notice can be reopened.
+- Clarified record checking, local data backups, document links, third-party services and limitations of liability.
 - Existing customers, invoices, expenses, tasks, documents and settings are preserved.
+
+## Legal and data notice
+
+SoloDesk is a local business organiser, not accounting, bookkeeping, tax, legal or financial advice software. It does not process payments, submit tax or VAT returns, verify invoice compliance or convert currencies. Users must check records and exported information before relying on them. Business records are stored locally; users are responsible for maintaining separate backups. Document entries link to files at their current local paths. The app may contain errors or interruptions, and third-party update services are outside the developer's control. To the fullest extent permitted by law, Adrian Vale and the people involved in creating or maintaining SoloDesk exclude liability for losses arising from use of or reliance on the app, including data loss and business interruption. This does not exclude liability or consumer rights that cannot legally be excluded.
 
 ## Previous release highlights
 - **V2.8:** Added persistent Adrian Vale website and Donate · Ko-fi shortcuts.
