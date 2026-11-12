@@ -216,7 +216,7 @@ body>footer.wrap.footer{display:flex!important;flex-wrap:wrap!important;justify-
     });
     document.querySelectorAll("[data-latest-release]").forEach(link=>{link.href=release.html_url||releaseFallback;});
     document.querySelectorAll("[data-latest-version]").forEach(node=>{node.textContent=tag||node.textContent;});
-    document.querySelectorAll("[data-latest-portable]").forEach(link=>{link.href=portable?.browser_download_url||release.html_url||releaseFallback;});
+    document.querySelectorAll("[data-latest-portable]").forEach(link=>{link.href=portable?.browser_download_url||release.html_url||releaseFallback;link.textContent=portable?"Download portable ZIP ↓":"View latest release downloads ↗";});
   }catch(error){
     document.querySelectorAll("[data-latest-installer]").forEach(link=>link.href=fallback);
     document.querySelectorAll("[data-latest-portable]").forEach(link=>link.href="https://github.com/adrianvaleitl-debug/SoloDesk/releases/download/V3.0/SoloDesk-Portable-V3.0.zip");
