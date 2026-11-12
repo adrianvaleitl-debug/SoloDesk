@@ -1,5 +1,11 @@
 # Changelog
 
+## V3.2 — 12 November 2026
+- Added a required first-launch legal and liability acknowledgement before app access.
+- Added a Legal & Important Information section to Settings for reopening the notice.
+- Clarified local record storage, backups, document links, user verification responsibilities and third-party service limitations.
+
+
 ## V3.1 — 11 November 2026
 - Improved accent-theme refresh stability and ensured the selected palette is applied consistently when the workspace is rebuilt.
 - Removed full-window Gaussian-blur regeneration from resize events to keep window dragging smooth.
