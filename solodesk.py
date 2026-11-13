@@ -7,10 +7,7 @@ from tkinter import ttk,messagebox,filedialog
 import customtkinter as ctk
 
 # ---------------------------------------------------------------------------
-# TEMPORARY UNSTYLED UI BASELINE
-# Keep the existing widget tree, layout and behaviour, but discard authored
-# visual styling so a new design can be applied cleanly later.
-def _install_unstyled_ui():
+:
     _style_keys = {
         "fg_color", "bg_color", "hover_color", "border_color", "border_width",
         "text_color", "placeholder_text_color", "button_color",
