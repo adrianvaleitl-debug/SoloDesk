@@ -906,7 +906,7 @@ class SoloDesk(ctk.CTk):
   if messagebox.askyesno("Create a desktop shortcut?","Would you like a SoloDesk shortcut on your Windows desktop? You can change this later in Settings."):
    self.create_shortcut()
  def delete_all_data(self):
-  if not messagebox.askyesno("Delete all SoloDesk data","This permanently deletes all SoloDesk records and settings stored on this device, including customers, invoices, expenses, tasks, document links and preferences. Back up anything you want to keep first. This cannot be undone.\n\nContinue?"):
+  if not messagebox.askyesno("Delete all SoloDesk data","This permanently deletes all SoloDesk records and settings stored on this device, including customers, invoices, expenses, tasks, document links and preferences. Back up anything you want to keep first. This does not delete original documents or backup copies stored outside the SoloDesk data folder. This cannot be undone.\n\nContinue?"):
    return
   try:
    self.db.commit()
