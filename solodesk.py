@@ -261,7 +261,7 @@ class SoloDesk(ctk.CTk):
   self.label(foot,"LOCAL-FIRST",8,"accent").pack(anchor="w",padx=12,pady=(10,3))
   self.label(foot,"Your business records stay on this computer.",9,"muted",wraplength=180,justify="left").pack(anchor="w",padx=12,pady=(0,8))
   self.button(foot,"My website ↗",lambda:webbrowser.open(PERSONAL_SITE),width=180).pack(fill="x",padx=10,pady=3)
-  self.button(foot,"Donate · Ko-fi ↗",lambda:webbrowser.open(KOFI),True,180).pack(fill="x",padx=10,pady=(2,10))
+  self.button(foot,"Optional support · Ko-fi ↗",lambda:webbrowser.open(KOFI),True,180).pack(fill="x",padx=10,pady=(2,10))
   self.top=ctk.CTkFrame(self.work,height=68,fg_color=self.col("panel"),corner_radius=24,border_width=1,border_color=self.col("line"))
   self.top.grid(row=0,column=1,sticky="ew",padx=(8,14),pady=(14,8));self.top.grid_propagate(False)
   self.titlelabel=self.label(self.top,"Overview",16);self.titlelabel.pack(side="left",padx=25)
