@@ -9,3 +9,8 @@
 - Matched the Adrian Vale website surfaces, typography and Classy blue / Royal gold themes.
 - Added automated tests and Windows installer build checks.
 - No legacy Python application code or old desktop UI is included.
+
+## 3.9.0 — Ledger release
+- Added a first-launch business-use and data-loss acknowledgement.
+- Renamed the product Ledger and introduced a matching royal-gold L app icon.
+- Updated the desktop installer identity and manual release links.
