@@ -122,7 +122,22 @@ ACTIVE_THEME="Classy"
 def palette_color(value):
  royal={"#101012":"#24160E","#19191D":"#362316","#202024":"#432C1B","#29292E":"#52351F","#38383E":"#75512D","#404040":"#75512D","#36363D":"#694523","#1B1B20":"#2C1C11","#F2F2F2":"#F1D9A8","#A9A9A9":"#C5A978","#AFAFAF":"#C5A978","#EDEDED":"#24160E","#FBFBFB":"#432C1B","#F9F9F9":"#2C1C11","#E9E9E9":"#52351F","#E4E4E4":"#694523","#DBDBDB":"#75512D","#7E7E7E":"#C5A978","#333333":"#F1D9A8","#1E1E1E":"#24160E","#282828":"#52351F","#1F1F1F":"#432C1B","#7F7F7F":"#A98753","#D6D6D6":"#75512D","#CBCBCB":"#694523","#585858":"#75512D","#343434":"#52351F","#B9B9B9":"#F1D9A8","#A0A0A0":"#D7B979"}
  classy={"#101012":"#000412","#19191D":"#0B1020","#202024":"#111B2B","#29292E":"#18243A","#38383E":"#29364A","#404040":"#29364A","#36363D":"#24334A","#1B1B20":"#0B1424","#F2F2F2":"#EBEEF2","#A9A9A9":"#AAB4C2","#AFAFAF":"#AAB4C2","#EDEDED":"#000412","#FBFBFB":"#111B2B","#F9F9F9":"#0B1424","#E9E9E9":"#18243A","#E4E4E4":"#24334A","#DBDBDB":"#29364A","#7E7E7E":"#AAB4C2","#333333":"#EBEEF2","#1E1E1E":"#000412","#282828":"#18243A","#1F1F1F":"#111B2B","#7F7F7F":"#AAB4C2","#D6D6D6":"#29364A","#CBCBCB":"#24334A","#585858":"#29364A","#343434":"#18243A","#B9B9B9":"#DCE5F0","#A0A0A0":"#AAB9CC"}
- return (royal if ACTIVE_THEME=="Royal" else classy).get(value,value)
+ palette = royal if ACTIVE_THEME=="Royal" else classy
+ if value in palette:return palette[value]
+ if value in ("#202020","#1A1A1A","#1F1F1F","#363636"):return "#24160E" if ACTIVE_THEME=="Royal" else "#000412"
+ if len(value)==7 and value.startswith("#"):
+  try:
+   rgb=tuple(int(value[i:i+2],16) for i in (1,3,5))
+   if max(rgb)-min(rgb)<=2:
+    level=sum(rgb)//3
+    if level<=35:return "#24160E" if ACTIVE_THEME=="Royal" else "#000412"
+    if level<=65:return "#75512D" if ACTIVE_THEME=="Royal" else "#29364A"
+    if level<=125:return "#C5A978" if ACTIVE_THEME=="Royal" else "#AAB4C2"
+    if level<=185:return "#75512D" if ACTIVE_THEME=="Royal" else "#29364A"
+    if level<=225:return "#52351F" if ACTIVE_THEME=="Royal" else "#18243A"
+    return "#F1D9A8" if ACTIVE_THEME=="Royal" else "#EBEEF2"
+  except ValueError:pass
+ return value
 YOUTUBE="https://www.youtube.com/@Adrianvaleitl";TIKTOK="https://www.tiktok.com/@adrianvaleitl";KOFI="https://ko-fi.com/marketinsight";PERSONAL_SITE="https://adrianvaleitl-debug.github.io/"
 REPO="https://github.com/adrianvaleitl-debug/SoloDesk";RELEASES=REPO+"/releases/latest"
 GITHUB_SSL_CONTEXT=ssl.create_default_context(cafile=certifi.where())
