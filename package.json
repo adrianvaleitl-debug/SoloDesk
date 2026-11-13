@@ -1,7 +1,7 @@
 {
-  "name": "solodesk",
+  "name": "ledger",
   "private": true,
-  "version": "3.8.0",
+  "version": "3.9.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
@@ -25,5 +25,5 @@
     "vite": "^7.3.2",
     "@vitejs/plugin-react": "^5.2.0"
   },
-  "description": "SoloDesk desktop application"
+  "description": "Ledger desktop application"
 }
