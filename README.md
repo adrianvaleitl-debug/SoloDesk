@@ -10,7 +10,7 @@ A focused business workspace, rebuilt with React, TypeScript and Tauri 2. This i
 - Document index for local file locations and external URLs
 - Overview of customers, paid income, outstanding invoices, expenses and tasks
 - Analytics for total invoiced, outstanding balances, expenses and net recorded amounts
-- Full JSON backup export and per-section CSV export
+- Full JSON backup export, per-section CSV export and a confirmed local-data deletion control
 - Website-matched Classy blue and Royal gold themes
 
 ## Run locally
