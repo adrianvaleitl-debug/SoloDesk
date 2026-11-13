@@ -1,6 +1,10 @@
-# SoloDesk V3.2
+# SoloDesk V3.3
 **Your business, in one place.**  
 **Created by Adrian Vale.**
+
+## What's new in V3.3
+- Added a Settings option to permanently delete the local database and preferences after an explicit confirmation.
+- Added clear local-storage choices to the project website.
 
 ## What's new in V3.2
 - Added a required first-launch legal and liability notice before the app can be used.
