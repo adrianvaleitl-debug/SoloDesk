@@ -1,5 +1,11 @@
 # Changelog
 
+## V3.4 — 13 November 2026
+- Replaced the previous six accent colours and Light/Dark/System choices with two complete themes: Classy (midnight navy and ice white) and Royal (dark chocolate brown, pale gold and metallic gold).
+- Applied the selected palette consistently across the desktop workspace, panels, navigation, controls and highlights.
+- Preserved existing local records and saved preferences while migrating previous colour selections to the closest new theme.
+
+
 ## V3.3 — 13 November 2026
 - Added a confirmed Settings action to permanently delete all SoloDesk local records and preferences.
 - Added a browser-storage choice banner to the website, with an option not to save appearance preferences.
