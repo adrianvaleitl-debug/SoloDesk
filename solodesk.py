@@ -761,7 +761,8 @@ class SoloDesk(ctk.CTk):
   d=self.panel(sc);d.pack(fill="x",pady=6);self.label(d,"App and data",16).pack(anchor="w",padx=18,pady=(14,8));self.setting_switch(d,"Launch when Windows starts","startup");self.setting_switch(d,"Check for updates automatically","auto_updates")
   row=ctk.CTkFrame(d,fg_color="transparent");row.pack(anchor="w",padx=12,pady=10)
   for t,fn in [("Back up database",self.backup),("Create desktop shortcut",self.create_shortcut),("Remove desktop shortcut",lambda:self.create_shortcut(True)),("Replay quick-start guide",self.tutorial),("Check for updates",lambda:self.check_updates(True)),("Open GitHub",lambda:webbrowser.open(REPO))]:self.button(row,t,fn).pack(side="left",padx=4)
-  self.label(d,"Records are stored locally. Currency selection changes the displayed symbol only; no FX conversion or tax calculations are performed.",10,"muted",wraplength=900,justify="left").pack(anchor="w",padx=18,pady=(0,14))
+  self.label(d,"Records are stored locally. Currency selection changes the displayed symbol only; no FX conversion or tax calculations are performed.",10,"muted",wraplength=900,justify="left").pack(anchor="w",padx=18,pady=(0,8))
+  self.button(d,"Delete all SoloDesk data…",self.delete_all_data).pack(anchor="w",padx=18,pady=(0,14))
   legal=self.panel(sc);legal.pack(fill="x",pady=6);self.label(legal,"Legal & important information",16).pack(anchor="w",padx=18,pady=(14,5))
   self.label(legal,"SoloDesk is an organiser, not accounting or tax software. Review the full risk, data and liability notice before relying on records.",10,"muted",wraplength=900,justify="left").pack(anchor="w",padx=18,pady=(0,8))
   self.button(legal,"Read legal & liability notice",self.show_legal_from_settings).pack(anchor="w",padx=18,pady=(0,14))
@@ -901,6 +902,19 @@ class SoloDesk(ctk.CTk):
   if shortcut.exists():return
   if messagebox.askyesno("Create a desktop shortcut?","Would you like a SoloDesk shortcut on your Windows desktop? You can change this later in Settings."):
    self.create_shortcut()
+ def delete_all_data(self):
+  if not messagebox.askyesno("Delete all SoloDesk data","This permanently deletes all SoloDesk records and settings stored on this device, including customers, invoices, expenses, tasks, document links and preferences. Back up anything you want to keep first. This cannot be undone.\\n\\nContinue?"):
+   return
+  try:
+   self.db.commit()
+   self.db.close()
+   if ROOT.exists():shutil.rmtree(ROOT)
+  except Exception as exc:
+   messagebox.showerror("Data deletion incomplete",f"SoloDesk could not remove all local data. Close the app and remove this folder manually:\\n{ROOT}\\n\\nDetails: {exc}")
+   self.destroy()
+   return
+  messagebox.showinfo("Local data deleted","SoloDesk local records and settings have been deleted from this device.")
+  self.destroy()
  def backup(self):
   path=filedialog.asksaveasfilename(defaultextension=".db",initialfile="solodesk-backup.db")
   if path:self.db.commit();shutil.copy2(DB,path);messagebox.showinfo("Backup","Database backup saved.")
