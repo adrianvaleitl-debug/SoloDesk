@@ -22,12 +22,14 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install -r requirements.txt
           python -m pip install pyinstaller pillow
+          python -m pip install pip-licenses
+          pip-licenses --format=markdown --with-urls --output-file=THIRD_PARTY_LICENSES.md
       - name: Generate app icon and validate source
         run: |
           python tools/generate_icon.py
           python -m py_compile solodesk.py tools/generate_icon.py
       - name: Build desktop application
-        run: python -m PyInstaller --noconfirm --clean --windowed --name SoloDesk --icon assets/solodesk.ico --add-data "assets/solodesk.ico;." --add-data "assets/solodesk.png;." --add-data "THIRD_PARTY_NOTICES.md;." --collect-all customtkinter --collect-all certifi --collect-all PIL solodesk.py
+        run: python -m PyInstaller --noconfirm --clean --windowed --name SoloDesk --icon assets/solodesk.ico --add-data "assets/solodesk.ico;." --add-data "assets/solodesk.png;." --add-data "THIRD_PARTY_NOTICES.md;." --add-data "THIRD_PARTY_LICENSES.md;." --collect-all customtkinter --collect-all certifi --collect-all PIL solodesk.py
       - name: Smoke test packaged desktop app
         shell: pwsh
         run: |
