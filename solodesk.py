@@ -172,7 +172,7 @@ def install_accent_spotlight(window, accent, background="#101012"):
     except Exception:
         pass
 
-APP_VERSION="V3.5"
+APP_VERSION="V3.6"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
@@ -802,13 +802,13 @@ class SoloDesk(ctk.CTk):
   sc=ctk.CTkScrollableFrame(p,fg_color="transparent");sc.pack(fill="both",expand=True)
   latest=self.panel(sc);latest.pack(fill="x",pady=(4,14))
   top=ctk.CTkFrame(latest,fg_color="transparent");top.pack(fill="x",padx=22,pady=(20,8))
-  self.label(top,"V3.5",25,"accent").pack(side="left")
+  self.label(top,"V3.6",25,"accent").pack(side="left")
   self.label(top,"LATEST RELEASE",10,"muted").pack(side="right")
-  self.label(latest,"Two complete Classy and Royal themes",19).pack(anchor="w",padx=22,pady=(0,5))
+  self.label(latest,"Unstyled interface baseline",19).pack(anchor="w",padx=22,pady=(0,5))
   self.label(latest,"13 November 2026  ·  Windows desktop",10,"muted").pack(anchor="w",padx=22)
-  self.label(latest,"This release replaces the old accent-colour collection with two complete themes: Classy in midnight navy and ice white, and Royal in dark chocolate brown and pale metallic gold. Theme changes update the full workspace and preserve your saved records.",11,"muted",wraplength=900,justify="left").pack(anchor="w",padx=22,pady=(12,15))
+  self.label(latest,"This release temporarily removes custom visual styling to provide a clean, neutral starting point for the next interface redesign. Existing features, navigation, layout structure and saved records are retained.",11,"muted",wraplength=900,justify="left").pack(anchor="w",padx=22,pady=(12,15))
   self.label(latest,"IN THIS RELEASE",10,"muted").pack(anchor="w",padx=22,pady=(0,7))
-  for item in ["Choose Classy for midnight navy, ice white and subtle silver.","Choose Royal for dark chocolate brown, pale gold and metallic gold.","The selected theme updates the full interface, including navigation, panels, controls and highlights.","Existing customers, invoices, expenses, tasks, documents and settings are preserved."]:
+  for item in ["Removed custom colours, decorative backgrounds and branded visual effects.","Reset typography and control styling to a plain system appearance.","Kept the existing screens, controls, navigation and app functionality.","Existing customers, invoices, expenses, tasks, documents and settings are preserved."]:
    self.label(latest,"✓   "+item,11,"text",wraplength=900,justify="left").pack(anchor="w",padx=24,pady=3)
   self.label(sc,"PREVIOUS RELEASES",10,"muted").pack(anchor="w",padx=4,pady=(8,7))
   history=[("V2.9","Accent spotlight groundwork","Introduced the multi-layer accent glow and initial Windows backdrop integration. The backdrop handling is refined in V3.0."),("V2.8","Creator shortcuts","Added persistent website and Ko-fi links in the sidebar and Settings."),("V2.7","Settings reliability","Improved saved accent compatibility and safe fallback handling."),("V2.6","Workspace refinements","Refined search, spacing and optional accent colours."),("V1.8","Financial overview","Added cashflow, invoice ageing and spending breakdown insights."),("V1.7","Workspace reliability","Refined startup and update handoff behaviour."),("V1.6","Workspace redesign","Introduced the top navigation, page ribbon and improved business workspace layout."),("V1.5","Everyday workflow tools","Added recurring tasks, reminders, global search, calendar and customer activity history."),("V1.4","Personalisation and updates","Added themes, fonts, appearance modes, automatic updates and Windows branding."),("V1.3","Business workspace","Added searchable records, analytics, local backups and customisation."),("V1.2","Core organiser","Added dashboard, customers, invoices, expenses, tasks and database backups.") ]
