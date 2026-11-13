@@ -111,7 +111,7 @@ def install_accent_spotlight(window, accent, background="#101012"):
     except Exception:
         pass
 
-APP_VERSION="V3.3"
+APP_VERSION="V3.4"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
@@ -712,11 +712,11 @@ class SoloDesk(ctk.CTk):
   sc=ctk.CTkScrollableFrame(p,fg_color="transparent");sc.pack(fill="both",expand=True)
   latest=self.panel(sc);latest.pack(fill="x",pady=(4,14))
   top=ctk.CTkFrame(latest,fg_color="transparent");top.pack(fill="x",padx=22,pady=(20,8))
-  self.label(top,"V3.2",25,"accent").pack(side="left")
+  self.label(top,"V3.4",25,"accent").pack(side="left")
   self.label(top,"LATEST RELEASE",10,"muted").pack(side="right")
-  self.label(latest,"Legal safeguards and data responsibilities",19).pack(anchor="w",padx=22,pady=(0,5))
-  self.label(latest,"12 November 2026  ·  Windows desktop",10,"muted").pack(anchor="w",padx=22)
-  self.label(latest,"This release adds a first-launch legal and liability notice, plus a Legal & Important Information section in Settings. It explains record checking, local backups, document links and third-party update services.",11,"muted",wraplength=900,justify="left").pack(anchor="w",padx=22,pady=(12,15))
+  self.label(latest,"Two complete Classy and Royal themes",19).pack(anchor="w",padx=22,pady=(0,5))
+  self.label(latest,"13 November 2026  ·  Windows desktop",10,"muted").pack(anchor="w",padx=22)
+  self.label(latest,"This release replaces the old accent-colour collection with two complete themes: Classy in midnight navy and ice white, and Royal in dark chocolate brown and pale metallic gold. Theme changes update the full workspace and preserve your saved records.",11,"muted",wraplength=900,justify="left").pack(anchor="w",padx=22,pady=(12,15))
   self.label(latest,"IN THIS RELEASE",10,"muted").pack(anchor="w",padx=22,pady=(0,7))
   for item in ["A risk and liability notice appears before first use and must be acknowledged.","The full notice can be reopened from Settings at any time.","The notice explains local data storage, backup responsibilities and the limits of business-record outputs.","Existing customers, invoices, expenses, tasks, documents and settings are preserved."]:
    self.label(latest,"✓   "+item,11,"text",wraplength=900,justify="left").pack(anchor="w",padx=24,pady=3)
