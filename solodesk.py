@@ -78,7 +78,7 @@ def apply_windows_glass_backdrop(window, transparency=8, light=False):
 
 
 
-def install_accent_spotlight(window, accent, background=palette_color("#101012")):
+def install_accent_spotlight(window, accent, background="#101012"):
     """Render a soft multi-layer nebula glow behind the app's glass surfaces."""
     try:
         if not isinstance(accent, str) or len(accent) != 7 or not accent.startswith("#"):
@@ -161,7 +161,7 @@ class SoloDesk(ctk.CTk):
   task_columns={row["name"] for row in self.db.execute("PRAGMA table_info(tasks)")}
   if "recurrence" not in task_columns:self.db.execute("ALTER TABLE tasks ADD COLUMN recurrence TEXT DEFAULT 'None'")
   self.db.execute("CREATE INDEX IF NOT EXISTS idx_customer_activity_customer ON customer_activity(customer_id, id DESC)")
-  defaults={"business":"My Business","currency":"GBP","appearance":"Dark","colour_theme":"Black","font_family":"Segoe UI","bold_text":"1","tutorial_completed":"0","startup":"0","auto_updates":"1","transparency":"8"}
+  defaults={"business":"My Business","currency":"GBP","appearance":"Dark","colour_theme":"Classy","font_family":"Segoe UI","bold_text":"1","tutorial_completed":"0","startup":"0","auto_updates":"1","transparency":"8"}
   for k,v in defaults.items():self.db.execute("INSERT OR IGNORE INTO settings VALUES(?,?)",(k,v))
   self.db.commit();self.cfg={r["k"]:r["v"] for r in self.db.execute("SELECT * FROM settings")}
   self.font_family=self.cfg["font_family"];self.bold=self.cfg["bold_text"]=="1"
