@@ -1,37 +1,34 @@
-# SoloDesk
+# SoloDesk 4.0 — clean rebuild
 
-Your business, in one place.
+A focused business workspace by Adrian Vale, rebuilt from a clean React + TypeScript + Tauri 2 foundation. The legacy application UI and Python application code are not carried into this project.
 
-A completely new TypeScript + React + Tauri 2 desktop application by Adrian Vale.
+## Core workspace
+- Customer records and contact notes
+- Invoice register with issue/due dates and payment status
+- Expense register and business totals
+- Task list with completion state and due dates
+- Document index for local file locations and URLs
+- Simple business analytics and CSV export
+- Full JSON backup export
+- Classy blue and Royal gold appearance modes
 
-## Stack
-- React + TypeScript + Vite
-- Tauri 2 desktop runtime (Rust host)
-- Lucide icons
-
-## Development
+## Run locally
 ```bash
 npm install
 npm run tauri dev
 ```
 
-## Production build
+## Test and build
 ```bash
+npm test
+npm run build
 npm run tauri build
 ```
 
-## Product scope
-- Overview
-- Customers
-- Invoices
-- Expenses
-- Tasks
-- Documents
+## Data and privacy
+Workspace records are stored in the app's local webview storage on this device. The app does not connect to a hosted account or upload your records. Export a JSON backup to keep a separate copy. This is a lightweight business organiser, not accounting or tax software.
 
-## Design
-A focused interpretation of the Adrian Vale website design system: deep midnight surfaces, precise cool-blue Classy accents, warm Royal gold accents, quiet borders, restrained radii and crisp typography.
+## Stack
+React 18 · TypeScript · Vite · Tauri 2 · Rust
 
-## Data
-This first rebuild foundation stores working workspace entries locally in the WebView. No existing Python UI or legacy interface is included. Do not import or overwrite previous app data automatically.
-
-Created by Adrian Vale · https://adrianvaleitl-debug.github.io/
+Website: https://adrianvaleitl-debug.github.io/
