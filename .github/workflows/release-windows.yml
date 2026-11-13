@@ -43,15 +43,15 @@ jobs:
           $exe = Get-ChildItem -Path "src-tauri/target/release/bundle/nsis" -Filter "*.exe" | Select-Object -First 1
           $msi = Get-ChildItem -Path "src-tauri/target/release/bundle/msi" -Filter "*.msi" | Select-Object -First 1
           if (-not $exe -or -not $msi) { throw "Expected NSIS EXE and MSI installers were not produced." }
-          Copy-Item $exe.FullName "release-assets/SoloDesk-Setup-V3.8.exe"
-          Copy-Item $msi.FullName "release-assets/SoloDesk-V3.8.msi"
+          Copy-Item $exe.FullName "release-assets/Ledger-Setup-3.9.exe"
+          Copy-Item $msi.FullName "release-assets/Ledger-3.9.msi"
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "V3.8"
-          name: "SoloDesk 3.8 — Windows"
+          tag_name: "V3.9"
+          name: "Ledger 3.9 — Windows"
           body: |
-            Fresh React + TypeScript + Tauri 2 rebuild with personal settings, accessibility options and expanded legal and privacy information.
+            New Ledger release with the royal-gold app identity, first-launch legal acknowledgement and updated workspace experience.
           files: release-assets/*
           overwrite_files: true
           fail_on_unmatched_files: true
