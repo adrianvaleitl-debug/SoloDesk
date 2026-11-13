@@ -17,7 +17,7 @@ def apply_windows_glass_backdrop(window, transparency=8, light=False):
 def install_accent_spotlight(window, accent, background=None):
     """Keep the app background flat; the website design has no app blur layer."""
     return None
-APP_VERSION="V3.6"
+APP_VERSION="V3.7"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
