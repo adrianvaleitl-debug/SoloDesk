@@ -804,7 +804,7 @@ class SoloDesk(ctk.CTk):
   self.heading(p,"Settings","Personalise your workspace and manage your data.")
   sc=ctk.CTkScrollableFrame(p,fg_color="transparent");sc.pack(fill="both",expand=True)
   a=self.panel(sc);a.pack(fill="x",pady=6);self.label(a,"Choose one complete colour palette for the whole app.",16).pack(anchor="w",padx=18,pady=(14,8))
-  self.setting_select(a,"Colour theme","colour_theme",["Classy","Royal"]);self.setting_transparency(a);self.setting_select(a,"Font family","font_family",FONTS);self.setting_switch(a,"Bold text","bold_text")
+  self.setting_select(a,"Colour theme","colour_theme",["Classy","Royal"]);self.setting_transparency(a)
   b=self.panel(sc);b.pack(fill="x",pady=6);self.label(b,"Business preferences",16).pack(anchor="w",padx=18,pady=(14,8))
   self.bizvar=tk.StringVar(value=self.get("business"));self.curvar=tk.StringVar(value=self.get("currency","GBP"))
   self.setting_entry(b,"Business name",self.bizvar);self.setting_select_var(b,"Display currency",self.curvar,list(SYMBOLS))
