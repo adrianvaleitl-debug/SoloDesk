@@ -741,7 +741,7 @@ class SoloDesk(ctk.CTk):
   sc=ctk.CTkScrollableFrame(p,fg_color="transparent");sc.pack(fill="both",expand=True)
   latest=self.panel(sc);latest.pack(fill="x",pady=(4,14))
   top=ctk.CTkFrame(latest,fg_color="transparent");top.pack(fill="x",padx=22,pady=(20,8))
-  self.label(top,"V3.4",25,"accent").pack(side="left")
+  self.label(top,"V3.5",25,"accent").pack(side="left")
   self.label(top,"LATEST RELEASE",10,"muted").pack(side="right")
   self.label(latest,"Two complete Classy and Royal themes",19).pack(anchor="w",padx=22,pady=(0,5))
   self.label(latest,"13 November 2026  ·  Windows desktop",10,"muted").pack(anchor="w",padx=22)
