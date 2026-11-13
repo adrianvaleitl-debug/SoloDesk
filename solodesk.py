@@ -245,7 +245,7 @@ class SoloDesk(ctk.CTk):
   elif n=="What's New":self.whats_new()
   else:self.settings_page()
  def heading(self,p,t,sub):
-  ctk.CTkLabel(p,text=t,font=ctk.CTkFont(family="Cormorant Garamond" if self.theme=="Royal" else "Manrope",size=31,weight="bold"),text_color=self.col("text")).pack(anchor="w",pady=(3,2));self.label(p,sub,11,"muted").pack(anchor="w",pady=(0,15))
+  ctk.CTkLabel(p,text=t,font=ctk.CTkFont(family="Cormorant Garamond",size=31,weight="bold"),text_color=self.col("text")).pack(anchor="w",pady=(3,2));self.label(p,sub,11,"muted").pack(anchor="w",pady=(0,15))
  def metric(self,p,title,value,sub):
   f=self.panel(p);f.pack(side="left",fill="both",expand=True,padx=5)
   self.label(f,title.upper(),9,"muted").pack(anchor="w",padx=16,pady=(15,4));self.label(f,value,23).pack(anchor="w",padx=16)
