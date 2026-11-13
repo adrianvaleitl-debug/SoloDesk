@@ -137,7 +137,7 @@ def acquire_single_instance():
   if not handle:return True
   if kernel32.GetLastError()==183:
    kernel32.CloseHandle(handle)
-   ctypes.windll.user32.MessageBoxW(None,"SoloDesk is already running.\\n\\nCheck your taskbar for the open window.","SoloDesk",0x40)
+   ctypes.windll.user32.MessageBoxW(None,"SoloDesk is already running.\n\nCheck your taskbar for the open window.","SoloDesk",0x40)
    return False
   _SINGLE_INSTANCE_MUTEX=handle
   return True
@@ -871,14 +871,14 @@ class SoloDesk(ctk.CTk):
      self.after(0,lambda:self.offer_update(latest,asset))
     elif manual:self.after(0,lambda:messagebox.showinfo("SoloDesk is up to date",f"You are using {APP_VERSION}, the latest available release."))
    except Exception as e:
-    if manual:self.after(0,lambda err=str(e):messagebox.showwarning("Update check unavailable",f"Could not check GitHub Releases right now.\\n\\n{err}"))
+    if manual:self.after(0,lambda err=str(e):messagebox.showwarning("Update check unavailable",f"Could not check GitHub Releases right now.\n\n{err}"))
    finally:self._update_check_running=False
   threading.Thread(target=worker,daemon=True).start()
  def offer_update(self,version,asset=None):
   if not asset or not asset.get("browser_download_url"):
-   if messagebox.askyesno("Update available",f"SoloDesk {version} is available.\\n\\nOpen the release page to download it?"):webbrowser.open(RELEASES)
+   if messagebox.askyesno("Update available",f"SoloDesk {version} is available.\n\nOpen the release page to download it?"):webbrowser.open(RELEASES)
    return
-  if not messagebox.askyesno("Update available",f"SoloDesk {version} is available.\\n\\nDownload and install the update now?\\nYour saved business data will be kept."):return
+  if not messagebox.askyesno("Update available",f"SoloDesk {version} is available.\n\nDownload and install the update now?\nYour saved business data will be kept."):return
   if not getattr(sys,"frozen",False):
    webbrowser.open(asset["browser_download_url"]);return
   def download():
@@ -891,9 +891,9 @@ class SoloDesk(ctk.CTk):
      try:
       subprocess.Popen([str(target),"/SILENT","/CLOSEAPPLICATIONS","/NORESTART"],close_fds=True)
       self.after(700,self.close)
-     except Exception as e:messagebox.showerror("Update failed",f"Could not launch the installer.\\n\\n{e}")
+     except Exception as e:messagebox.showerror("Update failed",f"Could not launch the installer.\n\n{e}")
     self.after(0,launch)
-   except Exception as e:self.after(0,lambda err=str(e):messagebox.showerror("Update download failed",f"Could not download the update.\\n\\n{err}"))
+   except Exception as e:self.after(0,lambda err=str(e):messagebox.showerror("Update download failed",f"Could not download the update.\n\n{err}"))
   threading.Thread(target=download,daemon=True).start()
  def first_run_shortcut_prompt(self):
   if self.get("shortcut_prompted","0")=="1":return
@@ -903,14 +903,14 @@ class SoloDesk(ctk.CTk):
   if messagebox.askyesno("Create a desktop shortcut?","Would you like a SoloDesk shortcut on your Windows desktop? You can change this later in Settings."):
    self.create_shortcut()
  def delete_all_data(self):
-  if not messagebox.askyesno("Delete all SoloDesk data","This permanently deletes all SoloDesk records and settings stored on this device, including customers, invoices, expenses, tasks, document links and preferences. Back up anything you want to keep first. This cannot be undone.\\n\\nContinue?"):
+  if not messagebox.askyesno("Delete all SoloDesk data","This permanently deletes all SoloDesk records and settings stored on this device, including customers, invoices, expenses, tasks, document links and preferences. Back up anything you want to keep first. This cannot be undone.\n\nContinue?"):
    return
   try:
    self.db.commit()
    self.db.close()
    if ROOT.exists():shutil.rmtree(ROOT)
   except Exception as exc:
-   messagebox.showerror("Data deletion incomplete",f"SoloDesk could not remove all local data. Close the app and remove this folder manually:\\n{ROOT}\\n\\nDetails: {exc}")
+   messagebox.showerror("Data deletion incomplete",f"SoloDesk could not remove all local data. Close the app and remove this folder manually:\n{ROOT}\n\nDetails: {exc}")
    self.destroy()
    return
   messagebox.showinfo("Local data deleted","SoloDesk local records and settings have been deleted from this device.")
@@ -950,11 +950,11 @@ def run_app():
    ROOT.mkdir(parents=True,exist_ok=True)
    log.write_text(details,encoding="utf-8")
   except Exception:log=None
-  message="SoloDesk could not start because something went wrong.\\n\\n"+details[-1800:]
-  if log:message+="\\n\\nA diagnostic report was saved to:\\n"+str(log)
+  message="SoloDesk could not start because something went wrong.\n\n"+details[-1800:]
+  if log:message+="\n\nA diagnostic report was saved to:\n"+str(log)
   if sys.platform=="win32":
    try:ctypes.windll.user32.MessageBoxW(None,message,"SoloDesk",0x10)
-   except Exception:print(message+"\\n"+details)
-  else:print(message+"\\n"+details)
+   except Exception:print(message+"\n"+details)
+  else:print(message+"\n"+details)
 
 if __name__=="__main__" and acquire_single_instance():run_app()
