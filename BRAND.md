@@ -1,6 +1,6 @@
 # SoloDesk brand system
 - Product: SoloDesk
-- Current version: V1.4
+- Current version: V3.3
 - Tagline: Your business, in one place.
 - Creator attribution: Created by Adrian Vale
 - Creator links: YouTube @Adrianvaleitl · TikTok @adrianvaleitl · Ko-fi marketinsight
