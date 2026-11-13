@@ -12,10 +12,10 @@ from PIL import Image, ImageDraw, ImageFilter, ImageTk
 GLASS_KEY = "#010101"
 
 def apply_windows_glass_backdrop(window, transparency=8, light=False):
-    """Disable acrylic so app surfaces stay crisp and opaque like the website."""
+    """Use solid website-matched surfaces instead of Windows acrylic."""
     return False
 def install_accent_spotlight(window, accent, background=None):
-    """No decorative blur layer: use the flat website palette instead."""
+    """Keep the app background flat; the website design has no app blur layer."""
     return None
 APP_VERSION="V3.6"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
@@ -114,7 +114,7 @@ class SoloDesk(ctk.CTk):
   defaults={"business":"My Business","currency":"GBP","appearance":"Dark","colour_theme":"Classy","font_family":"Segoe UI","bold_text":"1","tutorial_completed":"0","startup":"0","auto_updates":"1","transparency":"8"}
   for k,v in defaults.items():self.db.execute("INSERT OR IGNORE INTO settings VALUES(?,?)",(k,v))
   self.db.commit();self.cfg={r["k"]:r["v"] for r in self.db.execute("SELECT * FROM settings")}
-  self.font_family=self.cfg["font_family"];self.bold=self.cfg["bold_text"]=="1"
+  self.font_family="Manrope";self.bold=self.cfg["bold_text"]=="1"
   self.theme=LEGACY_THEMES.get(self.cfg["colour_theme"],self.cfg["colour_theme"])
   if self.theme not in THEMES:self.theme="Classy"
   global ACTIVE_THEME
@@ -710,7 +710,7 @@ class SoloDesk(ctk.CTk):
   self.heading(p,"Settings","Personalise your workspace and manage your data.")
   sc=ctk.CTkScrollableFrame(p,fg_color="transparent");sc.pack(fill="both",expand=True)
   a=self.panel(sc);a.pack(fill="x",pady=6);self.label(a,"Choose one complete colour palette for the whole app.",16).pack(anchor="w",padx=18,pady=(14,8))
-  self.setting_select(a,"Colour theme","colour_theme",["Classy","Royal"]);self.setting_transparency(a)
+  self.setting_select(a,"Colour theme","colour_theme",["Classy","Royal"])
   b=self.panel(sc);b.pack(fill="x",pady=6);self.label(b,"Business preferences",16).pack(anchor="w",padx=18,pady=(14,8))
   self.bizvar=tk.StringVar(value=self.get("business"));self.curvar=tk.StringVar(value=self.get("currency","GBP"))
   self.setting_entry(b,"Business name",self.bizvar);self.setting_select_var(b,"Display currency",self.curvar,list(SYMBOLS))
