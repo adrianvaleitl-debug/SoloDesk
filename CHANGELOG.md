@@ -1,5 +1,11 @@
 # Changelog
 
+## V3.3 — 13 November 2026
+- Added a confirmed Settings action to permanently delete all SoloDesk local records and preferences.
+- Added a browser-storage choice banner to the website, with an option not to save appearance preferences.
+- Corrected the Windows release workflow so installer, portable ZIP, release tag and asset names all use V3.3 consistently.
+
+
 ## V3.2 — 12 November 2026
 - Added a required first-launch legal and liability acknowledgement before app access.
 - Added a Legal & Important Information section to Settings for reopening the notice.
