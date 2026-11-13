@@ -771,7 +771,7 @@ class SoloDesk(ctk.CTk):
   self.button(legal,"Read legal & liability notice",self.show_legal_from_settings).pack(anchor="w",padx=18,pady=(0,14))
   cr=self.panel(sc);cr.pack(fill="x",pady=6);self.label(cr,"Created by Adrian Vale",16).pack(anchor="w",padx=18,pady=(14,3));self.label(cr,"Follow the project and support development.",11,"muted").pack(anchor="w",padx=18)
   row=ctk.CTkFrame(cr,fg_color="transparent");row.pack(anchor="w",padx=12,pady=12)
-  for t,u in [("My website ↗",PERSONAL_SITE),("YouTube @Adrianvaleitl",YOUTUBE),("TikTok @adrianvaleitl",TIKTOK),("Donate · Ko-fi",KOFI)]:self.button(row,t,lambda url=u:webbrowser.open(url)).pack(side="left",padx=4)
+  for t,u in [("My website ↗",PERSONAL_SITE),("YouTube @Adrianvaleitl",YOUTUBE),("TikTok @adrianvaleitl",TIKTOK),("Optional support · Ko-fi",KOFI)]:self.button(row,t,lambda url=u:webbrowser.open(url)).pack(side="left",padx=4)
  def setting_transparency(self,p):
   r=ctk.CTkFrame(p,fg_color="transparent");r.pack(fill="x",padx=18,pady=7)
   self.label(r,"Window transparency",11,"muted").pack(side="left")
