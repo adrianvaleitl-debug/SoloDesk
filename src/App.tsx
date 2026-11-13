@@ -3,7 +3,7 @@ import { Activity, ArrowDownRight, ArrowUpRight, BarChart3, CalendarDays, Check,
 import "./styles.css";
 
 type Row = { id:string; created:string; done?:boolean; [key:string]:string|number|boolean|undefined };
-const APP = "SoloDesk";
+const APP: string = "SoloDesk";
 const NAV = ["Overview","Customers","Invoices","Expenses","Tasks","Documents","Analytics","Settings"] as string[];
 const FIELDS = {"Customers":[["name","Customer name","text"],["company","Company","text"],["email","Email address","email"],["phone","Phone","tel"],["notes","Notes","textarea"]],"Invoices":[["number","Invoice number","text"],["customer","Customer","text"],["description","Description","text"],["amount","Amount (£)","number"],["issued","Issue date","date"],["due","Due date","date"],["status","Status","select","Draft|Sent|Paid|Overdue"]],"Expenses":[["category","Category","select","Software|Travel|Equipment|Marketing|Office|Other"],["description","Description","text"],["amount","Amount (£)","number"],["date","Date","date"],["supplier","Supplier","text"]],"Tasks":[["title","Task","text"],["due","Due date","date"],["priority","Priority","select","Low|Normal|High"],["notes","Notes","textarea"]],"Documents":[["title","Document name","text"],["category","Category","select","Contract|Invoice|Receipt|Proposal|Other"],["path","File location or URL","text"],["notes","Notes","textarea"]]} as Record<string, [string,string,string,string?][]>;
 const STORE = "adrianvale.rebuild." + APP.toLowerCase().replace(/ /g,"-") + ".v2";
@@ -81,6 +81,6 @@ export default function App(){
  {toast?<div className="toast"><CheckCircle2 size={15}/>{toast}</div>:null}</div>;
 }
 function Metric({label,value,hint,icon}:{label:string;value:string;hint:string;icon:any}){return <div className="metric-card"><div className="metric-top"><span>{label}</span><i>{icon}</i></div><strong>{value}</strong><small>{hint}</small></div>}
-function SectionTitle({title,action,onAction}:{title:string;action:string;onAction:()=>void}){return <div className="section-title"><h3>{title}</h3><button onClick={onAction}>{action} <ArrowUpRight size={13}/></button></div>}
+function SectionTitle({title,action,onAction=()=>{}}:{title:string;action:string;onAction?:()=>void}){return <div className="section-title"><h3>{title}</h3><button onClick={onAction}>{action} <ArrowUpRight size={13}/></button></div>}
 function EyeIcon(){return <Activity/>}
 function UsersIcon(){return <Wallet/>}
