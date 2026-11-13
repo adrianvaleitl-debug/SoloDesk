@@ -19,7 +19,7 @@ export default function App(){
  const [toast,setToast]=useState("");
  const [theme,setTheme]=useState<"classy"|"royal">("classy");
  useEffect(()=>{localStorage.setItem(storageKey,JSON.stringify(data))},[data]);
- useEffect(()=>{document.documentElement.dataset.theme=theme},[theme]);
+ useEffect(()=>{document.documentElement.dataset.theme=theme;localStorage.setItem("adrianvale.theme",theme)},[theme]);
  const key = section.toLowerCase().replace(" ","");
  const dataKey = ["customers","invoices","expenses","tasks","documents"].find((k:string)=>k.replace(" ","")===key) || "customers";
  const entries=data[dataKey]||[];
@@ -42,7 +42,7 @@ export default function App(){
    <div className="side-bottom"><div className="side-card"><Sparkles size={16}/><b>Made by Adrian Vale</b><p>Thoughtful tools, designed to feel effortless.</p><a href="https://adrianvaleitl-debug.github.io/" target="_blank">Visit website <ArrowUpRight size={12}/></a></div><div className="side-links"><a href="https://ko-fi.com/marketinsight" target="_blank">Support the work ↗</a><span>VERSION 4.0.0</span></div></div>
   </aside>
   <main className="main">
-   <header className="topbar"><div className="breadcrumbs">ADRIAN VALE <span>/</span> SOLODESK <span>/</span> {section.toUpperCase()}</div><div className="top-actions"><div className="search"><Search size={15}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search workspace"/><kbd>⌘ K</kbd></div><button className="icon-button" aria-label="Settings" onClick={()=>setToast("Settings are being prepared for this rebuild")}><Settings2 size={17}/></button><div className="avatar">AV</div></div></header>
+   <header className="topbar"><div className="breadcrumbs">ADRIAN VALE <span>/</span> SOLODESK <span>/</span> {section.toUpperCase()}</div><div className="top-actions"><button className="theme-toggle" onClick={()=>setTheme(theme==="classy"?"royal":"classy")}>{theme==="classy"?"Classy · Blue":"Royal · Gold"}</button><div className="search"><Search size={15}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search workspace"/><kbd>⌘ K</kbd></div><button className="icon-button" aria-label="Settings" onClick={()=>setToast("Settings are being prepared for this rebuild")}><Settings2 size={17}/></button><div className="avatar">AV</div></div></header>
    <div className="content">
     <div className="welcome"><div><div className="eyebrow">YOUR SPACE, WELL SPENT</div><h1>{pageTitle}<span>.</span></h1><p>A calm workspace for the essentials of running your business.</p></div><div className="date-pill"><span className="live-dot"/>{new Intl.DateTimeFormat("en-GB",{weekday:"long",day:"numeric",month:"long"}).format(new Date())}</div></div>
     <section className="hero-panel"><div className="hero-copy"><div className="eyebrow light">BUSINESS AT A GLANCE</div><h2>Your business, in one place.</h2><p>A calm workspace for the essentials of running your business.</p><button className="primary-button" onClick={()=>setShowAdd(true)}><Plus size={16}/> Add {section==="Customers"?"customer":section==="Invoices"?"invoice":section==="Expenses"?"expense":section==="Watchlist"?"symbol":section==="Notes"?"note":"item"}</button></div><div className="hero-stat"><span>RECORDED VALUE</span><strong>{heroMetric}</strong><small>{subMetric}</small></div><div className="hero-orb"/></section>
