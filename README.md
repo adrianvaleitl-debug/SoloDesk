@@ -1,4 +1,4 @@
-# SoloDesk 4.0 — Adrian Vale
+# Ledger 3.9 4.0 — Adrian Vale
 
 A focused business workspace, rebuilt with React, TypeScript and Tauri 2. This is a clean desktop application foundation; the previous Python UI and application implementation are not included.
 
@@ -27,9 +27,14 @@ npm run tauri build
 ```
 
 ## Data and limitations
-Records are saved in local app storage on this device. No hosted account, payment processor, cloud sync or tax filing service is connected. Export a JSON backup regularly. SoloDesk is an organiser, not accounting, bookkeeping, tax or legal advice software. Check records and exported information before relying on them.
+Records are saved in local app storage on this device. No hosted account, payment processor, cloud sync or tax filing service is connected. Export a JSON backup regularly. Ledger is an organiser, not accounting, bookkeeping, tax or legal advice software. Check records and exported information before relying on them.
 
 ## Technology
 React 18 · TypeScript · Vite · Tauri 2 · Rust
 
 Website: https://adrianvaleitl-debug.github.io/
+
+## Ledger 3.9.0
+
+- Added a first-launch business-use and data-loss acknowledgement.
+- Renamed the product Ledger and introduced a matching royal-gold L app icon.
