@@ -764,6 +764,7 @@ class SoloDesk(ctk.CTk):
   row=ctk.CTkFrame(d,fg_color="transparent");row.pack(anchor="w",padx=12,pady=10)
   for t,fn in [("Back up database",self.backup),("Create desktop shortcut",self.create_shortcut),("Remove desktop shortcut",lambda:self.create_shortcut(True)),("Replay quick-start guide",self.tutorial),("Check for updates",lambda:self.check_updates(True)),("Open GitHub",lambda:webbrowser.open(REPO))]:self.button(row,t,fn).pack(side="left",padx=4)
   self.label(d,"Records are stored locally. Currency selection changes the displayed symbol only; no FX conversion or tax calculations are performed.",10,"muted",wraplength=900,justify="left").pack(anchor="w",padx=18,pady=(0,8))
+  self.button(d,"Privacy & legal information",lambda:webbrowser.open("https://adrianvaleitl-debug.github.io/SoloDesk/legal.html")).pack(anchor="w",padx=18,pady=(0,8))
   self.button(d,"Delete all SoloDesk data…",self.delete_all_data).pack(anchor="w",padx=18,pady=(0,14))
   legal=self.panel(sc);legal.pack(fill="x",pady=6);self.label(legal,"Legal & important information",16).pack(anchor="w",padx=18,pady=(14,5))
   self.label(legal,"SoloDesk is an organiser, not accounting or tax software. Review the full risk, data and liability notice before relying on records.",10,"muted",wraplength=900,justify="left").pack(anchor="w",padx=18,pady=(0,8))
