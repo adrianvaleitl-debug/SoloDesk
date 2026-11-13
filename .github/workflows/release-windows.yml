@@ -43,15 +43,15 @@ jobs:
           $exe = Get-ChildItem -Path "src-tauri/target/release/bundle/nsis" -Filter "*.exe" | Select-Object -First 1
           $msi = Get-ChildItem -Path "src-tauri/target/release/bundle/msi" -Filter "*.msi" | Select-Object -First 1
           if (-not $exe -or -not $msi) { throw "Expected NSIS EXE and MSI installers were not produced." }
-          Copy-Item $exe.FullName "release-assets/SoloDesk-Setup-V4.0.exe"
-          Copy-Item $msi.FullName "release-assets/SoloDesk-V4.0.msi"
+          Copy-Item $exe.FullName "release-assets/SoloDesk-Setup-V3.8.exe"
+          Copy-Item $msi.FullName "release-assets/SoloDesk-V3.8.msi"
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "V4.0"
-          name: "SoloDesk V4.0 — Windows"
+          tag_name: "V3.8"
+          name: "SoloDesk 3.8 — Windows"
           body: |
-            Fresh React + TypeScript + Tauri 2 rebuild. Customers, invoices, expenses, recurring tasks, document index and business analytics. Local data is not migrated from the previous app; export any old records before replacing it.
+            Fresh React + TypeScript + Tauri 2 rebuild with personal settings, accessibility options and expanded legal and privacy information.
           files: release-assets/*
           overwrite_files: true
           fail_on_unmatched_files: true
