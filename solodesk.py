@@ -111,7 +111,7 @@ def install_accent_spotlight(window, accent, background="#101012"):
     except Exception:
         pass
 
-APP_VERSION="V3.4"
+APP_VERSION="V3.5"
 ROOT=Path(os.environ.get("LOCALAPPDATA",Path.home()))/("SoloDesk" if sys.platform=="win32" else ".solodesk")
 ROOT.mkdir(parents=True,exist_ok=True);DB=ROOT/"solodesk.db"
 SYMBOLS={"GBP":"£","USD":"$","EUR":"€","CAD":"C$","AUD":"A$","INR":"₹","JPY":"¥","CHF":"Fr"}
@@ -120,29 +120,58 @@ THEMES={"Classy":("#DCE5F0","#AAB9CC"),"Royal":("#FFC34D","#DFA52F")}
 LEGACY_THEMES={"Black":"Classy","Amber":"Royal","Azure":"Classy","Lavender":"Classy","Rose":"Classy","Teal":"Classy","Dollar":"Classy","Euro":"Classy","Pound":"Classy","Yen":"Classy","Franc":"Classy","Ocean":"Classy","Sage":"Classy","Violet":"Classy","Coral":"Classy"}
 ACTIVE_THEME="Classy"
 def palette_color(value):
- royal={"#101012":"#24160E","#19191D":"#362316","#202024":"#432C1B","#29292E":"#52351F","#38383E":"#75512D","#404040":"#75512D","#36363D":"#694523","#1B1B20":"#2C1C11","#F2F2F2":"#F1D9A8","#A9A9A9":"#C5A978","#AFAFAF":"#C5A978","#EDEDED":"#24160E","#FBFBFB":"#432C1B","#F9F9F9":"#2C1C11","#E9E9E9":"#52351F","#E4E4E4":"#694523","#DBDBDB":"#75512D","#7E7E7E":"#C5A978","#333333":"#F1D9A8","#1E1E1E":"#24160E","#282828":"#52351F","#1F1F1F":"#432C1B","#7F7F7F":"#A98753","#D6D6D6":"#75512D","#CBCBCB":"#694523","#585858":"#75512D","#343434":"#52351F","#B9B9B9":"#F1D9A8","#A0A0A0":"#D7B979"}
- classy={"#101012":"#000412","#19191D":"#0B1020","#202024":"#111B2B","#29292E":"#18243A","#38383E":"#29364A","#404040":"#29364A","#36363D":"#24334A","#1B1B20":"#0B1424","#F2F2F2":"#EBEEF2","#A9A9A9":"#AAB4C2","#AFAFAF":"#AAB4C2","#EDEDED":"#000412","#FBFBFB":"#111B2B","#F9F9F9":"#0B1424","#E9E9E9":"#18243A","#E4E4E4":"#24334A","#DBDBDB":"#29364A","#7E7E7E":"#AAB4C2","#333333":"#EBEEF2","#1E1E1E":"#000412","#282828":"#18243A","#1F1F1F":"#111B2B","#7F7F7F":"#AAB4C2","#D6D6D6":"#29364A","#CBCBCB":"#24334A","#585858":"#29364A","#343434":"#18243A","#B9B9B9":"#DCE5F0","#A0A0A0":"#AAB9CC"}
- palette = royal if ACTIVE_THEME=="Royal" else classy
- if value in palette:return palette[value]
- if value in ("#202020","#1A1A1A","#1F1F1F","#363636"):return "#24160E" if ACTIVE_THEME=="Royal" else "#000412"
- if len(value)==7 and value.startswith("#"):
-  try:
-   rgb=tuple(int(value[i:i+2],16) for i in (1,3,5))
-   if max(rgb)-min(rgb)<=2:
-    level=sum(rgb)//3
-    if level<=35:return "#24160E" if ACTIVE_THEME=="Royal" else "#000412"
-    if level<=65:return "#75512D" if ACTIVE_THEME=="Royal" else "#29364A"
-    if level<=125:return "#C5A978" if ACTIVE_THEME=="Royal" else "#AAB4C2"
-    if level<=185:return "#75512D" if ACTIVE_THEME=="Royal" else "#29364A"
-    if level<=225:return "#52351F" if ACTIVE_THEME=="Royal" else "#18243A"
-    return "#F1D9A8" if ACTIVE_THEME=="Royal" else "#EBEEF2"
-  except ValueError:pass
- return value
-YOUTUBE="https://www.youtube.com/@Adrianvaleitl";TIKTOK="https://www.tiktok.com/@adrianvaleitl";KOFI="https://ko-fi.com/marketinsight";PERSONAL_SITE="https://adrianvaleitl-debug.github.io/"
-REPO="https://github.com/adrianvaleitl-debug/SoloDesk";RELEASES=REPO+"/releases/latest"
-GITHUB_SSL_CONTEXT=ssl.create_default_context(cafile=certifi.where())
-_SINGLE_INSTANCE_MUTEX=None
-
+    """Translate legacy widget colours into the Adrian Vale website palette."""
+    royal = ACTIVE_THEME == "Royal"
+    colors = {
+        "#101012": "#241407" if royal else "#000412",
+        "#19191D": "#4a2e18" if royal else "#101d32",
+        "#202024": "#382313" if royal else "#081225",
+        "#29292E": "#4a2e18" if royal else "#101d32",
+        "#38383E": "#6b4a2c" if royal else "#26364d",
+        "#404040": "#6b4a2c" if royal else "#26364d",
+        "#36363D": "#4a2e18" if royal else "#101d32",
+        "#1B1B20": "#241407" if royal else "#000412",
+        "#F2F2F2": "#fff3d9" if royal else "#EBEEF2",
+        "#EBEEF2": "#fff3d9" if royal else "#EBEEF2",
+        "#A9A9A9": "#d5bd94" if royal else "#aeb8c8",
+        "#AFAFAF": "#d5bd94" if royal else "#aeb8c8",
+        "#EDEDED": "#241407" if royal else "#000412",
+        "#FBFBFB": "#382313" if royal else "#081225",
+        "#F9F9F9": "#4a2e18" if royal else "#101d32",
+        "#FFFFFF": "#fff3d9" if royal else "#EBEEF2",
+        "#E9E9E9": "#4a2e18" if royal else "#101d32",
+        "#E4E4E4": "#6b4a2c" if royal else "#26364d",
+        "#DBDBDB": "#6b4a2c" if royal else "#26364d",
+        "#7E7E7E": "#d5bd94" if royal else "#aeb8c8",
+        "#333333": "#fff3d9" if royal else "#EBEEF2",
+        "#1E1E1E": "#241407" if royal else "#000412",
+        "#282828": "#4a2e18" if royal else "#101d32",
+        "#1F1F1F": "#382313" if royal else "#081225",
+        "#7F7F7F": "#d5bd94" if royal else "#aeb8c8",
+        "#D6D6D6": "#6b4a2c" if royal else "#26364d",
+        "#CBCBCB": "#6b4a2c" if royal else "#26364d",
+        "#585858": "#4a2e18" if royal else "#101d32",
+        "#343434": "#4a2e18" if royal else "#101d32",
+        "#B9B9B9": "#F1D9A8" if royal else "#d8dde5",
+        "#A0A0A0": "#d5bd94" if royal else "#aeb8c8",
+        "#696969": "#d5bd94" if royal else "#aeb8c8",
+        "#C3C3C3": "#d5bd94" if royal else "#aeb8c8",
+    }
+    if value in colors:
+        return colors[value]
+    if isinstance(value, str) and len(value) == 7 and value.startswith("#"):
+        try:
+            rgb = tuple(int(value[i:i + 2], 16) for i in (1, 3, 5))
+            if max(rgb) - min(rgb) <= 2:
+                level = sum(rgb) // 3
+                if level < 40: return "#241407" if royal else "#000412"
+                if level < 90: return "#4a2e18" if royal else "#101d32"
+                if level < 150: return "#d5bd94" if royal else "#aeb8c8"
+                if level < 215: return "#382313" if royal else "#081225"
+                return "#fff3d9" if royal else "#EBEEF2"
+        except ValueError:
+            pass
+    return value
 def acquire_single_instance():
  global _SINGLE_INSTANCE_MUTEX
  if sys.platform!="win32":return True
@@ -243,8 +272,8 @@ class SoloDesk(ctk.CTk):
    "muted":palette_color(palette_color("#A9A9A9")),"input":palette_color(palette_color("#1B1B20")),
    "hover":palette_color(palette_color("#36363D")),"accent":self.accent(),"danger":palette_color("#9B9B9B")}
   return bases[k]
- def font(self,n=12):return ctk.CTkFont(family=self.font_family,size=n,weight="bold" if self.bold else "normal")
- def panel(self,p):return ctk.CTkFrame(p,fg_color=self.col("panel"),corner_radius=22,border_width=1,border_color=self.col("line"))
+ def font(self,n=12):return ctk.CTkFont(family="Manrope",size=n,weight="bold" if self.bold else "normal")
+ def panel(self,p):return ctk.CTkFrame(p,fg_color=self.col("panel"),corner_radius=17,border_width=1,border_color=self.col("line"))
  def label(self,p,t,size=12,color="text",**kw):return ctk.CTkLabel(p,text=t,font=self.font(size),text_color=self.col(color),**kw)
  def button(self,p,t,fn,primary=False,width=None):
   return ctk.CTkButton(p,text=t,command=fn,width=width or 120,height=37,corner_radius=11,
@@ -255,7 +284,7 @@ class SoloDesk(ctk.CTk):
   install_accent_spotlight(self,self.accent(),GLASS_KEY if sys.platform=="win32" else (palette_color("#EDEDED") if ctk.get_appearance_mode()=="Light" else palette_color("#101012")))
   self.work=ctk.CTkFrame(self,fg_color="transparent",corner_radius=18);self.work.pack(fill="both",expand=True)
   self.work.grid_columnconfigure(1,weight=1);self.work.grid_rowconfigure(1,weight=1)
-  self.sidebar=ctk.CTkFrame(self.work,width=224,fg_color=self.col("side"),corner_radius=26,border_width=1,border_color=self.col("line"))
+  self.sidebar=ctk.CTkFrame(self.work,width=224,fg_color=self.col("side"),corner_radius=20,border_width=1,border_color=self.col("line"))
   self.sidebar.grid(row=0,column=0,rowspan=2,sticky="nsew",padx=(14,8),pady=14);self.sidebar.grid_propagate(False)
   brand=ctk.CTkFrame(self.sidebar,fg_color="transparent");brand.pack(fill="x",padx=20,pady=(24,26))
   if self.brand_image:ctk.CTkLabel(brand,text="",image=self.brand_image).pack(side="left",padx=(0,9))
@@ -282,7 +311,7 @@ class SoloDesk(ctk.CTk):
   self.label(foot,"Your business records stay on this computer.",9,"muted",wraplength=180,justify="left").pack(anchor="w",padx=12,pady=(0,8))
   self.button(foot,"My website ↗",lambda:webbrowser.open(PERSONAL_SITE),width=180).pack(fill="x",padx=10,pady=3)
   self.button(foot,"Optional support · Ko-fi ↗",lambda:webbrowser.open(KOFI),True,180).pack(fill="x",padx=10,pady=(2,10))
-  self.top=ctk.CTkFrame(self.work,height=68,fg_color=self.col("panel"),corner_radius=24,border_width=1,border_color=self.col("line"))
+  self.top=ctk.CTkFrame(self.work,height=68,fg_color=self.col("panel"),corner_radius=17,border_width=1,border_color=self.col("line"))
   self.top.grid(row=0,column=1,sticky="ew",padx=(8,14),pady=(14,8));self.top.grid_propagate(False)
   self.titlelabel=self.label(self.top,"Overview",16);self.titlelabel.pack(side="left",padx=25)
   self.search_open=False
@@ -310,7 +339,7 @@ class SoloDesk(ctk.CTk):
   elif n=="What's New":self.whats_new()
   else:self.settings_page()
  def heading(self,p,t,sub):
-  self.label(p,t,24).pack(anchor="w",pady=(3,2));self.label(p,sub,11,"muted").pack(anchor="w",pady=(0,15))
+  ctk.CTkLabel(p,text=t,font=ctk.CTkFont(family="Cormorant Garamond",size=31,weight="bold"),text_color=self.col("text")).pack(anchor="w",pady=(3,2));self.label(p,sub,11,"muted").pack(anchor="w",pady=(0,15))
  def metric(self,p,title,value,sub):
   f=self.panel(p);f.pack(side="left",fill="both",expand=True,padx=5)
   self.label(f,title.upper(),9,"muted").pack(anchor="w",padx=16,pady=(15,4));self.label(f,value,23).pack(anchor="w",padx=16)
@@ -950,7 +979,7 @@ class SoloDesk(ctk.CTk):
    ("03  Create and track invoices","Create invoices for customers and track draft, sent and paid status."),
    ("04  Record your expenses","Log business spending with a date, category, description and supplier."),
    ("05  Organise your work","Use priorities and due dates for tasks, and keep useful file links in Documents."),
-   ("06  Make SoloDesk yours","Choose a colour theme, font, text weight and Dark, Light or System appearance."),
+   ("06  Make SoloDesk yours","Choose the Classy or Royal website-matched visual theme."),
    ("07  Back up and stay current","Create a database backup from Settings and use automatic or manual update checks to stay up to date."),
   ]
   for title,desc in steps:
