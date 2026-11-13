@@ -710,7 +710,7 @@ class SoloDesk(ctk.CTk):
    self.label(card,detail,10,"muted",wraplength=900,justify="left").pack(anchor="w",padx=18,pady=(2,13))
 
  def show_legal_notice(self,force=False):
-  version="2026-11-12"
+  version="2026-11-13"
   if not force and self.get("legal_notice_version","") == version:
    self.continue_after_legal_notice()
    return
