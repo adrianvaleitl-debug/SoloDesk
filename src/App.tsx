@@ -10,7 +10,7 @@ const NAV = ["Overview","Customers","Invoices","Expenses","Tasks","Documents","A
 const FIELDS = {"Customers":[["name","Customer name","text"],["company","Company","text"],["email","Email address","email"],["phone","Phone","tel"],["notes","Notes","textarea"]],"Invoices":[["number","Invoice number","text"],["customer","Customer","text"],["description","Description","text"],["amount","Amount (£)","number"],["issued","Issue date","date"],["due","Due date","date"],["status","Status","select","Draft|Sent|Paid|Overdue"]],"Expenses":[["category","Category","select","Software|Travel|Equipment|Marketing|Office|Other"],["description","Description","text"],["amount","Amount (£)","number"],["date","Date","date"],["supplier","Supplier","text"]],"Tasks":[["title","Task","text"],["due","Due date","date"],["priority","Priority","select","Low|Normal|High"],["recurrence","Repeat","select","None|Daily|Weekly|Monthly"],["notes","Notes","textarea"]],"Documents":[["title","Document name","text"],["category","Category","select","Contract|Invoice|Receipt|Proposal|Other"],["path","File location or URL","text"],["notes","Notes","textarea"]]} as Record<string, [string,string,string,string?][]>;
 const PREFS_STORE = "adrianvale.preferences." + APP.toLowerCase().replace(/ /g,"-");
 const THEME_STORE = PREFS_STORE + ".theme";
-const DEFAULT_PREFERENCES = {font:"royal" as "modern"|"royal",textSize:"normal" as "normal"|"large"|"larger",reduceMotion:false,highContrast:false,enhancedFocus:true,compactMode:false,confirmDeletes:true,showWelcomePanel:true,showMetrics:true,showRecordMetadata:true,showSectionDescriptions:true,showHints:true,confirmExports:true,stickyTopbar:true,showFooter:true,roundedPanels:true,subtleAnimations:true,showPersonalGreeting:true};
+const DEFAULT_PREFERENCES = {font:"royal" as "modern"|"royal",textSize:"normal" as "normal"|"large"|"larger",reduceMotion:false,highContrast:false,enhancedFocus:true,compactMode:false,confirmDeletes:true,showWelcomePanel:true,showMetrics:true,showRecordMetadata:true,showSectionDescriptions:true,showHints:true,confirmExports:true,stickyTopbar:true,showFooter:true,roundedPanels:true,subtleAnimations:true,showPersonalGreeting:true,settingsVersion:2};
 type AppPreferences = typeof DEFAULT_PREFERENCES;
 const STORE = "adrianvale.rebuild." + APP.toLowerCase().replace(/ /g,"-") + ".v2";
 const money = (n:number) => new Intl.NumberFormat("en-GB",{style:"currency",currency:"GBP",maximumFractionDigits:2}).format(n||0);
@@ -23,7 +23,7 @@ export default function App(){
  const [page,setPage]=useState("Overview");
  const [data,setData]=useState<Record<string,Row[]>>(()=>{try{return {...emptyData(),...JSON.parse(localStorage.getItem(STORE)||"{}")}}catch{return emptyData()}});
  const [theme,setTheme]=useState<"classy"|"royal">(()=>localStorage.getItem(THEME_STORE)==="royal"?"royal":"classy");
- const [preferences,setPreferences]=useState<AppPreferences>(()=>{try{return {...DEFAULT_PREFERENCES,...JSON.parse(localStorage.getItem(PREFS_STORE)||"{}")}}catch{return DEFAULT_PREFERENCES}});
+ const [preferences,setPreferences]=useState<AppPreferences>(()=>{try{const saved=JSON.parse(localStorage.getItem(PREFS_STORE)||"{}");return {...DEFAULT_PREFERENCES,...saved,font:saved.settingsVersion>=2?saved.font:"royal",settingsVersion:2}}catch{return DEFAULT_PREFERENCES}});
  const [displayName,setDisplayName]=useState(()=>localStorage.getItem(PREFS_STORE+".name")||"");
  const [query,setQuery]=useState("");
  const [modal,setModal]=useState(false);
