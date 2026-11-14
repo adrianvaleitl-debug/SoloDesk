@@ -47,15 +47,15 @@ jobs:
           $exe = Get-ChildItem -Path "src-tauri/target/release/bundle/nsis" -Filter "*.exe" | Select-Object -First 1
           $msi = Get-ChildItem -Path "src-tauri/target/release/bundle/msi" -Filter "*.msi" | Select-Object -First 1
           if (-not $exe -or -not $msi) { throw "Expected NSIS EXE and MSI installers were not produced." }
-          Copy-Item $exe.FullName "release-assets/Ledger-Setup-3.10.exe"
-          Copy-Item $msi.FullName "release-assets/Ledger-3.10.msi"
+          Copy-Item $exe.FullName "release-assets/Ledger-Setup-3.11.exe"
+          Copy-Item $msi.FullName "release-assets/Ledger-3.11.msi"
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "V3.10"
-          name: "Ledger 3.10 — Windows"
+          tag_name: "V3.11"
+          name: "Ledger 3.11 — Windows"
           body: |
-            New Ledger release with the royal-gold app identity, first-launch legal acknowledgement and updated workspace experience.
+            New Ledger 3.11 release with personalised greetings, expanded workspace settings and the royal typography default.
           files: release-assets/*
           overwrite_files: true
           fail_on_unmatched_files: true
