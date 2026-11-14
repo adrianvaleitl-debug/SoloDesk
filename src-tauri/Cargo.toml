@@ -1,6 +1,6 @@
 [package]
 name = "SoloDesk"
-version = "3.11.0"
+version = "3.12.0"
 description = "A calm workspace for the essentials of running your business."
 authors = ["Adrian Vale"]
 edition = "2021"
