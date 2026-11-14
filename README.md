@@ -33,6 +33,7 @@ Records are saved in local app storage on this device. No hosted account, paymen
 React 18 · TypeScript · Vite · Tauri 2 · Rust
 
 Website: https://adrianvaleitl-debug.github.io/Adrian-Vales-Projects/
+Discord: https://discord.gg/3TQcf6DwvT
 
 ## Ledger 3.9.0
 
